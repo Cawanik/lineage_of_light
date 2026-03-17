@@ -5,38 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b152a851-bdcb-4d31-8dff-9b65944e675b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/lineage_of_light.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0001.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0002.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0003.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0004.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0005.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0006.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0007.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0008.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0009.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0010.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0011.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0012.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0013.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0014.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0015.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0016.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0017.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0018.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0019.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0020.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0021.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0022.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0023.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0024.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0025.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/backup/backup-1773701165_0026.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_016.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_017.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lineage_of_light_art_bible.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/editor/editor_layout.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/editor_layout.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/editor/filesystem_cache10" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/filesystem_cache10" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/editor/filesystem_update4" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/filesystem_update4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/editor/script_editor_cache.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/script_editor_cache.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/uid_cache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/uid_cache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_016.png" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_016.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_017.png" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_017.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/godot/project.godot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/scenes/buildings/wall_system.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/buildings/wall_system.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/scenes/main/iso_ground.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/main/iso_ground.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/scenes/player/player.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/player/player.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/scenes/ui/build_menu.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/ui/build_menu.gd" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,8 +29,25 @@
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Cawanik"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Cawanik/lineage_of_light.git",
+    "accountId": "33e68576-6d81-487c-9b1a-61a6ce763230"
+  }
+}]]></component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -75,7 +73,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "refactor/jsonizirovanie",
     "javascript.preferred.runtime.type.id": "node",
     "last_opened_file_path": "C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/player/wizard/animations/smoke/backup",
     "node.js.detected.package.eslint": "true",
@@ -106,11 +104,34 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1773690966271</updated>
-      <workItem from="1773690967294" duration="28655000" />
+      <workItem from="1773690967294" duration="31616000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="refactor/jsonizirovanie" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

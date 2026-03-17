@@ -18,6 +18,10 @@ config/name="Lineage of Light"
 run/main_scene="res://scenes/main/main.tscn"
 config/features=PackedStringArray("4.6")
 
+[autoload]
+
+Config="*res://scripts/autoload/config.gd"
+
 [display]
 
 window/size/viewport_width=1280

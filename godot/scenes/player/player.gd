@@ -1,11 +1,12 @@
 class_name Player
 extends CharacterBody2D
 
-@export var speed: float = 120.0
-@export var zoom_speed: float = 0.1
-@export var zoom_min: float = 0.5
-@export var zoom_max: float = 4.0
-@export var afk_timeout: float = 10.0
+var speed: float = 120.0
+var zoom_speed: float = 0.1
+var zoom_min: float = 0.5
+var zoom_max: float = 4.0
+var afk_timeout: float = 10.0
+var move_threshold: float = 5.0
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var camera: Camera2D = $Camera2D
@@ -27,6 +28,14 @@ const DIRECTIONS = ["south", "south-west", "west", "north-west", "north", "north
 
 
 func _ready() -> void:
+	var p = Config.player
+	speed = p.get("speed", 120.0)
+	zoom_speed = p.get("zoom_speed", 0.1)
+	zoom_min = p.get("zoom_min", 0.5)
+	zoom_max = p.get("zoom_max", 4.0)
+	afk_timeout = p.get("afk_timeout", 10.0)
+	move_threshold = p.get("move_threshold", 5.0)
+
 	_setup_animations()
 	sprite.play("idle_south")
 
@@ -113,7 +122,7 @@ func _physics_process(delta: float) -> void:
 		_reset_afk()
 	elif using_mouse_move:
 		var diff = move_target - global_position
-		if diff.length() > 5.0:
+		if diff.length() > move_threshold:
 			input = diff.normalized()
 			velocity = input * speed
 			_reset_afk()

@@ -1,0 +1,37 @@
+{
+	"wall": {
+		"name": "Стена",
+		"cost": 10,
+		"desc": "Каменная стена с башенками на стыках",
+		"hotkey": "1",
+		"height": 28.0,
+		"thickness": 6.0,
+		"shrink": 5.0,
+		"pillar_extra_height": 14,
+		"pillar_shift_down": 4,
+		"pillar_radius_extra": 2.0,
+		"pillar_segments": 12,
+		"pillar_brick_rows": 6,
+		"merlon_width": 3.0,
+		"merlon_height": 5.0,
+		"merlon_depth": 2.0,
+		"pillar_merlon_width": 4.0,
+		"pillar_merlon_height": 6.0,
+		"pillar_merlon_depth": 3.0,
+		"brick_rows": 4,
+		"brick_joints_per_row": 3,
+		"brick_color_variation": 0.06,
+		"fade_radius": 50.0,
+		"demolish_snap_radius": 16.0,
+		"transparency_alpha": 0.5,
+		"colors": {
+			"top": "#6a6580",
+			"front": "#4a4460",
+			"side": "#2a2440",
+			"dark": "#1a1030",
+			"brick": "#1f1535",
+			"highlight": "#7a7590",
+			"merlon": "#5a5470"
+		}
+	}
+}

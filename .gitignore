@@ -1,0 +1,30 @@
+# Godot
+godot/.godot/
+godot/.uid_cache
+godot/*.import
+
+# Godot imported resources
+godot/**/*.import
+
+# Godot export
+godot/export_presets.cfg
+godot/.export/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+
+# Claude
+.claude/
+
+# Backups
+*.bak
+*.tmp

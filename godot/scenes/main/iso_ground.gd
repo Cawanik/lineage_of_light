@@ -3,37 +3,42 @@ extends Node2D
 
 ## Isometric tile ground with weighted random placement
 
-const CELL_SIZE = 64
-const ISO_RATIO = 0.5  # Y squash for isometric
+var CELL_SIZE: int = 64
+var ISO_RATIO: float = 0.5
 
 var tiles_loaded: Array[Texture2D] = []
 var tile_weights: Array[float] = []
 
-# Grid data: Vector2i -> tile_index
 var grid: Dictionary = {}
 
 var grid_width: int = 30
 var grid_height: int = 30
+var ground_seed: int = 42
 
 
 func _ready() -> void:
+	var iso = Config.game.get("iso", {})
+	CELL_SIZE = iso.get("cell_size", 64)
+	ISO_RATIO = iso.get("iso_ratio", 0.5)
+	grid_width = iso.get("grid_width", 30)
+	grid_height = iso.get("grid_height", 30)
+	ground_seed = iso.get("ground_seed", 42)
+
 	_load_tiles()
 	_generate_grid()
 	queue_redraw()
 
 
 func _load_tiles() -> void:
+	var tw = Config.game.get("tile_weights", {})
 	var tile_defs = [
-		# Grass variants (~60%)
-		{"path": "res://assets/sprites/tiles/iso_tile_0.png", "weight": 12.0},   # grass + purple flowers
-		{"path": "res://assets/sprites/tiles/iso_grass_0.png", "weight": 12.0},   # wildflowers
-		{"path": "res://assets/sprites/tiles/iso_grass_1.png", "weight": 12.0},   # mushrooms
-		{"path": "res://assets/sprites/tiles/iso_grass_2.png", "weight": 12.0},   # fallen leaves
-		{"path": "res://assets/sprites/tiles/iso_grass_3.png", "weight": 12.0},   # sparse grass
-		# Dirt (~20%)
-		{"path": "res://assets/sprites/tiles/iso_tile_2.png", "weight": 20.0},    # dirt + pebbles
-		# Stone (~10%)
-		{"path": "res://assets/sprites/tiles/iso_tile_1.png", "weight": 10.0},    # cobblestone
+		{"path": "res://assets/sprites/tiles/iso_tile_0.png", "weight": tw.get("grass_flower", 12.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_0.png", "weight": tw.get("grass_wildflower", 12.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_1.png", "weight": tw.get("grass_mushroom", 12.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_2.png", "weight": tw.get("grass_leaves", 12.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_3.png", "weight": tw.get("grass_sparse", 12.0)},
+		{"path": "res://assets/sprites/tiles/iso_tile_2.png", "weight": tw.get("dirt", 20.0)},
+		{"path": "res://assets/sprites/tiles/iso_tile_1.png", "weight": tw.get("stone", 10.0)},
 	]
 
 	for def in tile_defs:
@@ -52,7 +57,7 @@ func _generate_grid() -> void:
 
 	# Use seeded RNG for consistent map
 	var rng = RandomNumberGenerator.new()
-	rng.seed = 42
+	rng.seed = ground_seed
 
 	for y in range(grid_height):
 		for x in range(grid_width):

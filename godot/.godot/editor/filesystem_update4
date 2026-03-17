@@ -7,3 +7,4 @@ res://scenes/buildings/wall_system.gd
 res://scenes/buildings/wall_segment.tscn
 res://scenes/buildings/wall_draw_node.gd
 res://scenes/ui/build_menu.gd
+res://scenes/main/iso_ground.gd
