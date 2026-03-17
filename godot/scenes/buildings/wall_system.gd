@@ -5,19 +5,19 @@ extends Node2D
 ## Walls are edges between grid nodes, not nodes themselves
 ## Click two adjacent nodes to build a wall segment between them
 
-const CELL_SIZE = 64
-const ISO_RATIO = 0.5
-const WALL_HEIGHT = 28.0
-const WALL_THICK = 6.0
+var CELL_SIZE: int = 64
+var ISO_RATIO: float = 0.5
+var WALL_HEIGHT: float = 28.0
+var WALL_THICK: float = 6.0
 
 # Palette
-var col_top = Color("#6a6580")
-var col_front = Color("#4a4460")
-var col_side = Color("#2a2440")
-var col_dark = Color("#1a1030")
-var col_brick = Color("#1f1535")
-var col_highlight = Color("#7a7590")
-var col_merlon = Color("#5a5470")
+var col_top: Color
+var col_front: Color
+var col_side: Color
+var col_dark: Color
+var col_brick: Color
+var col_highlight: Color
+var col_merlon: Color
 
 # Nodes where walls meet: Vector2i -> true
 var nodes: Dictionary = {}
@@ -33,8 +33,8 @@ var _target: WallDrawNode = null
 var wall_visuals: Dictionary = {}   # StringName -> WallDrawNode
 var pillar_visuals: Dictionary = {} # Vector2i -> WallDrawNode
 var player: Node2D = null
-const FADE_RADIUS = 50.0
-const DEMOLISH_SNAP_RADIUS = 16.0
+var FADE_RADIUS: float = 50.0
+var DEMOLISH_SNAP_RADIUS: float = 16.0
 
 var demolish_mode: bool = false
 var hovered_node: Vector2i = Vector2i(-9999, -9999)
@@ -56,6 +56,28 @@ func _line(from: Vector2, to: Vector2, color: Color, width: float = 1.0) -> void
 
 func _ready() -> void:
 	y_sort_enabled = true
+	_load_config()
+
+
+func _load_config() -> void:
+	var iso = Config.game.get("iso", {})
+	CELL_SIZE = iso.get("cell_size", 64)
+	ISO_RATIO = iso.get("iso_ratio", 0.5)
+
+	var w = Config.buildings.get("wall", {})
+	WALL_HEIGHT = w.get("height", 28.0)
+	WALL_THICK = w.get("thickness", 6.0)
+	FADE_RADIUS = w.get("fade_radius", 50.0)
+	DEMOLISH_SNAP_RADIUS = w.get("demolish_snap_radius", 16.0)
+
+	var wc = w.get("colors", {})
+	col_top = Color(wc.get("top", "#6a6580"))
+	col_front = Color(wc.get("front", "#4a4460"))
+	col_side = Color(wc.get("side", "#2a2440"))
+	col_dark = Color(wc.get("dark", "#1a1030"))
+	col_brick = Color(wc.get("brick", "#1f1535"))
+	col_highlight = Color(wc.get("highlight", "#7a7590"))
+	col_merlon = Color(wc.get("merlon", "#5a5470"))
 
 
 func _process(_delta: float) -> void:

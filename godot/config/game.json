@@ -1,0 +1,40 @@
+{
+	"initial_gold": 150,
+	"initial_lives": 20,
+
+	"iso": {
+		"cell_size": 64,
+		"iso_ratio": 0.5,
+		"grid_width": 30,
+		"grid_height": 30,
+		"ground_seed": 42,
+		"grid_offset_y": 8.0
+	},
+
+	"tile_weights": {
+		"grass_flower": 12.0,
+		"grass_wildflower": 12.0,
+		"grass_mushroom": 12.0,
+		"grass_leaves": 12.0,
+		"grass_sparse": 12.0,
+		"dirt": 20.0,
+		"stone": 10.0
+	},
+
+	"move_marker": {
+		"max_lifetime": 2.0,
+		"start_radius": 18.0,
+		"min_radius": 4.0,
+		"segments": 20,
+		"y_squash": 0.55,
+		"color": "#9933cccc",
+		"inner_color": "#9933cc4d"
+	},
+
+	"ui": {
+		"font_color": "#e8e0ff",
+		"font_hover_color": "#f0d060",
+		"font_pressed_color": "#9933cc",
+		"button_min_size": [220, 40]
+	}
+}

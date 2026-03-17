@@ -7,18 +7,12 @@ signal building_selected(building_type: String)
 var is_open: bool = false
 var selected_building: String = ""
 
-const BUILDINGS = {
-	"wall": {
-		"name": "Стена",
-		"cost": 10,
-		"desc": "Каменная стена с башенками на стыках",
-		"hotkey": "1",
-	},
-}
+var BUILDINGS: Dictionary = {}
 
 
 func _ready() -> void:
 	visible = false
+	BUILDINGS = Config.buildings
 	_build_buttons()
 
 
@@ -31,9 +25,10 @@ func _build_buttons() -> void:
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.custom_minimum_size = Vector2(220, 40)
 
-		btn.add_theme_color_override("font_color", Color("#e8e0ff"))
-		btn.add_theme_color_override("font_hover_color", Color("#f0d060"))
-		btn.add_theme_color_override("font_pressed_color", Color("#9933cc"))
+		var ui = Config.game.get("ui", {})
+		btn.add_theme_color_override("font_color", Color(ui.get("font_color", "#e8e0ff")))
+		btn.add_theme_color_override("font_hover_color", Color(ui.get("font_hover_color", "#f0d060")))
+		btn.add_theme_color_override("font_pressed_color", Color(ui.get("font_pressed_color", "#9933cc")))
 
 		btn.pressed.connect(_on_item_pressed.bind(key))
 		item_list.add_child(btn)

@@ -1,0 +1,12 @@
+{
+	"speed": 120.0,
+	"zoom_speed": 0.1,
+	"zoom_min": 0.5,
+	"zoom_max": 4.0,
+	"afk_timeout": 10.0,
+	"move_threshold": 5.0,
+	"walk_anim_speed": 10.0,
+	"idle_anim_speed": 2.0,
+	"smoke_anim_speed": 6.0,
+	"smoke_sit_frames": 8
+}
