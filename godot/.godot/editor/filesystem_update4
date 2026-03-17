@@ -1,0 +1,9 @@
+res://scenes/main/main.gd
+res://shaders/ground.gdshader
+res://scenes/main/main.tscn
+res://scenes/player/player.gd
+res://scenes/ui/move_marker.gd
+res://scenes/buildings/wall_system.gd
+res://scenes/buildings/wall_segment.tscn
+res://scenes/buildings/wall_draw_node.gd
+res://scenes/ui/build_menu.gd

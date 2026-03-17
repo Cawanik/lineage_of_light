@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cplacegrid01"]
+
+[ext_resource type="Script" path="res://scenes/ui/placement_grid.gd" id="1_grid"]
+
+[node name="PlacementGrid" type="Node2D"]
+script = ExtResource("1_grid")

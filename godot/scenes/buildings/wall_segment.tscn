@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cwallseg01"]
+
+[ext_resource type="Script" path="res://scenes/buildings/wall_segment.gd" id="1_wall"]
+
+[node name="WallSegment" type="Node2D"]
+script = ExtResource("1_wall")

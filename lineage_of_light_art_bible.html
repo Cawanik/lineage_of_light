@@ -1,0 +1,865 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --void: #0a0a12;
+    --abyss: #0d1a2e;
+    --shadow: #1a1030;
+    --dusk: #4a3070;
+    --violet: #7a5a9a;
+    --lavender: #a080c0;
+    --lake: #1e3a5f;
+    --lake2: #2d5080;
+    --brick: #8b5e3c;
+    --terra: #c47a45;
+    --gold: #b8860b;
+    --moss: #2d5a27;
+    --pine: #4a8c3f;
+    --curse: #9933cc;
+    --blood: #8b0000;
+    --ghost: #e8e0ff;
+    --pale: #f0d060;
+    --parchment: #d4c5a0;
+    --ink: #1a1525;
+  }
+
+  body {
+    background: var(--void);
+    color: var(--ghost);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  .cover {
+    background: linear-gradient(180deg, #0a0a12 0%, #1a1030 40%, #2a1545 70%, #0a0a12 100%);
+    border-bottom: 1px solid var(--dusk);
+    padding: 60px 40px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(153,51,204,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .rune-row {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--dusk);
+    letter-spacing: 8px;
+    margin-bottom: 24px;
+    opacity: 0.7;
+  }
+
+  .cover-title {
+    font-family: 'Cinzel', serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--ghost);
+    letter-spacing: 4px;
+    text-shadow: 0 0 40px rgba(153,51,204,0.4);
+    margin-bottom: 6px;
+  }
+
+  .cover-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--lavender);
+    letter-spacing: 8px;
+    margin-bottom: 32px;
+    text-transform: uppercase;
+  }
+
+  .cover-badge {
+    display: inline-block;
+    border: 1px solid var(--dusk);
+    padding: 6px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--violet);
+    letter-spacing: 3px;
+    margin: 4px 6px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 40px 0 28px;
+    padding: 0 40px;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--dusk), transparent);
+  }
+
+  .divider-glyph {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: var(--violet);
+  }
+
+  .section {
+    padding: 0 40px;
+    margin-bottom: 48px;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--violet);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ghost);
+    margin-bottom: 16px;
+    border-left: 3px solid var(--curse);
+    padding-left: 14px;
+  }
+
+  .section-body {
+    font-size: 16px;
+    color: #b0a8cc;
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 2px;
+    margin-top: 16px;
+  }
+
+  .color-chip {
+    position: relative;
+    height: 72px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 6px 8px;
+    cursor: default;
+  }
+
+  .color-chip-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    line-height: 1.3;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+
+  .color-chip-hex {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    opacity: 0.7;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+
+  .spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .spec-card {
+    background: rgba(26,16,48,0.6);
+    border: 1px solid rgba(74,48,112,0.4);
+    padding: 16px 18px;
+  }
+
+  .spec-card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--lavender);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .spec-card ul {
+    list-style: none;
+    font-size: 14px;
+    color: #9a90b0;
+    line-height: 1.9;
+  }
+
+  .spec-card ul li::before {
+    content: '▸ ';
+    color: var(--curse);
+    font-size: 10px;
+  }
+
+  .code-block {
+    background: rgba(10,10,18,0.9);
+    border: 1px solid rgba(74,48,112,0.5);
+    border-left: 3px solid var(--curse);
+    padding: 20px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #c8c0e0;
+    line-height: 1.9;
+    margin-top: 16px;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+
+  .code-comment { color: var(--dusk); }
+  .code-key { color: var(--lavender); }
+  .code-val { color: var(--parchment); }
+  .code-hex { color: var(--terra); }
+  .code-label { color: var(--curse); }
+
+  .asset-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 14px;
+  }
+
+  .asset-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--lavender);
+    text-transform: uppercase;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--dusk);
+    background: rgba(26,16,48,0.4);
+  }
+
+  .asset-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(74,48,112,0.2);
+    color: #9a90b0;
+    vertical-align: top;
+  }
+
+  .asset-table tr:hover td {
+    background: rgba(74,48,112,0.1);
+  }
+
+  .asset-table .td-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ghost);
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    border-radius: 2px;
+    margin: 1px;
+  }
+
+  .tag-attack { background: rgba(139,0,0,0.3); color: #ff6060; border: 1px solid rgba(139,0,0,0.5); }
+  .tag-magic  { background: rgba(153,51,204,0.3); color: #cc88ff; border: 1px solid rgba(153,51,204,0.5); }
+  .tag-trap   { background: rgba(74,48,112,0.3); color: var(--lavender); border: 1px solid rgba(74,48,112,0.6); }
+  .tag-hero   { background: rgba(180,134,11,0.2); color: var(--pale); border: 1px solid rgba(180,134,11,0.4); }
+  .tag-env    { background: rgba(45,90,39,0.3); color: #80c870; border: 1px solid rgba(45,90,39,0.5); }
+  .tag-ui     { background: rgba(30,58,95,0.4); color: #70a8e0; border: 1px solid rgba(30,58,95,0.6); }
+
+  .prompt-block {
+    background: rgba(10,10,18,0.95);
+    border: 1px solid rgba(153,51,204,0.3);
+    padding: 0;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+
+  .prompt-header {
+    background: rgba(74,48,112,0.25);
+    border-bottom: 1px solid rgba(74,48,112,0.4);
+    padding: 8px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .prompt-header-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--lavender);
+    text-transform: uppercase;
+  }
+
+  .prompt-header-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--violet);
+  }
+
+  .prompt-content {
+    padding: 18px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #c8c0e0;
+    line-height: 2;
+    white-space: pre-wrap;
+  }
+
+  .rule-block {
+    background: rgba(139,0,0,0.08);
+    border: 1px solid rgba(139,0,0,0.25);
+    border-left: 3px solid var(--blood);
+    padding: 14px 18px;
+    margin-top: 12px;
+  }
+
+  .rule-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: #ff6060;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .rule-list {
+    list-style: none;
+    font-size: 14px;
+    color: #cc8888;
+    line-height: 1.9;
+  }
+
+  .rule-list li::before {
+    content: '✗ ';
+    color: var(--blood);
+  }
+
+  .ok-block {
+    background: rgba(45,90,39,0.08);
+    border: 1px solid rgba(45,90,39,0.25);
+    border-left: 3px solid var(--pine);
+    padding: 14px 18px;
+    margin-top: 8px;
+  }
+
+  .ok-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: #80c870;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .ok-list {
+    list-style: none;
+    font-size: 14px;
+    color: #7aaa6a;
+    line-height: 1.9;
+  }
+
+  .ok-list li::before {
+    content: '✓ ';
+    color: var(--pine);
+  }
+
+  .epoch-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .epoch-card {
+    background: rgba(26,16,48,0.5);
+    border: 1px solid rgba(74,48,112,0.4);
+    padding: 14px 12px;
+    text-align: center;
+  }
+
+  .epoch-num {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    color: var(--violet);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .epoch-name {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--ghost);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .epoch-desc {
+    font-size: 12px;
+    color: #6a6080;
+    line-height: 1.5;
+  }
+
+  .epoch-accent {
+    display: block;
+    width: 24px;
+    height: 2px;
+    margin: 8px auto 0;
+  }
+
+  .warning-block {
+    background: rgba(180,134,11,0.08);
+    border: 1px solid rgba(180,134,11,0.25);
+    border-left: 3px solid var(--gold);
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #c8a840;
+    line-height: 1.8;
+  }
+
+  .footer {
+    border-top: 1px solid var(--shadow);
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 60px;
+  }
+
+  .footer-title {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: var(--dusk);
+    letter-spacing: 2px;
+  }
+
+  .footer-version {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--shadow);
+  }
+
+  @media (max-width: 600px) {
+    .cover { padding: 40px 20px 36px; }
+    .cover-title { font-size: 26px; }
+    .section { padding: 0 20px; }
+    .divider { padding: 0 20px; }
+    .spec-grid { grid-template-columns: 1fr; }
+    .epoch-grid { grid-template-columns: 1fr 1fr; }
+    .footer { padding: 24px 20px; flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
+
+<div style="background: var(--void); min-height: 100vh;">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="rune-row">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ</div>
+    <div class="cover-title">LINEAGE OF LIGHT</div>
+    <div class="cover-subtitle">Art Bible & Asset Generation Guide</div>
+    <div style="margin-bottom: 20px;">
+      <span class="cover-badge">PIXEL ART</span>
+      <span class="cover-badge">DARK FANTASY</span>
+      <span class="cover-badge">32×32 BASE</span>
+      <span class="cover-badge">TOWER DEFENSE</span>
+    </div>
+    <div style="font-family: 'Crimson Pro', serif; font-size: 15px; color: var(--dusk); font-style: italic; letter-spacing: 1px;">
+      Indie Game Jam — Theme: Legacy
+    </div>
+  </div>
+
+  <!-- VISION -->
+  <div class="divider"><div class="divider-line"></div><div class="divider-glyph">✦</div><div class="divider-line"></div></div>
+  <div class="section">
+    <div class="section-label">Chapter I</div>
+    <div class="section-title">Художественное видение</div>
+    <div class="section-body">
+      Ты — Древний. Не злодей — страж Запретного Равновесия. Мир вокруг тебя — это тёмное величие: готические замки над горными озёрами, фиолетовые сумерки, что длятся вечно, архитектура из проклятого камня, пережившая десятки поколений. Каждая башня — памятник. Каждая ловушка — ритуал.<br><br>
+      Визуальный язык игры — это не ужас и не мрак ради мрака. Это <em>тёмная красота</em>. Элегантная угроза. Холодное величие существа, которое существует тысячелетия и видело, как одно поколение героев сменяет другое. Пиксельность не ограничение — это эстетика. Каждый пиксель намеренен.
+    </div>
+  </div>
+
+  <!-- PALETTE -->
+  <div class="divider"><div class="divider-line"></div><div class="divider-glyph">✦</div><div class="divider-line"></div></div>
+  <div class="section">
+    <div class="section-label">Chapter II</div>
+    <div class="section-title">Цветовая палитра — «Cursed Twilight»</div>
+    <div class="palette-grid">
+      <div class="color-chip" style="background:#0a0a12;"><div class="color-chip-name" style="color:#3d2a60;">Void Black</div><div class="color-chip-hex" style="color:#2a1840;">#0a0a12</div></div>
+      <div class="color-chip" style="background:#0d1a2e;"><div class="color-chip-name" style="color:#2d5080;">Abyss Navy</div><div class="color-chip-hex" style="color:#1e3a5f;">#0d1a2e</div></div>
+      <div class="color-chip" style="background:#1a1030;"><div class="color-chip-name" style="color:#4a3070;">Shadow Purple</div><div class="color-chip-hex" style="color:#2a1840;">#1a1030</div></div>
+      <div class="color-chip" style="background:#4a3070;"><div class="color-chip-name" style="color:#c0a0e0;">Dusk Purple</div><div class="color-chip-hex" style="color:#9070b0;">#4a3070</div></div>
+      <div class="color-chip" style="background:#7a5a9a;"><div class="color-chip-name" style="color:#e8d8f8;">Violet Haze</div><div class="color-chip-hex" style="color:#c0a0d8;">#7a5a9a</div></div>
+      <div class="color-chip" style="background:#a080c0;"><div class="color-chip-name" style="color:#1a1030;">Lavender Mist</div><div class="color-chip-hex" style="color:#3d2060;">#a080c0</div></div>
+      <div class="color-chip" style="background:#1e3a5f;"><div class="color-chip-name" style="color:#2d5080;">Deep Lake</div><div class="color-chip-hex" style="color:#152840;">#1e3a5f</div></div>
+      <div class="color-chip" style="background:#2d5080;"><div class="color-chip-name" style="color:#90c0f0;">Lake Reflect</div><div class="color-chip-hex" style="color:#5080a0;">#2d5080</div></div>
+      <div class="color-chip" style="background:#8b5e3c;"><div class="color-chip-name" style="color:#f0d0a0;">Stone Brick</div><div class="color-chip-hex" style="color:#c09060;">#8b5e3c</div></div>
+      <div class="color-chip" style="background:#c47a45;"><div class="color-chip-name" style="color:#1a1030;">Terracotta</div><div class="color-chip-hex" style="color:#3a1808;">#c47a45</div></div>
+      <div class="color-chip" style="background:#b8860b;"><div class="color-chip-name" style="color:#1a1030;">Aged Gold</div><div class="color-chip-hex" style="color:#3a2000;">#b8860b</div></div>
+      <div class="color-chip" style="background:#2d5a27;"><div class="color-chip-name" style="color:#80c870;">Moss Green</div><div class="color-chip-hex" style="color:#507848;">#2d5a27</div></div>
+      <div class="color-chip" style="background:#9933cc;"><div class="color-chip-name" style="color:#f0d0ff;">Cursed Violet</div><div class="color-chip-hex" style="color:#c080e0;">#9933cc</div></div>
+      <div class="color-chip" style="background:#8b0000;"><div class="color-chip-name" style="color:#ff8080;">Blood Crimson</div><div class="color-chip-hex" style="color:#c04040;">#8b0000</div></div>
+      <div class="color-chip" style="background:#e8e0ff;"><div class="color-chip-name" style="color:#1a1030;">Ghost White</div><div class="color-chip-hex" style="color:#4a3070;">#e8e0ff</div></div>
+      <div class="color-chip" style="background:#f0d060;"><div class="color-chip-name" style="color:#1a1030;">Pale Gold</div><div class="color-chip-hex" style="color:#3a2800;">#f0d060</div></div>
+    </div>
+    <div class="warning-block" style="margin-top:16px;">
+      ⚠ Правило палитры: каждый ассет должен использовать не более 12–16 уникальных цветов (исключая прозрачность). При генерации указывай именно эти hex-значения — не допускай дрейфа палитры между разными ассетами. Все объекты должны принадлежать одному миру.
+    </div>
+  </div>
+
+  <!-- TECHNICAL SPECS -->
+  <div class="divider"><div class="divider-line"></div><div class="divider-glyph">✦</div><div class="divider-line"></div></div>
+  <div class="section">
+    <div class="section-label">Chapter III</div>
+    <div class="section-title">Технические требования</div>
+    <div class="spec-grid">
+      <div class="spec-card">
+        <div class="spec-card-title">Размеры спрайтов</div>
+        <ul>
+          <li>Базовый юнит: 32×32 px</li>
+          <li>Башни (высокие): 32×48 px</li>
+          <li>Крупные структуры: 64×64 px</li>
+          <li>Босс / финальный объект: 96×96 px</li>
+          <li>Эффекты и частицы: 8×8 или 16×16 px</li>
+          <li>Тайлы фона: 32×32, тайлируемые</li>
+        </ul>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-title">Рендер</div>
+        <ul>
+          <li>Без anti-aliasing — никогда</li>
+          <li>Без sub-pixel рендеринга</li>
+          <li>Жёсткие края пикселей</li>
+          <li>Контур: 1px тёмный (#0a0a12)</li>
+          <li>Прозрачный фон (PNG + alpha)</li>
+          <li>Формат экспорта: PNG-24</li>
+        </ul>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-title">Свет и тени</div>
+        <ul>
+          <li>Источник света: верхний левый 45°</li>
+          <li>3–4 ступени затенения на поверхность</li>
+          <li>Dithering — только для атмосферы</li>
+          <li>Pillow shading — ЗАПРЕЩЁН</li>
+          <li>Без градиентов внутри спрайтов</li>
+          <li>Highlight — только 1–2 px</li>
+        </ul>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-title">Перспектива</div>
+        <ul>
+          <li>Игровые объекты: top-down isometric ~25°</li>
+          <li>Фон / окружение: side-scrolling</li>
+          <li>Персонажи: 3/4 view (чуть сверху)</li>
+          <li>UI-элементы: фронтальный, плоский</li>
+          <li>Все объекты — единая точка схода</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STYLE RULES -->
+  <div class="divider"><div class="divider-line"></div><div class="divider-glyph">✦</div><div class="divider-line"></div></div>
+  <div class="section">
+    <div class="section-label">Chapter IV</div>
+    <div class="section-title">Правила стиля — запрещено / обязательно</div>
+    <div class="rule-block">
+      <div class="rule-title">✗ Запрещено</div>
+      <ul class="rule-list">
+        <li>Яркие, насыщенные цвета не из палитры — нарушает единство мира</li>
+        <li>Pillow shading (равномерный свет со всех сторон) — выглядит непрофессионально</li>
+        <li>Чистые, идеальные геометрические формы — всё должно быть древним и осевшим</li>
+        <li>Мультяшный / kawaii стиль — no cartoon style, no bright outlines</li>
+        <li>Белый или светлый фон при генерации — всегда #ff00ff для chroma key</li>
+        <li>Более 16 цветов на один спрайт (кроме крупных объектов 64px+)</li>
+        <li>Anti-aliasing, размытые края, субпиксельный рендер</li>
+        <li>«Новые» материалы — металл без ржавчины, камень без трещин</li>
+      </ul>
+    </div>
+    <div class="ok-block">
+      <div class="ok-title">✓ Обязательно</div>
+      <ul class="ok-list">
+        <li>Силуэт читается на расстоянии — первый тест любого спрайта</li>
+        <li>Признаки возраста на всех структурах: трещины, мох, неровности</li>
+        <li>Минимум один светящийся элемент на каждой башне (руна / глаз / пламя)</li>
+        <li>Холодная палитра для «нашей» стороны, тёплая — для героев (контраст!)</li>
+        <li>Тёмный контур 1px на всех непрозрачных элементах</li>
+        <li>Атмосфера тёмного величия, а не дешёвого хоррора</li>
+        <li>Стилистическая консистентность — все ассеты из одного мира</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ASSET LIST -->
+  <div class="divider"><div class="divider-line"></div><div class="divider-glyph">✦</div><div class="divider-line"></div></div>
+  <div class="section">
+    <div class="section-label">Chapter V</div>
+    <div class="section-title">Список ассетов проекта</div>
+    <table class="asset-table">
+      <thead>
+        <tr>
+          <th>Ассет</th>
+          <th>Размер</th>
+          <th>Тип</th>
+          <th>Описание</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="td-name">tower_arrow</td><td>32×48</td><td><span class="tag tag-attack">ATTACK</span></td><td>Сторожевая башня с бойницами, фиолетовый свет изнутри</td></tr>
+        <tr><td class="td-name">tower_necro</td><td>32×48</td><td><span class="tag tag-magic">MAGIC</span></td><td>Обелиск некроманта, парящие осколки костей</td></tr>
+        <tr><td class="td-name">tower_fire</td><td>32×48</td><td><span class="tag tag-attack">ATTACK</span></td><td>Жертвенный алтарь с адским пламенем, цепи по базе</td></tr>
+        <tr><td class="td-name">tower_curse</td><td>32×48</td><td><span class="tag tag-magic">MAGIC</span></td><td>Колонна проклятия, пульсирующие руны, фиолетовый туман</td></tr>
+        <tr><td class="td-name">tower_ice</td><td>32×48</td><td><span class="tag tag-magic">MAGIC</span></td><td>Кристаллический шпиль, ледяное свечение, замедление</td></tr>
+        <tr><td class="td-name">trap_spikes</td><td>32×32</td><td><span class="tag tag-trap">TRAP</span></td><td>Напольные шипы, руна-триггер, кровь на остриях</td></tr>
+        <tr><td class="td-name">trap_ghost</td><td>32×32</td><td><span class="tag tag-trap">TRAP</span></td><td>Невидимая зона, едва заметный синий мерцающий туман</td></tr>
+        <tr><td class="td-name">trap_altar</td><td>32×32</td><td><span class="tag tag-trap">TRAP</span></td><td>Алтарь из черепов, ритуальный круг, фиолетовый туман</td></tr>
+        <tr><td class="td-name">hero_barbarian</td><td>32×32</td><td><span class="tag tag-hero">EPOCH I</span></td><td>Коричнево-кожаные тона, грубый силуэт, факел</td></tr>
+        <tr><td class="td-name">hero_knight</td><td>32×32</td><td><span class="tag tag-hero">EPOCH II</span></td><td>Стальной синий + геральдический тёплый акцент, щит</td></tr>
+        <tr><td class="td-name">hero_mage</td><td>32×32</td><td><span class="tag tag-hero">EPOCH III</span></td><td>Яркое магическое свечение — выделяется на тёмном фоне</td></tr>
+        <tr><td class="td-name">tile_stone_path</td><td>32×32</td><td><span class="tag tag-env">ENV</span></td><td>Тёмная брусчатка, неровные края, влажный блик</td></tr>
+        <tr><td class="td-name">tile_grass_dark</td><td>32×32</td><td><span class="tag tag-env">ENV</span></td><td>Тёмно-зелёная трава, мелкие фиолетовые цветы</td></tr>
+        <tr><td class="td-name">tile_water</td><td>32×32</td><td><span class="tag tag-env">ENV</span></td><td>Глубокий синий, горизонтальные блики, отражения</td></tr>
+        <tr><td class="td-name">bg_mountains</td><td>320×180</td><td><span class="tag tag-env">BG</span></td><td>3 слоя параллакса, фиолетовые горы, озеро</td></tr>
+        <tr><td class="td-name">ui_panel</td><td>—</td><td><span class="tag tag-ui">UI</span></td><td>Панель управления, пергаментный тон + тёмная рамка</td></tr>
+        <tr><td class="td-name">fx_hit_crimson</td><td>16×16</td><td><span class="tag tag-attack">FX</span></td><td>Вспышка попадания, 3 кадра, алый→чёрный</td></tr>
+        <tr><td class="td-name">fx_magic_orb</td><td>8×8</td><td><span class="tag tag-magic">FX</span></td><td>Магический снаряд, яркое ядро + кольцо свечения</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MASTER PROMPT -->
+  <div class="divider"><div class="divider-line"></div><div class="divider-glyph">✦</div><div class="divider-line"></div></div>
+  <div class="section">
+    <div class="section-label">Chapter VI</div>
+    <div class="section-title">Мастер-промпт (копировать в начало каждого запроса)</div>
+    <div class="prompt-block">
+      <div class="prompt-header">
+        <div class="prompt-header-title">Master Style Header</div>
+        <div class="prompt-header-type">DALL-E / Midjourney / Leonardo</div>
+      </div>
+      <div class="prompt-content"><span class="code-comment">// ВСТАВЛЯЙ ЭТОТ БЛОК ПЕРЕД ОПИСАНИЕМ ЛЮБОГО АССЕТА</span>
+
+<span class="code-label">You are a master pixel artist</span> creating assets for a dark fantasy tower defense game called Lineage of Light. Your task is to generate a single game sprite with strict adherence to the following style guide.
+
+<span class="code-key">TECHNICAL:</span>
+<span class="code-val">- Pixel art style, hard pixel edges, no anti-aliasing, no sub-pixel rendering
+- 32x32 pixels base size (stated per asset)
+- Maximum 14 colors per sprite (excluding transparency)
+- 1px dark outline (#0a0a12) on all solid elements
+- Transparent background — export on magenta (#ff00ff) if alpha not supported
+- Light source: upper-left at 45 degrees
+- 3-4 shading steps per surface
+- NO pillow shading, NO gradients inside sprites
+- Top-down isometric perspective (~25 degrees tilt)</span>
+
+<span class="code-key">PALETTE (use ONLY these hex values):</span>
+<span class="code-hex">Darks:      #0a0a12  #0d1a2e  #1a1030
+Purples:    #4a3070  #7a5a9a  #a080c0
+Blues:      #1e3a5f  #2d5080
+Warms:      #8b5e3c  #c47a45  #b8860b
+Nature:     #2d5a27  #4a8c3f
+Magic:      #9933cc  #8b0000
+Light:      #e8e0ff  #f0d060</span>
+
+<span class="code-key">MOOD:</span>
+<span class="code-val">Ancient dark grandeur. Elegant and threatening, NOT grotesque.
+Gothic architecture with age: cracks, moss, uneven stones.
+Every structure has survived centuries. Cold beauty, oppressive majesty.
+No bright colors, no cartoon style, no clean/new-looking materials.
+gritty pixel art, retro RPG aesthetic, chunky pixels</span>
+
+<span class="code-comment">// ДАЛЕЕ — описание конкретного ассета:</span>
+<span class="code-label">[ASSET DESCRIPTION HERE]</span></div>
+    </div>
+  </div>
+
+  <!-- INDIVIDUAL PROMPTS -->
+  <div class="divider"><div class="divider-line"></div><div class="divider-glyph">✦</div><div class="divider-line"></div></div>
+  <div class="section">
+    <div class="section-label">Chapter VII</div>
+    <div class="section-title">Промпты по ассетам</div>
+
+    <div style="margin-top:16px; font-family:'Cinzel',serif; font-size:13px; color:var(--lavender); letter-spacing:2px; margin-bottom:8px;">— БАШНИ —</div>
+
+    <div class="prompt-block" style="margin-bottom:12px;">
+      <div class="prompt-header">
+        <div class="prompt-header-title">tower_arrow — Башня лучников тьмы</div>
+        <div class="prompt-header-type">32×48px · ATTACK</div>
+      </div>
+      <div class="prompt-content">Dark stone watchtower, crumbling gothic architecture, narrow arrow slits glowing with sickly purple light (#9933cc), skull carvings on the base in stone #4a3070, iron spikes on top. Mossy lower section (#2d5a27). Terracotta roof tiles (#c47a45) partially collapsed. Deep cracks running vertically. Ancient, military, oppressive. Three-quarter isometric view, right side slightly lighter.</div>
+    </div>
+
+    <div class="prompt-block" style="margin-bottom:12px;">
+      <div class="prompt-header">
+        <div class="prompt-header-title">tower_necro — Обелиск некроманта</div>
+        <div class="prompt-header-type">32×48px · MAGIC / SLOW</div>
+      </div>
+      <div class="prompt-content">Tall black stone obelisk, surface covered in glowing runes (#9933cc dim glow, 2px rune lines), floating bone fragments orbiting the top (small 2px white pixels), three small skulls embedded in the base. Stone surface #4a3070 with #0a0a12 deep cracks. Faint ghost-white (#e8e0ff) particles at the very top, 1-2px dots. No roof — bare pointed tip. Sinister magical beacon.</div>
+    </div>
+
+    <div class="prompt-block" style="margin-bottom:12px;">
+      <div class="prompt-header">
+        <div class="prompt-header-title">tower_fire — Адский алтарь</div>
+        <div class="prompt-header-type">32×48px · ATTACK / AoE</div>
+      </div>
+      <div class="prompt-content">Demonic fire brazier on a heavy stone pedestal, iron chains wrapped around the base (#0a0a12 chains with #8b5e3c rust highlights), dark flames at the top (deep red #8b0000 at core, transitioning to black at tips — NOT orange), carved demon face on the front side (2px details, sunken eye sockets). Base stone is darkest (#1a1030), pedestal mid (#4a3070). The fire is the only warm element.</div>
+    </div>
+
+    <div style="margin-top:24px; font-family:'Cinzel',serif; font-size:13px; color:var(--lavender); letter-spacing:2px; margin-bottom:8px;">— ЛОВУШКИ —</div>
+
+    <div class="prompt-block" style="margin-bottom:12px;">
+      <div class="prompt-header">
+        <div class="prompt-header-title">trap_spikes — Напольные шипы</div>
+        <div class="prompt-header-type">32×32px · FLOOR TRAP</div>
+      </div>
+      <div class="prompt-content">Stone floor tile with iron spikes emerging from cracks, viewed from top-down. Dark rust (#8b5e3c) and dried dark red (#8b0000) on spike tips. Subtle trigger rune on the stone surface — 4px circular pattern, dim red glow (#8b0000 at 40% brightness). The trap must BLEND with the floor — primary read is stone, spikes are secondary. Stone base color #2a2a3a.</div>
+    </div>
+
+    <div class="prompt-block" style="margin-bottom:12px;">
+      <div class="prompt-header">
+        <div class="prompt-header-title">trap_altar — Алтарь проклятия</div>
+        <div class="prompt-header-type">32×32px · AoE DEBUFF</div>
+      </div>
+      <div class="prompt-content">Top-down view of small bone altar — three skulls on short stakes arranged in a triangle. Dark ritual circle on the ground between them, cracked stone with glowing violet sigil (#9933cc, 1-2px lines forming circular rune pattern). Dim purple mist pixels (#7a5a9a, scattered 1px dots) at base of stakes. Bone color #d4c5a0. Stakes dark wood #2a1808. Sinister but floor-level — not taller than 8px in profile.</div>
+    </div>
+
+    <div style="margin-top:24px; font-family:'Cinzel',serif; font-size:13px; color:var(--lavender); letter-spacing:2px; margin-bottom:8px;">— ГЕРОИ (Враги) —</div>
+
+    <div class="prompt-block" style="margin-bottom:12px;">
+      <div class="prompt-header">
+        <div class="prompt-header-title">hero_barbarian — Эпоха I: Варвар</div>
+        <div class="prompt-header-type">32×32px · EPOCH I ENEMY</div>
+      </div>
+      <div class="prompt-content">Barbarian warrior pixel art character, 3/4 top-down view, walking pose. WARM palette to contrast with our dark world: brown leather armor (#8b5e3c light), cream skin (#d4c5a0), rough fur trim (#6b4c00). Holds a torch — small warm yellow #f0d060 flame, 3px. Crude iron weapon. Wild hair, no helmet. Simple silhouette, stocky proportions. The warmth of skin and fire should visually "pop" against the dark environment. Heroic but unsophisticated.</div>
+    </div>
+
+    <div class="prompt-block" style="margin-bottom:12px;">
+      <div class="prompt-header">
+        <div class="prompt-header-title">hero_mage — Эпоха III: Маг</div>
+        <div class="prompt-header-type">32×32px · EPOCH III ENEMY</div>
+      </div>
+      <div class="prompt-content">Arcane mage character, 3/4 top-down view. BRIGHTEST enemy in the game — must read as dangerous from a distance. Glowing magical aura around hands (bright #f0d060 pale gold + white #e8e0ff). Dark robes (#1a1030) with gold trim (#b8860b). Staff with glowing orb at tip. The mage should look like a moving light source — the brightest sprite on a dark map. Confident pose, floating slightly off ground (1px gap at feet suggests levitation).</div>
+    </div>
+
+    <div style="margin-top:24px; font-family:'Cinzel',serif; font-size:13px; color:var(--lavender); letter-spacing:2px; margin-bottom:8px;">— ОКРУЖЕНИЕ —</div>
+
+    <div class="prompt-block" style="margin-bottom:12px;">
+      <div class="prompt-header">
+        <div class="prompt-header-title">tile_stone_path — Дорожка</div>
+        <div class="prompt-header-type">32×32px · TILEABLE GROUND</div>
+      </div>
+      <div class="prompt-content">Top-down tileable stone path, dark cobblestones. Irregular cobblestone shapes with 1px dark gaps (#0a0a12) between them. Stone colors: #2a2a3a base, #4a3070 mid, #1a1030 deep shadows in gaps. 2-3 pixel "wet sheen" highlight dots in upper-left of each cobblestone (#7a5a9a, 1-2px). Slight moss between stones (#2d5a27, sparse 1px dots). Must tile seamlessly — no obvious seams at 32px repeat. Dark, ancient, well-worn.</div>
+    </div>
+  </div>
+
+  <!-- EPOCHS -->
+  <div class="divider"><div class="divider-line"></div><div class="divider-glyph">✦</div><div class="divider-line"></div></div>
+  <div class="section">
+    <div class="section-label">Chapter VIII</div>
+    <div class="section-title">Визуальная прогрессия эпох</div>
+    <div class="epoch-grid">
+      <div class="epoch-card">
+        <span class="epoch-num">EPOCH I</span>
+        <span class="epoch-name">Варвары</span>
+        <div class="epoch-desc">Коричневая кожа, мех, факелы. Тёплые тона. Прут напролом.</div>
+        <span class="epoch-accent" style="background: #8b5e3c;"></span>
+      </div>
+      <div class="epoch-card">
+        <span class="epoch-num">EPOCH II</span>
+        <span class="epoch-name">Рыцари</span>
+        <div class="epoch-desc">Стальной синий, геральдика, щиты. Строй и дисциплина.</div>
+        <span class="epoch-accent" style="background: #5a7aaa;"></span>
+      </div>
+      <div class="epoch-card">
+        <span class="epoch-num">EPOCH III</span>
+        <span class="epoch-name">Маги</span>
+        <div class="epoch-desc">Яркое свечение. Самые видимые враги на тёмном фоне.</div>
+        <span class="epoch-accent" style="background: #f0d060;"></span>
+      </div>
+      <div class="epoch-card">
+        <span class="epoch-num">EPOCH IV</span>
+        <span class="epoch-name">Алхимики</span>
+        <div class="epoch-desc">Кислота, зелёный яд, инструменты. Тактические обходы.</div>
+        <span class="epoch-accent" style="background: #4a9a3a;"></span>
+      </div>
+      <div class="epoch-card">
+        <span class="epoch-num">EPOCH V</span>
+        <span class="epoch-name">Наследники</span>
+        <div class="epoch-desc">Все предыдущие тона в одном. Гибридный отряд. Финал.</div>
+        <span class="epoch-accent" style="background: linear-gradient(90deg, #8b5e3c, #f0d060, #4a9a3a);"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPS -->
+  <div class="divider"><div class="divider-line"></div><div class="divider-glyph">✦</div><div class="divider-line"></div></div>
+  <div class="section">
+    <div class="section-label">Chapter IX</div>
+    <div class="section-title">Советы по работе с генераторами</div>
+    <div class="spec-grid">
+      <div class="spec-card">
+        <div class="spec-card-title">Если результат слишком яркий</div>
+        <ul>
+          <li>Добавь: <em>no bright colors, desaturated</em></li>
+          <li>Добавь: <em>muted dark palette only</em></li>
+          <li>Добавь: <em>gritty, no cartoon style</em></li>
+          <li>Убери любые упоминания «colorful»</li>
+        </ul>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-title">Если теряется пиксельность</div>
+        <ul>
+          <li>Добавь: <em>strict pixel art</em></li>
+          <li>Добавь: <em>chunky pixels, retro game sprite</em></li>
+          <li>Добавь: <em>16-bit era pixel art style</em></li>
+          <li>Убери: <em>detailed, realistic, smooth</em></li>
+        </ul>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-title">Для консистентности</div>
+        <ul>
+          <li>Всегда начинай с мастер-промпта</li>
+          <li>Не меняй hex-коды между запросами</li>
+          <li>Генерируй батчами по типу объекта</li>
+          <li>Сохраняй seed удачных генераций</li>
+        </ul>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-title">Экспорт и обработка</div>
+        <ul>
+          <li>Фон: магента #ff00ff для chroma key</li>
+          <li>Масштаб: генерируй 256px → уменьши до 32px</li>
+          <li>Пост-обработка: Aseprite или Libresprite</li>
+          <li>Проверяй силуэт: смотри без цвета</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-title">LINEAGE OF LIGHT · ART BIBLE</div>
+    <div class="footer-version">v1.0 · INDIE GAME JAM · THEME: LEGACY</div>
+  </div>
+
+</div>
