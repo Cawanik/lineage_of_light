@@ -8,3 +8,7 @@ res://scenes/buildings/wall_segment.tscn
 res://scenes/buildings/wall_draw_node.gd
 res://scenes/ui/build_menu.gd
 res://scenes/main/iso_ground.gd
+res://scripts/autoload/config.gd
+res://scenes/buildings/building_adjuster.gd
+res://scenes/buildings/building.gd
+res://scenes/main/building_grid.gd

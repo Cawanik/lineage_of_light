@@ -19,9 +19,12 @@ func _ready() -> void:
 func _build_buttons() -> void:
 	for key in BUILDINGS:
 		var data = BUILDINGS[key]
+		# Skip buildings without cost (like throne) — not player-buildable
+		if not data.has("hotkey"):
+			continue
 		var btn = Button.new()
-		btn.text = "%s  [%d]  (%s)" % [data["name"], data["cost"], data["hotkey"]]
-		btn.tooltip_text = data["desc"]
+		btn.text = "%s  [%d]  (%s)" % [data.get("name", key), data.get("cost", 0), data.get("hotkey", "")]
+		btn.tooltip_text = data.get("desc", "")
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.custom_minimum_size = Vector2(220, 40)
 

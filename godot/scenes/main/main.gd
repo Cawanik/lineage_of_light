@@ -4,17 +4,39 @@ extends Node2D
 @onready var build_menu = $UILayer/BuildMenu
 @onready var build_button: TextureButton = $UILayer/Toolbar/Grid/BuildButton
 @onready var demolish_button: TextureButton = $UILayer/Toolbar/Grid/DemolishButton
+@onready var move_button: TextureButton = $UILayer/Toolbar/Grid/MoveButton
 @onready var wall_system: WallSystem = $YSort/WallSystem
+@onready var building_grid: BuildingGrid = $YSort/BuildingGrid
+@onready var lich_king: AnimatedSprite2D = $YSort/LichKing
 
-var building_mode: bool = false
-var demolish_mode: bool = false
+var active_tool: BaseTool = null
+var tools: Dictionary = {}
+
+var throne_scene: PackedScene = preload("res://scenes/buildings/throne.tscn")
 
 
 func _ready() -> void:
+	tools = {
+		"build": BuildTool.new(),
+		"demolish": DemolishTool.new(),
+		"move": MoveTool.new(),
+	}
+
 	build_menu.building_selected.connect(_on_building_selected)
 	build_menu.visibility_changed.connect(_on_menu_visibility_changed)
 	build_button.pressed.connect(_on_build_button_pressed)
 	demolish_button.pressed.connect(_on_demolish_button_pressed)
+	move_button.pressed.connect(_on_move_button_pressed)
+
+	# Place throne on tile
+	var throne_tile = Vector2i(14, 15)
+	var throne = throne_scene.instantiate()
+	building_grid.add_child(throne)
+	building_grid.place_building(throne_tile, throne)
+
+	# Lich King on adjacent tile
+	var lich_tile = Vector2i(15, 15)
+	lich_king.position = building_grid.tile_to_world(lich_tile)
 
 	# Box 1
 	var c = Vector2i(15, 15)
@@ -30,47 +52,43 @@ func _ready() -> void:
 	wall_system.place_wall_line(c2 + Vector2i(3, 4), c2 + Vector2i(0, 4))
 
 
+func _set_tool(tool_name: String) -> void:
+	var same = active_tool == tools.get(tool_name)
+	if active_tool:
+		active_tool.deactivate()
+		active_tool = null
+	build_menu.visible = false
+	if not same and tools.has(tool_name):
+		active_tool = tools[tool_name]
+		active_tool.activate(wall_system)
+
+
 func _on_build_button_pressed() -> void:
-	_exit_demolish()
+	if active_tool:
+		active_tool.deactivate()
+		active_tool = null
 	build_menu.toggle_menu()
 
 
 func _on_demolish_button_pressed() -> void:
-	build_menu.visible = false
-	_exit_build()
-	demolish_mode = not demolish_mode
-	wall_system.demolish_mode = demolish_mode
-	if not demolish_mode:
-		wall_system.clear_demolish_mode()
+	_set_tool("demolish")
 
 
-func _exit_demolish() -> void:
-	if demolish_mode:
-		demolish_mode = false
-		wall_system.clear_demolish_mode()
-
-
-func _exit_build() -> void:
-	if building_mode:
-		building_mode = false
-		wall_system.clear_build_mode()
+func _on_move_button_pressed() -> void:
+	_set_tool("move")
 
 
 func _on_building_selected(building_type: String) -> void:
-	_exit_demolish()
 	if building_type == "wall":
-		building_mode = true
-		wall_system.build_mode = true
+		_set_tool("build")
 
 
 func _on_menu_visibility_changed() -> void:
-	if not build_menu.visible:
-		_exit_build()
+	if not build_menu.visible and active_tool == tools.get("build"):
+		active_tool.deactivate()
+		active_tool = null
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		if demolish_mode:
-			wall_system.demolish_hovered()
-		elif building_mode:
-			wall_system.place_at_preview()
+	if active_tool and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		active_tool.click()

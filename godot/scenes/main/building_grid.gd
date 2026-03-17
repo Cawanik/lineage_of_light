@@ -1,0 +1,110 @@
+class_name BuildingGrid
+extends Node2D
+
+## Single source of truth for the isometric tile grid
+## Stores buildings, walls, and provides tile<->world conversion
+
+var CELL_SIZE: int = 64
+var ISO_RATIO: float = 0.5
+
+# Buildings: Vector2i -> Building node
+var buildings: Dictionary = {}
+# Wall nodes: Vector2i -> true (tiles that have a wall pillar)
+var wall_nodes: Dictionary = {}
+
+# Debug: draw grid overlay
+var show_grid: bool = false
+
+
+func _ready() -> void:
+	var iso = Config.game.get("iso", {})
+	CELL_SIZE = iso.get("cell_size", 64)
+	ISO_RATIO = iso.get("iso_ratio", 0.5)
+
+
+func tile_to_world(tile: Vector2i) -> Vector2:
+	## Returns the world-space CENTER of the isometric tile
+	## This is where iso_ground draws the texture center
+	var screen_x = float((tile.x - tile.y) * CELL_SIZE) * 0.5
+	var screen_y = float((tile.x + tile.y) * CELL_SIZE) * ISO_RATIO * 0.5 + 15.0
+	return Vector2(screen_x, screen_y)
+
+
+func world_to_tile(world_pos: Vector2) -> Vector2i:
+	var adjusted_y = world_pos.y - 15.0
+	var fx = world_pos.x / (CELL_SIZE * 0.5)
+	var fy = adjusted_y / (CELL_SIZE * ISO_RATIO * 0.5)
+	return Vector2i(roundi((fx + fy) * 0.5), roundi((fy - fx) * 0.5))
+
+
+func place_building(tile: Vector2i, building: Node2D) -> void:
+	if buildings.has(tile):
+		return
+	buildings[tile] = building
+	building.position = tile_to_world(tile)
+
+
+func remove_building(tile: Vector2i) -> Node2D:
+	if not buildings.has(tile):
+		return null
+	var building = buildings[tile]
+	buildings.erase(tile)
+	return building
+
+
+func get_building(tile: Vector2i) -> Node2D:
+	return buildings.get(tile, null)
+
+
+func is_occupied(tile: Vector2i) -> bool:
+	return buildings.has(tile) or wall_nodes.has(tile)
+
+
+var grid_offset: Vector2 = Vector2.ZERO
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_G:
+		show_grid = not show_grid
+		queue_redraw()
+		return
+
+	if show_grid and event is InputEventKey and event.pressed:
+		var s = 1.0 if not event.shift_pressed else 5.0
+		match event.keycode:
+			KEY_UP:
+				grid_offset.y -= s
+			KEY_DOWN:
+				grid_offset.y += s
+			KEY_LEFT:
+				grid_offset.x -= s
+			KEY_RIGHT:
+				grid_offset.x += s
+			KEY_ENTER:
+				print("[BuildingGrid] offset: ", grid_offset)
+				return
+			_:
+				return
+		queue_redraw()
+		print("[BuildingGrid] offset: ", grid_offset)
+
+
+func _draw() -> void:
+	if not show_grid:
+		return
+
+	var hw = CELL_SIZE * 0.5
+	var hh = CELL_SIZE * ISO_RATIO * 0.5
+
+	for y in range(30):
+		for x in range(30):
+			var center = tile_to_world(Vector2i(x, y)) + grid_offset
+			var diamond = [
+				center + Vector2(0, -hh),
+				center + Vector2(hw, 0),
+				center + Vector2(0, hh),
+				center + Vector2(-hw, 0),
+			]
+			var col = Color.YELLOW if not is_occupied(Vector2i(x, y)) else Color.RED
+			for i in range(4):
+				draw_line(diamond[i], diamond[(i + 1) % 4], Color(col, 0.3), 1.0)

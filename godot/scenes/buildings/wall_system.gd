@@ -29,6 +29,7 @@ var collision_bodies: Dictionary = {}
 var visual_nodes: Array[Node2D] = []
 var _needs_rebuild: bool = false
 var _target: WallDrawNode = null
+var building_grid: BuildingGrid = null
 # Visual lookup: edge_key -> WallDrawNode, node Vector2i -> WallDrawNode
 var wall_visuals: Dictionary = {}   # StringName -> WallDrawNode
 var pillar_visuals: Dictionary = {} # Vector2i -> WallDrawNode
@@ -41,7 +42,12 @@ var hovered_node: Vector2i = Vector2i(-9999, -9999)
 
 var build_mode: bool = false
 var build_preview_node: Vector2i = Vector2i(-9999, -9999)
-var build_preview_draw: Node2D = null  # draws the green preview
+var build_preview_draw: Node2D = null
+
+var move_mode: bool = false
+var move_selected_node: Vector2i = Vector2i(-9999, -9999)
+var move_preview_node: Vector2i = Vector2i(-9999, -9999)
+var move_phase: String = "select"  # "select" or "place"
 
 
 func _poly(points: PackedVector2Array, color: Color) -> void:
@@ -57,6 +63,11 @@ func _line(from: Vector2, to: Vector2, color: Color, width: float = 1.0) -> void
 func _ready() -> void:
 	y_sort_enabled = true
 	_load_config()
+	# Find BuildingGrid sibling
+	await get_tree().process_frame
+	var parent = get_parent()
+	if parent:
+		building_grid = parent.get_node_or_null("BuildingGrid")
 
 
 func _load_config() -> void:
@@ -89,6 +100,8 @@ func _process(_delta: float) -> void:
 		_update_demolish_hover()
 	if build_mode:
 		_update_build_preview()
+	if move_mode:
+		_update_move_preview()
 
 
 func _make_edge_key(a: Vector2i, b: Vector2i) -> StringName:
@@ -190,22 +203,22 @@ func _node_edge_count(node: Vector2i) -> int:
 
 
 func grid_to_world(grid_pos: Vector2i) -> Vector2:
-	# Isometric projection matching IsoGround, offset to tile center
-	# Center of tile (x,y) — offset +0.5 to go from corner to center of diamond
-	var cx = grid_pos.x + 0.5
-	var cy = grid_pos.y + 0.5
-	var screen_x = (cx - cy) * (CELL_SIZE * 0.5)
-	var screen_y = (cx + cy) * (CELL_SIZE * ISO_RATIO * 0.5) + 8.0
+	if building_grid:
+		return building_grid.tile_to_world(grid_pos)
+	# Fallback
+	var screen_x = float((grid_pos.x - grid_pos.y) * CELL_SIZE) * 0.5
+	var screen_y = float((grid_pos.x + grid_pos.y) * CELL_SIZE) * ISO_RATIO * 0.5 + 15.0
 	return Vector2(screen_x, screen_y)
 
 
 func world_to_grid(world_pos: Vector2) -> Vector2i:
-	# Reverse isometric projection
+	if building_grid:
+		return building_grid.world_to_tile(world_pos)
+	# Fallback
+	var adjusted_y = world_pos.y - 15.0
 	var fx = world_pos.x / (CELL_SIZE * 0.5)
-	var fy = world_pos.y / (CELL_SIZE * ISO_RATIO * 0.5)
-	var gx = (fx + fy) * 0.5
-	var gy = (fy - fx) * 0.5
-	return Vector2i(roundi(gx), roundi(gy))
+	var fy = adjusted_y / (CELL_SIZE * ISO_RATIO * 0.5)
+	return Vector2i(roundi((fx + fy) * 0.5), roundi((fy - fx) * 0.5))
 
 
 func _get_ysort() -> Node2D:
@@ -232,10 +245,10 @@ func _update_demolish_hover() -> void:
 		_set_node_highlight(hovered_node, true)
 
 
-func _set_node_highlight(node_pos: Vector2i, highlighted: bool) -> void:
+func _set_node_highlight(node_pos: Vector2i, highlighted: bool, color: Color = Color(1.0, 0.3, 0.3)) -> void:
 	if node_pos == Vector2i(-9999, -9999):
 		return
-	var tint = Color(1.0, 0.3, 0.3) if highlighted else Color.WHITE
+	var tint = color if highlighted else Color.WHITE
 
 	# Tint pillar
 	if pillar_visuals.has(node_pos) and is_instance_valid(pillar_visuals[node_pos]):
@@ -365,6 +378,146 @@ func place_at_preview() -> void:
 func clear_build_mode() -> void:
 	build_mode = false
 	build_preview_node = Vector2i(-9999, -9999)
+	if is_instance_valid(build_preview_draw):
+		build_preview_draw.queue_free()
+		build_preview_draw = null
+
+
+# === MOVE MODE ===
+
+func _update_move_preview() -> void:
+	var mouse_pos = get_global_mouse_position()
+
+	if move_phase == "select":
+		# Highlight nearest existing node
+		var closest = Vector2i(-9999, -9999)
+		var closest_dist = DEMOLISH_SNAP_RADIUS
+		for node_pos in nodes:
+			var wpos = grid_to_world(node_pos)
+			var dist = mouse_pos.distance_to(wpos)
+			if dist < closest_dist:
+				closest_dist = dist
+				closest = node_pos
+
+		if closest != move_selected_node:
+			_set_node_highlight(move_selected_node, false)
+			move_selected_node = closest
+			if move_selected_node != Vector2i(-9999, -9999):
+				_set_node_highlight(move_selected_node, true, Color(0.3, 0.5, 1.0))
+
+	elif move_phase == "place":
+		# Show build preview at new location
+		var grid_pos = world_to_grid(mouse_pos)
+		if grid_pos != move_preview_node:
+			move_preview_node = grid_pos
+			_redraw_move_preview()
+
+
+func _redraw_move_preview() -> void:
+	if is_instance_valid(build_preview_draw):
+		build_preview_draw.queue_free()
+
+	build_preview_draw = Node2D.new()
+	get_tree().current_scene.add_child(build_preview_draw)
+
+	var wpos = grid_to_world(move_preview_node)
+
+	# Draw pillar preview at target
+	var pillar_wdn = WallDrawNode.new()
+	pillar_wdn.position = Vector2(wpos.x, wpos.y + 0.5)
+	pillar_wdn.z_index = 100
+	pillar_wdn.modulate = Color(0.4, 0.6, 1.0, 0.7)  # blue tint for move
+	_target = pillar_wdn
+	_draw_pillar(Vector2(0, -0.5))
+	_target = null
+	build_preview_draw.add_child(pillar_wdn)
+
+	# Draw wall previews to adjacent existing nodes (excluding the one being moved)
+	var cardinal = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	for dir in cardinal:
+		var neighbor = move_preview_node + dir
+		if nodes.has(neighbor) and neighbor != move_selected_node:
+			var nwpos = grid_to_world(neighbor)
+			var draw_from = wpos
+			var draw_to = nwpos
+			var shrink = 5.0
+			if draw_from.y < draw_to.y:
+				draw_from = wpos + (nwpos - wpos).normalized() * shrink
+			elif draw_to.y < draw_from.y:
+				draw_to = nwpos + (wpos - nwpos).normalized() * shrink
+
+			var wall_wdn = WallDrawNode.new()
+			var sort_y = minf(draw_from.y, draw_to.y)
+			wall_wdn.position = Vector2(0, sort_y)
+			wall_wdn.z_index = 99
+			wall_wdn.modulate = Color(0.4, 0.6, 1.0, 0.5)
+			_target = wall_wdn
+			_draw_wall_edge(draw_from - wall_wdn.position, draw_to - wall_wdn.position)
+			_target = null
+			build_preview_draw.add_child(wall_wdn)
+
+
+func move_select() -> void:
+	## Phase 1: select a node to move
+	if move_selected_node == Vector2i(-9999, -9999):
+		return
+	# Keep selected node highlighted light blue
+	_set_node_highlight(move_selected_node, true, Color(0.5, 0.7, 1.0))
+	move_phase = "place"
+
+
+func move_place() -> void:
+	## Phase 2: place the node at new location
+	if move_preview_node == Vector2i(-9999, -9999) or move_selected_node == Vector2i(-9999, -9999):
+		return
+	if nodes.has(move_preview_node):
+		return  # can't place on existing node
+
+	var old_pos = move_selected_node
+	var new_pos = move_preview_node
+
+	# Collect old edges
+	var old_neighbors: Array[Vector2i] = []
+	for neighbor in _get_neighbors(old_pos):
+		if edges.has(_make_edge_key(old_pos, neighbor)):
+			old_neighbors.append(neighbor)
+
+	# Remove old node and edges
+	for neighbor in old_neighbors:
+		var key = _make_edge_key(old_pos, neighbor)
+		edges.erase(key)
+		if collision_bodies.has(key):
+			collision_bodies[key].queue_free()
+			collision_bodies.erase(key)
+	nodes.erase(old_pos)
+
+	# Place new node
+	nodes[new_pos] = true
+
+	# Connect to adjacent existing nodes at new position
+	var cardinal = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	for dir in cardinal:
+		var neighbor = new_pos + dir
+		if nodes.has(neighbor):
+			place_wall_between(new_pos, neighbor)
+
+	# Reset move state
+	move_phase = "select"
+	move_selected_node = Vector2i(-9999, -9999)
+	move_preview_node = Vector2i(-9999, -9999)
+	if is_instance_valid(build_preview_draw):
+		build_preview_draw.queue_free()
+		build_preview_draw = null
+
+	_needs_rebuild = true
+
+
+func clear_move_mode() -> void:
+	_set_node_highlight(move_selected_node, false)
+	move_mode = false
+	move_phase = "select"
+	move_selected_node = Vector2i(-9999, -9999)
+	move_preview_node = Vector2i(-9999, -9999)
 	if is_instance_valid(build_preview_draw):
 		build_preview_draw.queue_free()
 		build_preview_draw = null

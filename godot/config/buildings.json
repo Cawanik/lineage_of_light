@@ -1,4 +1,12 @@
 {
+	"throne": {
+		"name": "Трон Лича",
+		"cost": 0,
+		"desc": "Трон Короля Лича. Если будет разрушен — игра проиграна.",
+		"hp": 500,
+		"sprite": "res://assets/sprites/lich_king/throne.png",
+		"sprite_offset": [0.0, -84.0]
+	},
 	"wall": {
 		"name": "Стена",
 		"cost": 10,

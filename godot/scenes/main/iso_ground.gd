@@ -14,6 +14,7 @@ var grid: Dictionary = {}
 var grid_width: int = 30
 var grid_height: int = 30
 var ground_seed: int = 42
+var tile_draw_offset_y: float = 0.0
 
 
 func _ready() -> void:
@@ -23,6 +24,7 @@ func _ready() -> void:
 	grid_width = iso.get("grid_width", 30)
 	grid_height = iso.get("grid_height", 30)
 	ground_seed = iso.get("ground_seed", 42)
+	tile_draw_offset_y = iso.get("tile_draw_offset_y", 0.0)
 
 	_load_tiles()
 	_generate_grid()
@@ -32,13 +34,14 @@ func _ready() -> void:
 func _load_tiles() -> void:
 	var tw = Config.game.get("tile_weights", {})
 	var tile_defs = [
-		{"path": "res://assets/sprites/tiles/iso_tile_0.png", "weight": tw.get("grass_flower", 12.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_0.png", "weight": tw.get("grass_wildflower", 12.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_1.png", "weight": tw.get("grass_mushroom", 12.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_2.png", "weight": tw.get("grass_leaves", 12.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_3.png", "weight": tw.get("grass_sparse", 12.0)},
-		{"path": "res://assets/sprites/tiles/iso_tile_2.png", "weight": tw.get("dirt", 20.0)},
-		{"path": "res://assets/sprites/tiles/iso_tile_1.png", "weight": tw.get("stone", 10.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_0.png", "weight": tw.get("grass_wildflower", 15.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_1.png", "weight": tw.get("grass_mushroom", 15.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_2.png", "weight": tw.get("grass_leaves", 15.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_3.png", "weight": tw.get("grass_sparse", 15.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_4.png", "weight": tw.get("grass_dandelion", 10.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_5.png", "weight": tw.get("grass_daisy", 10.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_6.png", "weight": tw.get("grass_clover", 10.0)},
+		{"path": "res://assets/sprites/tiles/iso_grass_7.png", "weight": tw.get("grass_twigs", 10.0)},
 	]
 
 	for def in tile_defs:
@@ -82,7 +85,7 @@ func _draw() -> void:
 
 			# Isometric position: diamond layout
 			var screen_x = (x - y) * (CELL_SIZE * 0.5)
-			var screen_y = (x + y) * (CELL_SIZE * ISO_RATIO * 0.5)
+			var screen_y = (x + y) * (CELL_SIZE * ISO_RATIO * 0.5) + 20.0
 
 			var tex = tiles_loaded[tile_idx]
 			var draw_pos = Vector2(

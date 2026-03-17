@@ -8,17 +8,19 @@
 		"grid_width": 30,
 		"grid_height": 30,
 		"ground_seed": 42,
-		"grid_offset_y": 8.0
+		"grid_offset_y": 8.0,
+		"tile_draw_offset_y": -20.0
 	},
 
 	"tile_weights": {
-		"grass_flower": 12.0,
-		"grass_wildflower": 12.0,
-		"grass_mushroom": 12.0,
-		"grass_leaves": 12.0,
-		"grass_sparse": 12.0,
-		"dirt": 20.0,
-		"stone": 10.0
+		"grass_wildflower": 15.0,
+		"grass_mushroom": 15.0,
+		"grass_leaves": 15.0,
+		"grass_sparse": 15.0,
+		"grass_dandelion": 10.0,
+		"grass_daisy": 10.0,
+		"grass_clover": 10.0,
+		"grass_twigs": 10.0
 	},
 
 	"move_marker": {
