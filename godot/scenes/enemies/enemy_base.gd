@@ -37,7 +37,7 @@ var path_index: int = 0
 var move_progress: float = 0.0
 
 # FSM
-enum State { MOVING, ATTACKING_WALL, ATTACKING_BUILDING, DEAD }
+enum State { MOVING, ATTACKING_WALL, ATTACKING_BUILDING, DEAD, VICTORY }
 enum ThroneAccess { BLOCKED, CLEAR_PATH, ADJACENT }
 var state: State = State.MOVING
 var attacking_edge_key: StringName = &""
@@ -71,13 +71,24 @@ func _ready() -> void:
 	body.collision_layer = 2
 	body.collision_mask = 1  # Collide with walls (layer 1)
 
+	# Add to enemies group for GameManager control
+	add_to_group("enemies")
+
 	var ps = get_node_or_null("/root/PathfindingSystem")
 	if ps:
 		ps.path_grid_changed.connect(_on_path_grid_changed)
 
 
+func set_victory_state() -> void:
+	"""Called by GameManager when throne is destroyed - stop all AI activity"""
+	state = State.VICTORY
+	sprite.modulate = Color.GRAY  # Visual indication
+	body.velocity = Vector2.ZERO
+	print("Enemy %s: Entering VICTORY state - throne destroyed!" % self)
+
+
 func _on_path_grid_changed() -> void:
-	if is_dead:
+	if is_dead or state == State.VICTORY:
 		return
 	if not _repath_queued:
 		_repath_queued = true
@@ -116,7 +127,10 @@ func repath() -> void:
 	print("EnemyBase repath from=%s path_size=%d bg=%s" % [current_tile, tile_path.size(), building_grid != null])
 
 	if tile_path.is_empty():
-		push_warning("EnemyBase: NO PATH from %s to throne!" % current_tile)
+		print("EnemyBase: No path to throne found (throne may be destroyed)")
+		# If game is over, enter victory state
+		if not GameManager.is_game_active:
+			set_victory_state()
 		return
 
 	print("Path found: ", tile_path)
@@ -154,7 +168,13 @@ func _check_wall_ahead() -> void:
 
 
 func _process(delta: float) -> void:
-	if is_dead:
+	if is_dead or state == State.VICTORY:
+		return
+	
+	# Stop all AI if game is over
+	if not GameManager.is_game_active:
+		if state != State.VICTORY:
+			set_victory_state()
 		return
 
 	# Slow effect
@@ -177,6 +197,9 @@ func _process(delta: float) -> void:
 			_process_wall_attack(delta)
 		State.ATTACKING_BUILDING:
 			_process_building_attack(delta)
+		State.VICTORY:
+			# Do nothing - enemy celebrates victory
+			pass
 
 
 func _process_movement(delta: float) -> void:

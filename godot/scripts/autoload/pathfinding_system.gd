@@ -70,6 +70,11 @@ func set_tile_solid(tile: Vector2i, solid: bool) -> void:
 
 
 func get_path_to_throne(from: Vector2i) -> Array[Vector2i]:
+	# Check if throne still exists
+	if not _throne_exists():
+		print("PathfindingSystem: No throne found - returning empty path")
+		return [] as Array[Vector2i]
+	
 	if from == throne_tile:
 		return [throne_tile] as Array[Vector2i]
 	
@@ -91,6 +96,24 @@ func get_path_to_throne(from: Vector2i) -> Array[Vector2i]:
 	return result
 
 
+func _throne_exists() -> bool:
+	"""Check if throne building still exists in the game world"""
+	if throne_tile == Vector2i(-1, -1):
+		return false
+		
+	# Try to find building grid and check for throne
+	var main_scene = get_tree().current_scene
+	if not main_scene:
+		return false
+		
+	var building_grid = main_scene.get_node_or_null("YSort/BuildingGrid")
+	if not building_grid:
+		return false
+		
+	var throne = building_grid.get_building(throne_tile)
+	return throne != null and throne.building_type == "throne"
+
+
 func get_path_ignoring_walls(from: Vector2i) -> Array[Vector2i]:
 	if from == throne_tile:
 		return [throne_tile] as Array[Vector2i]
@@ -110,3 +133,10 @@ func get_path_cost(from: Vector2i) -> float:
 
 func is_in_bounds(tile: Vector2i) -> bool:
 	return tile.x >= 0 and tile.x < grid_size.x and tile.y >= 0 and tile.y < grid_size.y
+
+
+func clear_throne() -> void:
+	"""Called when throne is destroyed - invalidate throne pathfinding"""
+	print("PathfindingSystem: Throne destroyed, clearing throne_tile")
+	throne_tile = Vector2i(-1, -1)
+	path_grid_changed.emit()

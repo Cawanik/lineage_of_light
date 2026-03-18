@@ -18,4 +18,6 @@ func _ready() -> void:
 
 
 func _on_destroyed() -> void:
+	print("Throne destroyed! Emitting throne_destroyed signal")
 	throne_destroyed.emit()
+	super._on_destroyed()  # Call parent's destruction logic

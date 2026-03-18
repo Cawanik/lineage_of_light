@@ -93,6 +93,19 @@ func free_cell(grid_pos: Vector2i) -> void:
 func on_throne_destroyed() -> void:
 	print("GameManager: Throne destroyed! Game Over!")
 	is_game_active = false
+	
+	# Clear pathfinding system
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if ps and ps.has_method("clear_throne"):
+		ps.clear_throne()
+	
+	# Stop all enemy AI immediately
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	for enemy in enemies:
+		if enemy.has_method("set_victory_state"):
+			enemy.set_victory_state()
+	
+	print("GameManager: Stopped %d enemies. Game Over signal emitted." % enemies.size())
 	game_over.emit()
 
 
