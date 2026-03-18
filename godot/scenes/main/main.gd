@@ -1,3 +1,17 @@
+# ==========================================
+# main.gd — Главная сцена, тут всё начинается, ёб твою мать
+# ==========================================
+# _ready() — инициализирует инструменты (build/demolish/move/place), подключает сигналы, ставит трон и Лича
+# _set_tool(tool_name) — переключает активный инструмент, деактивирует старый, активирует новый
+# _on_build_button_pressed() — нажали кнопку строительства — открываем меню, нахуй
+# _on_demolish_button_pressed() — включает инструмент сноса
+# _on_move_button_pressed() — включает инструмент перемещения
+# _on_building_selected(building_type) — выбрали здание в меню: wall -> build tool, остальное -> place tool
+# _on_menu_visibility_changed() — если меню закрылось а build tool активен — деактивируем его
+# _process(_delta) — каждый кадр дёргает update() активного инструмента
+# _input(event) — F7 экспорт карты, F5 adjust стен, F6 adjust трона, ЛКМ -> клик инструмента
+# ==========================================
+
 extends Node2D
 
 @onready var placement_grid = $PlacementGrid

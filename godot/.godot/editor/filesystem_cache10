@@ -1,7 +1,9 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1773796895
+::res://::1773846165
 pixellab_tileset_converter.gd::GDScript::4242505560930537483::1773691896::0::1::::<>SceneTree<><>0<>0<><>::
-::res://assets/::1773691328
+::res://assets/::1773845828
+::res://assets/splitScreen/::1773848210
+logo_2_free_back.png::CompressedTexture2D::8847567874671085181::1773848124::1773848214::1::::<><><>0<>0<>f05b059546d6914e838ecb802cc12b02<>res://.godot/imported/logo_2_free_back.png-e1f61f0c9c9406b6433d104b450abb79.ctex::
 ::res://assets/sprites/::1773790319
 ::res://assets/sprites/buildings/::1773791883
 skeleton_archer_tower.png::CompressedTexture2D::2764404167286864969::1773791382::1773791384::1::::<><><>0<>0<>82ea5547b19caceff0a8052b2a614fc8<>res://.godot/imported/skeleton_archer_tower.png-80a2338dbde69485d4fc3c6a13570c60.ctex::
@@ -61,13 +63,13 @@ frame_013.png::CompressedTexture2D::692310503242686972::1773781090::1773792409::
 frame_014.png::CompressedTexture2D::658455227912152759::1773781090::1773792409::1::::<><><>0<>0<>44663e2796753c0b6e6fdddee6aa3174<>res://.godot/imported/frame_014.png-1c84f02d251f4fa99b1dfbec17e8feee.ctex::
 frame_015.png::CompressedTexture2D::5404124557169913655::1773781090::1773792409::1::::<><><>0<>0<>e04d586afaf3cc7c17f96b0d9bb85dad<>res://.godot/imported/frame_015.png-b4e60cdc445760abd14c128a7c632036.ctex::
 ::res://assets/sprites/buildings/skeleton_archer/animations/breathing-idle/::1773797378
-::res://assets/sprites/buildings/skeleton_archer/animations/breathing-idle/south/::1773797378
+::res://assets/sprites/buildings/skeleton_archer/animations/breathing-idle/south/::1773797395
 frame_000.png::CompressedTexture2D::2082391828547255203::1773786578::1773797395::1::::<><><>0<>0<>3dc6bb5c0c630e6c1053d28b2d753700<>res://.godot/imported/frame_000.png-f6faed04371e863dd266e017c6fee97c.ctex::
 frame_001.png::CompressedTexture2D::4711982689765052142::1773786578::1773797395::1::::<><><>0<>0<>00d066922a5b51892d09f5f2437e25c4<>res://.godot/imported/frame_001.png-cde9c7b683fc284f6612af7f7a0ac183.ctex::
 frame_002.png::CompressedTexture2D::7600885505394444132::1773786578::1773797395::1::::<><><>0<>0<>711278b6f3bdaec3053e9cdbdfc8bafb<>res://.godot/imported/frame_002.png-3870ccfc2a9a854bebfa76a4ecc76e5e.ctex::
 frame_003.png::CompressedTexture2D::8040101303380090622::1773786578::1773797395::1::::<><><>0<>0<>f21249f0c2181763e44ab525b9130cc5<>res://.godot/imported/frame_003.png-df1357faea274f7a142cdaeba30b0a29.ctex::
 ::res://assets/sprites/buildings/skeleton_archer/animations/custom-shooting a bow, drawing bowstring and releasing ar/::1773797378
-::res://assets/sprites/buildings/skeleton_archer/animations/custom-shooting a bow, drawing bowstring and releasing ar/east/::1773797378
+::res://assets/sprites/buildings/skeleton_archer/animations/custom-shooting a bow, drawing bowstring and releasing ar/east/::1773797395
 frame_000.png::CompressedTexture2D::8701683249851739814::1773786574::1773797395::1::::<><><>0<>0<>7478fdfc8d9cbbbefaee6685d412ed3a<>res://.godot/imported/frame_000.png-d7a173763b9d2e8cd1939ccb82dc48e1.ctex::
 frame_001.png::CompressedTexture2D::949603649289298017::1773786574::1773797395::1::::<><><>0<>0<>303b6dc2a7538d0cbf7e0ceef8c46f91<>res://.godot/imported/frame_001.png-355a8e94f29ccdb9a6cd19151e9b2671.ctex::
 frame_002.png::CompressedTexture2D::4471093507152100549::1773786574::1773797395::1::::<><><>0<>0<>27aaf450fe8266077af68ae45658cd1e<>res://.godot/imported/frame_002.png-f37769bc4f729e1b51694dd1717bdcbb.ctex::
@@ -84,7 +86,7 @@ frame_012.png::CompressedTexture2D::3884446400027768757::1773786574::1773797395:
 frame_013.png::CompressedTexture2D::1863574891420400524::1773786574::1773797395::1::::<><><>0<>0<>fc0e47169a52ff80e2449af23a8a08a6<>res://.godot/imported/frame_013.png-086dc9eafc507a4f818823947ad14656.ctex::
 frame_014.png::CompressedTexture2D::5553850443923700169::1773786574::1773797395::1::::<><><>0<>0<>f9543cfb2ead1c4c2c52c199cc9a66db<>res://.godot/imported/frame_014.png-f4be540e4000cf81043bb172bb3bfa61.ctex::
 frame_015.png::CompressedTexture2D::5269882732945238571::1773786574::1773797395::1::::<><><>0<>0<>a2c5d84d6aa2bd23a90a1b7acb24cacc<>res://.godot/imported/frame_015.png-d6d894a434e628de07147d33989584ea.ctex::
-::res://assets/sprites/buildings/skeleton_archer/animations/custom-shooting a bow, drawing bowstring and releasing ar/south/::1773797378
+::res://assets/sprites/buildings/skeleton_archer/animations/custom-shooting a bow, drawing bowstring and releasing ar/south/::1773797395
 frame_000.png::CompressedTexture2D::561904429974666928::1773786574::1773797395::1::::<><><>0<>0<>1df7870cc2fa4765ccceb0558678cc9b<>res://.godot/imported/frame_000.png-5bb7a5e33b183922f2fd7256017782b0.ctex::
 frame_001.png::CompressedTexture2D::1587456514351109674::1773786574::1773797395::1::::<><><>0<>0<>82394c2e5f95c1b24561a1ffdb920a7a<>res://.godot/imported/frame_001.png-e6d5b862c19c1a5b58fb24db6f4dc36a.ctex::
 frame_002.png::CompressedTexture2D::6903464794401305147::1773786574::1773797395::1::::<><><>0<>0<>ae264d2d31616d8f4b2b89e9424d6671<>res://.godot/imported/frame_002.png-d6c4666ecd7558ea91e914a118a8d093.ctex::
@@ -101,7 +103,7 @@ frame_012.png::CompressedTexture2D::677009979428165599::1773786576::1773797395::
 frame_013.png::CompressedTexture2D::4899722363040750281::1773786576::1773797395::1::::<><><>0<>0<>c4584c273b696b05b853ed745651cb50<>res://.godot/imported/frame_013.png-91f9406e6ce7b95e72403ba7af0a15f2.ctex::
 frame_014.png::CompressedTexture2D::2611618938650764698::1773786576::1773797395::1::::<><><>0<>0<>9e03d6fae31bfd14b3cf93720474b612<>res://.godot/imported/frame_014.png-cadc4a11658cdc3887e11d3ee127d7c1.ctex::
 frame_015.png::CompressedTexture2D::4159881747014244370::1773786576::1773797395::1::::<><><>0<>0<>e4a561b82fa41e4d42bd16755ee65301<>res://.godot/imported/frame_015.png-a0cfd5265d8d0a36cd5cf685e4a80809.ctex::
-::res://assets/sprites/buildings/skeleton_archer/animations/custom-shooting a bow, drawing bowstring and releasing ar/south-east/::1773797378
+::res://assets/sprites/buildings/skeleton_archer/animations/custom-shooting a bow, drawing bowstring and releasing ar/south-east/::1773797395
 frame_000.png::CompressedTexture2D::6844459246284887288::1773786576::1773797395::1::::<><><>0<>0<>462e60972097870522a21eee974793ab<>res://.godot/imported/frame_000.png-45b2745e14522aef95f3d731fb656b6b.ctex::
 frame_001.png::CompressedTexture2D::3828096139316330272::1773786576::1773797395::1::::<><><>0<>0<>a3cb793c7f16108333e4e66d9b36e0b3<>res://.godot/imported/frame_001.png-5195b0ca8df5e7ddd4c3c5a65410f2a7.ctex::
 frame_002.png::CompressedTexture2D::956902168747053523::1773786576::1773797395::1::::<><><>0<>0<>1201498d9e3d587a4da8936277ad6ea9<>res://.godot/imported/frame_002.png-357d18f1f1ee6ba86bbfebba796e4f60.ctex::
@@ -358,13 +360,13 @@ west.png::CompressedTexture2D::51203656812854475::1773709683::1773709890::1::::<
 build_icon.png::CompressedTexture2D::5079955881702121385::1773703574::1773704930::1::::<><><>0<>0<>c460e5a9c237387ced794c6d0f81a749<>res://.godot/imported/build_icon.png-c188e3f1f5fbbf884bf0ff3c836719bb.ctex::
 demolish_icon.png::CompressedTexture2D::6203979138528678068::1773718065::1773718427::1::::<><><>0<>0<>24894962792f34eb757fb098779a4714<>res://.godot/imported/demolish_icon.png-cf096bbcbc01f04756102cae2408c217.ctex::
 move_icon.png::CompressedTexture2D::3583517397598682400::1773756803::1773757162::1::::<><><>0<>0<>7fba17824d85864f38896b81c41c11de<>res://.godot/imported/move_icon.png-d5be16cc7421c7540ae4be9fce9c2d27.ctex::
-::res://config/::1773797272
-buildings.json::JSON::-1::1773797272::0::1::::<><><>0<>0<><>::
+::res://config/::1773797546
+buildings.json::JSON::-1::1773797546::0::1::::<><><>0<>0<><>::
 game.json::JSON::-1::1773788456::0::1::::<><><>0<>0<><>::
 player.json::JSON::-1::1773756124::0::1::::<><><>0<>0<><>::
 ::res://scenes/::1773709720
-::res://scenes/buildings/::1773797254
-building.gd::GDScript::6320806030939260468::1773797254::0::1::::Building<>Node2D<><>0<>0<><>::
+::res://scenes/buildings/::1773797560
+building.gd::GDScript::6320806030939260468::1773797560::0::1::::Building<>Node2D<><>0<>0<><>::
 building.tscn::PackedScene::4225625706149388::1773763900::0::1::::<><><>0<>0<><>::res://scenes/buildings/building.gd
 lich_king.gd::GDScript::1827414582840304829::1773763221::0::1::::<>AnimatedSprite2D<><>0<>0<><>::
 throne.gd::GDScript::1198424185017539027::1773763788::0::1::::Throne<>Building<><>0<>0<><>::
@@ -388,13 +390,15 @@ player.tscn::PackedScene::148799747451416::1773697956::0::1::::<><><>0<>0<><>::r
 ::res://scenes/towers/::1773691688
 tower_base.gd::GDScript::432725216458295422::1773691406::0::1::::TowerBase<>Node2D<><>0<>0<><>::
 tower_base.tscn::PackedScene::5322560302587984::1773691411::0::1::::<><><>0<>0<><>::res://scenes/towers/tower_base.gd
-::res://scenes/ui/::1773766954
+::res://scenes/ui/::1773846069
 build_menu.gd::GDScript::6250914478241260499::1773763991::0::1::::<>PanelContainer<><>0<>0<><>::
 build_menu.tscn::PackedScene::-1::1773719149::0::1::::<><><>0<>0<><>::
 move_marker.gd::GDScript::8011720190028694585::1773694032::0::1::::<>Node2D<><>0<>0<><>::
 move_marker.tscn::PackedScene::-1::1773693923::0::1::::<><><>0<>0<><>::
 placement_grid.gd::GDScript::8097380389044410693::1773694710::0::1::::<>Node2D<><>0<>0<><>::
 placement_grid.tscn::PackedScene::-1::1773694718::0::1::::<><><>0<>0<><>::
+splash_screen.gd::GDScript::2510252267105554870::1773845987::0::1::::<>Control<><>0<>0<><>::
+splash_screen.tscn::PackedScene::-1::1773846069::0::1::::<><><>0<>0<><>::
 ::res://scripts/::1773771589
 ::res://scripts/autoload/::1773756124
 config.gd::GDScript::4875278737137323913::1773756124::0::1::::<>Node<><>0<>0<><>::
