@@ -127,6 +127,9 @@ func _process(_delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F9:
+		_print_matrix()
+		return
 	if event is InputEventKey and event.pressed and event.keycode == KEY_F7:
 		MapExporter.export_map(building_grid, wall_system)
 		return
@@ -156,3 +159,37 @@ func _on_wave_completed(wave_number: int) -> void:
 
 func _on_all_waves_completed() -> void:
 	print("All waves completed! Victory!")
+
+
+func _print_matrix() -> void:
+	var iso = Config.game.get("iso", {})
+	var w: int = iso.get("grid_width", 32)
+	var h: int = iso.get("grid_height", 32)
+	# Найти тайл трона
+	var throne_pos = Vector2i(-9999, -9999)
+	for tile in building_grid.buildings:
+		var b = building_grid.buildings[tile]
+		if b.building_type == "throne":
+			throne_pos = tile
+			break
+
+	print("=== MAP MATRIX %dx%d === (throne at %s)" % [w, h, throne_pos])
+	for y in range(h):
+		var row = ""
+		for x in range(w):
+			var tile = Vector2i(x, y)
+			if building_grid.buildings.has(tile):
+				var b = building_grid.buildings[tile]
+				if b.building_type == "throne":
+					row += "T "
+				else:
+					row += "B "
+			elif wall_system.nodes.has(tile):
+				row += "W "
+			elif building_grid.is_border(tile):
+				row += "S "
+			elif throne_pos != Vector2i(-9999, -9999) and absi(tile.x - throne_pos.x) <= 1 and absi(tile.y - throne_pos.y) <= 1:
+				row += "L "
+			else:
+				row += ". "
+		print(row)
