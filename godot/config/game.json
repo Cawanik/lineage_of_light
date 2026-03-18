@@ -33,6 +33,18 @@
 		"inner_color": "#9933cc4d"
 	},
 
+	"lich_king": {
+		"idle_path": "res://assets/sprites/lich_king/animations/breathing-idle/",
+		"walk_path": "res://assets/sprites/lich_king/animations/walking-8-frames/",
+		"rotations_path": "res://assets/sprites/lich_king/rotations/",
+		"walk_speed": 15.0,
+		"idle_time_min": 2.0,
+		"idle_time_max": 5.0,
+		"scale": 1.25,
+		"sprite_offset": [0.0, -24.0],
+		"animation_speed": 2.0
+	},
+
 	"ui": {
 		"font_color": "#e8e0ff",
 		"font_hover_color": "#f0d060",

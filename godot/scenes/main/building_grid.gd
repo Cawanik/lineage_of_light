@@ -22,13 +22,15 @@ extends Node2D
 ## Single source of truth for the isometric tile grid
 ## Stores buildings, walls, and provides tile<->world conversion
 
+signal building_moved(building_type: String, from_tile: Vector2i, to_tile: Vector2i)
+
 var CELL_SIZE: int = 64
 var ISO_RATIO: float = 0.5
 
 # Buildings: Vector2i -> Building node
 var buildings: Dictionary = {}
-# Wall nodes: Vector2i -> true (tiles that have a wall pillar)
-var wall_nodes: Dictionary = {}
+# Ссылка на WallSystem для проверки стен
+var wall_system: WallSystem = null
 
 # Debug: draw grid overlay
 var show_grid: bool = false
@@ -38,6 +40,10 @@ func _ready() -> void:
 	var iso = Config.game.get("iso", {})
 	CELL_SIZE = iso.get("cell_size", 64)
 	ISO_RATIO = iso.get("iso_ratio", 0.5)
+	await get_tree().process_frame
+	var parent = get_parent()
+	if parent:
+		wall_system = parent.get_node_or_null("WallSystem")
 
 
 func tile_to_world(tile: Vector2i) -> Vector2:
@@ -92,7 +98,11 @@ func is_border(tile: Vector2i) -> bool:
 
 
 func is_occupied(tile: Vector2i) -> bool:
-	return buildings.has(tile) or wall_nodes.has(tile) or is_border(tile)
+	if buildings.has(tile) or is_border(tile):
+		return true
+	if wall_system and wall_system.nodes.has(tile):
+		return true
+	return false
 
 
 func move_building(from_tile: Vector2i, to_tile: Vector2i) -> bool:
@@ -106,6 +116,7 @@ func move_building(from_tile: Vector2i, to_tile: Vector2i) -> bool:
 	buildings.erase(from_tile)
 	buildings[to_tile] = building
 	building.position = tile_to_world(to_tile)
+	building_moved.emit(building.building_type, from_tile, to_tile)
 	return true
 
 
@@ -157,9 +168,12 @@ func _draw() -> void:
 	var hw = CELL_SIZE * 0.5
 	var hh = CELL_SIZE * ISO_RATIO * 0.5
 
-	for y in range(30):
-		for x in range(30):
-			var center = tile_to_world(Vector2i(x, y)) + grid_offset
+	var iso = Config.game.get("iso", {})
+	var gw = iso.get("grid_width", 32)
+	var gh = iso.get("grid_height", 32)
+	for y in range(gh):
+		for x in range(gw):
+			var center = tile_to_world(Vector2i(x, y))
 			var diamond = [
 				center + Vector2(0, -hh),
 				center + Vector2(hw, 0),
