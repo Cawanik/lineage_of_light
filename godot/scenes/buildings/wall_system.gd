@@ -5,10 +5,13 @@ extends Node2D
 ## Walls are edges between grid nodes, not nodes themselves
 ## Click two adjacent nodes to build a wall segment between them
 
+signal wall_segment_destroyed(edge_key: StringName)
+
 var CELL_SIZE: int = 64
 var ISO_RATIO: float = 0.5
 var WALL_HEIGHT: float = 28.0
 var WALL_THICK: float = 6.0
+var WALL_SEGMENT_HP: float = 100.0
 
 # Palette
 var col_top: Color
@@ -23,6 +26,8 @@ var col_merlon: Color
 var nodes: Dictionary = {}
 # Edges (wall segments): StringName -> true (key = "x1,y1-x2,y2" sorted)
 var edges: Dictionary = {}
+# Edge HP: StringName -> float
+var edge_hp: Dictionary = {}
 # Collision bodies: StringName -> StaticBody2D
 var collision_bodies: Dictionary = {}
 # Visual child nodes
@@ -78,6 +83,7 @@ func _load_config() -> void:
 	var w = Config.buildings.get("wall", {})
 	WALL_HEIGHT = w.get("height", 28.0)
 	WALL_THICK = w.get("thickness", 6.0)
+	WALL_SEGMENT_HP = w.get("hp", 100.0)
 	FADE_RADIUS = w.get("fade_radius", 50.0)
 	DEMOLISH_SNAP_RADIUS = w.get("demolish_snap_radius", 16.0)
 
@@ -116,11 +122,23 @@ func place_wall_between(a: Vector2i, b: Vector2i) -> void:
 	var key = _make_edge_key(a, b)
 	if edges.has(key):
 		return
+	
 	edges[key] = true
+	edge_hp[key] = WALL_SEGMENT_HP
 	nodes[a] = true
 	nodes[b] = true
 	_create_collision(key, a, b)
+	
+	print("WallSystem: Created wall edge %s between %s and %s" % [key, a, b])
+	
+	if Engine.has_singleton("PathfindingSystem") or get_node_or_null("/root/PathfindingSystem"):
+		var ps = get_node_or_null("/root/PathfindingSystem")
+		if ps:
+			ps.disable_edge(a, b)
+			print("WallSystem: Disabled pathfinding edge %s" % key)
+	
 	_needs_rebuild = true
+	print("WallSystem: Total edges now: %d" % edges.size())
 
 
 func _create_collision(key: StringName, a: Vector2i, b: Vector2i) -> void:
@@ -163,9 +181,13 @@ func place_wall_line(from: Vector2i, to: Vector2i) -> void:
 func remove_wall_between(a: Vector2i, b: Vector2i) -> void:
 	var key = _make_edge_key(a, b)
 	edges.erase(key)
+	edge_hp.erase(key)
 	if collision_bodies.has(key):
 		collision_bodies[key].queue_free()
 		collision_bodies.erase(key)
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if ps:
+		ps.enable_edge(a, b)
 	# Clean up orphan nodes
 	if not _node_has_edges(a):
 		nodes.erase(a)
@@ -523,6 +545,41 @@ func clear_move_mode() -> void:
 		build_preview_draw = null
 
 
+# === WALL DAMAGE ===
+
+func damage_wall_edge(key: StringName, damage: float) -> bool:
+	if not edge_hp.has(key):
+		return false
+	edge_hp[key] -= damage
+	_update_wall_visual_damage(key)
+	if edge_hp[key] <= 0:
+		var parts = str(key).split("-")
+		var a_parts = parts[0].split(",")
+		var b_parts = parts[1].split(",")
+		var a = Vector2i(int(a_parts[0]), int(a_parts[1]))
+		var b = Vector2i(int(b_parts[0]), int(b_parts[1]))
+		remove_wall_between(a, b)
+		wall_segment_destroyed.emit(key)
+		return true
+	return false
+
+
+func get_wall_hp(key: StringName) -> float:
+	return edge_hp.get(key, 0.0)
+
+
+func get_wall_hp_ratio(key: StringName) -> float:
+	if not edge_hp.has(key):
+		return 0.0
+	return edge_hp[key] / WALL_SEGMENT_HP
+
+
+func _update_wall_visual_damage(key: StringName) -> void:
+	if not wall_visuals.has(key) or not is_instance_valid(wall_visuals[key]):
+		return
+	var ratio = get_wall_hp_ratio(key)
+	var tint = Color.WHITE.lerp(Color(1.0, 0.3, 0.3), 1.0 - ratio)
+	wall_visuals[key].self_modulate = tint
 
 
 func _find_player() -> void:

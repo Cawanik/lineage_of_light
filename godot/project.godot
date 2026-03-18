@@ -21,6 +21,9 @@ config/features=PackedStringArray("4.6")
 [autoload]
 
 Config="*res://scripts/autoload/config.gd"
+GameManager="*res://scripts/autoload/game_manager.gd"
+WaveManager="*res://scripts/autoload/wave_manager.gd"
+PathfindingSystem="*res://scripts/autoload/pathfinding_system.gd"
 
 [display]
 

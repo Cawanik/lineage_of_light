@@ -10,9 +10,9 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/ui/move_icon.png" id="10_move_icon"]
 [ext_resource type="Script" uid="uid://bsrp63a0whs1w" path="res://scenes/buildings/wall_system.gd" id="7_wallsys"]
 [ext_resource type="Shader" uid="uid://chvk7my6p63ne" path="res://shaders/perspective.gdshader" id="8_perspective"]
-[ext_resource type="Script" path="res://scenes/buildings/lich_king.gd" id="11_lich_script"]
 [ext_resource type="PackedScene" uid="uid://cthrone01" path="res://scenes/buildings/throne.tscn" id="12_throne"]
 [ext_resource type="Script" path="res://scenes/main/building_grid.gd" id="13_building_grid"]
+[ext_resource type="PackedScene" uid="uid://cdevpanel001" path="res://scenes/ui/dev_panel.tscn" id="14_devpanel"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_perspective"]
 shader = ExtResource("8_perspective")
@@ -36,10 +36,6 @@ zoom = Vector2(2, 2)
 [node name="BuildingGrid" type="Node2D" parent="YSort"]
 script = ExtResource("13_building_grid")
 
-[node name="LichKing" type="AnimatedSprite2D" parent="YSort"]
-scale = Vector2(1.5, 1.5)
-texture_filter = 0
-script = ExtResource("11_lich_script")
 
 [node name="WallSystem" type="Node2D" parent="YSort" unique_id=1326952089]
 y_sort_enabled = true
@@ -100,3 +96,5 @@ layout_mode = 2
 custom_minimum_size = Vector2(48, 48)
 texture_normal = ExtResource("10_move_icon")
 stretch_mode = 0
+
+[node name="DevPanel" parent="UILayer" instance=ExtResource("14_devpanel")]

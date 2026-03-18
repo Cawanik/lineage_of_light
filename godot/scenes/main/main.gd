@@ -7,7 +7,6 @@ extends Node2D
 @onready var move_button: TextureButton = $UILayer/Toolbar/Grid/MoveButton
 @onready var wall_system: WallSystem = $YSort/WallSystem
 @onready var building_grid: BuildingGrid = $YSort/BuildingGrid
-@onready var lich_king: AnimatedSprite2D = $YSort/LichKing
 
 var active_tool: BaseTool = null
 var tools: Dictionary = {}
@@ -34,22 +33,33 @@ func _ready() -> void:
 	building_grid.add_child(throne)
 	building_grid.place_building(throne_tile, throne)
 
-	# Lich King on adjacent tile
-	var lich_tile = Vector2i(15, 15)
-	lich_king.position = building_grid.tile_to_world(lich_tile)
+	# Sync PathfindingSystem
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if ps:
+		ps.throne_tile = throne_tile
+		# Throne was marked solid by place_building — undo it so enemies can path to it
+		ps.set_tile_solid(throne_tile, false)
 
-	# Box 1
-	var c = Vector2i(15, 15)
-	wall_system.place_wall_line(c, c + Vector2i(4, 0))
-	wall_system.place_wall_line(c + Vector2i(4, 0), c + Vector2i(4, 4))
-	wall_system.place_wall_line(c + Vector2i(4, 4), c + Vector2i(0, 4))
-	wall_system.place_wall_line(c + Vector2i(0, 4), c)
+	# Simple wall defense around throne (14,15)
+	# Create a 7x7 wall box with throne in center and entrance from the right
+	var throne_center = throne_tile
+	
+	# Top wall (full)
+	wall_system.place_wall_line(throne_center + Vector2i(-3, -3), throne_center + Vector2i(3, -3))
+	# Bottom wall (full)  
+	wall_system.place_wall_line(throne_center + Vector2i(-3, 3), throne_center + Vector2i(3, 3))
+	# Left wall (full)
+	wall_system.place_wall_line(throne_center + Vector2i(-3, -3), throne_center + Vector2i(-3, 3))
+	# Right wall (with entrance gap in the middle)
+	wall_system.place_wall_line(throne_center + Vector2i(3, -3), throne_center + Vector2i(3, -1))
+	wall_system.place_wall_line(throne_center + Vector2i(3, 1), throne_center + Vector2i(3, 3))
+	
+	print("Throne at: %s, Wall box: %s to %s" % [throne_center, throne_center + Vector2i(-3, -3), throne_center + Vector2i(3, 3)])
 
-	# Box 2
-	var c2 = c + Vector2i(4, 0)
-	wall_system.place_wall_line(c2, c2 + Vector2i(3, 0))
-	wall_system.place_wall_line(c2 + Vector2i(3, 0), c2 + Vector2i(3, 4))
-	wall_system.place_wall_line(c2 + Vector2i(3, 4), c2 + Vector2i(0, 4))
+	# Connect wave signals
+	WaveManager.wave_started.connect(_on_wave_started)
+	WaveManager.wave_completed.connect(_on_wave_completed)
+	WaveManager.all_waves_completed.connect(_on_all_waves_completed)
 
 
 func _set_tool(tool_name: String) -> void:
@@ -92,3 +102,19 @@ func _on_menu_visibility_changed() -> void:
 func _input(event: InputEvent) -> void:
 	if active_tool and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		active_tool.click()
+
+	# N key — start next wave (quick hotkey)
+	if event is InputEventKey and event.pressed and event.keycode == KEY_N:
+		WaveManager.start_next_wave()
+
+
+func _on_wave_started(wave_number: int) -> void:
+	print("Wave %d started!" % wave_number)
+
+
+func _on_wave_completed(wave_number: int) -> void:
+	print("Wave %d completed!" % wave_number)
+
+
+func _on_all_waves_completed() -> void:
+	print("All waves completed! Victory!")

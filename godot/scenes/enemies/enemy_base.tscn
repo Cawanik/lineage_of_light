@@ -1,15 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://cenemy001"]
+[gd_scene load_steps=3 format=3 uid="uid://cenemy001"]
 
 [ext_resource type="Script" path="res://scenes/enemies/enemy_base.gd" id="1_enemy"]
 
-[node name="EnemyBase" type="PathFollow2D"]
-rotates = false
-loop = false
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(24, 24)
+
+[node name="EnemyBase" type="Node2D"]
 script = ExtResource("1_enemy")
 
 [node name="Body" type="CharacterBody2D" parent="."]
 collision_layer = 2
-collision_mask = 0
+collision_mask = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Body"]
 shape = SubResource("RectangleShape2D_body")
@@ -41,6 +42,3 @@ offset_top = -20
 offset_right = 14
 offset_bottom = -17
 color = Color(0.176, 0.353, 0.153, 1)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
-size = Vector2(24, 24)

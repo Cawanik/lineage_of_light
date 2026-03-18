@@ -42,6 +42,9 @@ func place_building(tile: Vector2i, building: Node2D) -> void:
 		return
 	buildings[tile] = building
 	building.position = tile_to_world(tile)
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if ps:
+		ps.set_tile_solid(tile, true)
 
 
 func remove_building(tile: Vector2i) -> Node2D:
@@ -49,6 +52,9 @@ func remove_building(tile: Vector2i) -> Node2D:
 		return null
 	var building = buildings[tile]
 	buildings.erase(tile)
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if ps:
+		ps.set_tile_solid(tile, false)
 	return building
 
 

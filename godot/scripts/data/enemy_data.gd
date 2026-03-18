@@ -10,6 +10,7 @@ const ENEMIES = {
 		"speed": 60.0,
 		"reward": 10,
 		"damage_to_base": 1,
+		"wall_dps": 15.0,
 		"color": Color("#8b5e3c"),  # Stone Brick (warm)
 		"accent": Color("#f0d060"),  # Pale Gold (torch)
 	},
@@ -20,6 +21,7 @@ const ENEMIES = {
 		"speed": 40.0,
 		"reward": 20,
 		"damage_to_base": 2,
+		"wall_dps": 25.0,
 		"color": Color("#2d5080"),  # Lake Reflect (steel blue)
 		"accent": Color("#c47a45"),  # Terracotta (heraldic)
 	},
@@ -30,6 +32,7 @@ const ENEMIES = {
 		"speed": 50.0,
 		"reward": 25,
 		"damage_to_base": 3,
+		"wall_dps": 5.0,
 		"color": Color("#1a1030"),  # Shadow Purple (robes)
 		"accent": Color("#f0d060"),  # Pale Gold (magic glow)
 	},
@@ -40,6 +43,7 @@ const ENEMIES = {
 		"speed": 55.0,
 		"reward": 20,
 		"damage_to_base": 2,
+		"wall_dps": 20.0,
 		"color": Color("#2d5a27"),  # Moss Green
 		"accent": Color("#4a8c3f"),  # Pine Green
 	},
@@ -50,6 +54,7 @@ const ENEMIES = {
 		"speed": 45.0,
 		"reward": 50,
 		"damage_to_base": 5,
+		"wall_dps": 30.0,
 		"color": Color("#b8860b"),  # Aged Gold
 		"accent": Color("#e8e0ff"),  # Ghost White
 	},

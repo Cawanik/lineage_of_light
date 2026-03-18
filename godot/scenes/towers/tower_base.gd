@@ -40,14 +40,17 @@ func setup(type: String) -> void:
 
 
 func _on_enemy_entered_range(body: Node2D) -> void:
-	if body is EnemyBase:
-		enemies_in_range.append(body)
+	var enemy = body.get_parent()
+	if enemy is EnemyBase:
+		enemies_in_range.append(enemy)
 
 
 func _on_enemy_exited_range(body: Node2D) -> void:
-	enemies_in_range.erase(body)
-	if current_target == body:
-		current_target = null
+	var enemy = body.get_parent()
+	if enemy is EnemyBase:
+		enemies_in_range.erase(enemy)
+		if current_target == enemy:
+			current_target = null
 
 
 func _find_target() -> Node2D:
