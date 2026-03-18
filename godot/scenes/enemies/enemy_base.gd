@@ -37,9 +37,10 @@ var path_index: int = 0
 var move_progress: float = 0.0
 
 # FSM
-enum State { MOVING, ATTACKING_WALL, DEAD }
+enum State { MOVING, ATTACKING_WALL, ATTACKING_BUILDING, DEAD }
 var state: State = State.MOVING
 var attacking_edge_key: StringName = &""
+var attacking_building: Building = null
 var attack_timer: float = 0.0
 const ATTACK_INTERVAL: float = 0.5
 
@@ -186,6 +187,8 @@ func _process(delta: float) -> void:
 			_process_movement(delta)
 		State.ATTACKING_WALL:
 			_process_wall_attack(delta)
+		State.ATTACKING_BUILDING:
+			_process_building_attack(delta)
 
 
 func _process_movement(delta: float) -> void:
@@ -256,7 +259,8 @@ func _process_movement(delta: float) -> void:
 						var tile2 = Vector2i(int(tile2_parts[0]), int(tile2_parts[1]))
 						var edge_center = (tile1 + tile2) * 0.5
 						var distance = current_tile.distance_to(edge_center)
-						if distance < closest_distance:
+						# Only attack walls within 1.5 tiles (adjacent only)
+						if distance <= 1.5 and distance < closest_distance:
 							closest_distance = distance
 							closest_key = edge_key
 			
@@ -288,17 +292,28 @@ func _process_movement(delta: float) -> void:
 		if tile_path.size() > 0:
 			path_progress = float(path_index) / float(tile_path.size())
 
-		# Check if reached throne
-		var ps = get_node_or_null("/root/PathfindingSystem")
-		if ps and current_tile == ps.throne_tile:
-			_reached_throne()
+		# Check if adjacent to any building (including throne)
+		var adjacent_building = _check_adjacent_building()
+		if adjacent_building:
+			_start_building_attack(adjacent_building)
 			return
 
 		if path_index < tile_path.size():
 			target_tile = tile_path[path_index]
 			_check_wall_ahead()
 		else:
-			# Path exhausted without reaching throne — repath
+			# Path exhausted without reaching throne
+			print("Enemy %s: Path exhausted at tile %s, checking for adjacent building" % [self, current_tile])
+			
+			# Check if we can attack a building directly
+			var adjacent_building = _check_adjacent_building()
+			if adjacent_building:
+				print("Enemy %s: Found adjacent building at path end: %s" % [self, adjacent_building])
+				_start_building_attack(adjacent_building)
+				return
+			
+			# Otherwise, repath
+			print("Enemy %s: No adjacent building, repathing from %s" % [self, current_tile])
 			repath()
 
 
@@ -334,6 +349,80 @@ func _process_wall_attack(delta: float) -> void:
 			state = State.MOVING
 			# Give PathfindingSystem a moment to update after wall destruction
 			await get_tree().process_frame
+			
+			# Check if we can now attack a building directly
+			var adjacent_building = _check_adjacent_building()
+			if adjacent_building:
+				print("Enemy %s: Found adjacent building after wall destruction: %s" % [self, adjacent_building])
+				_start_building_attack(adjacent_building)
+				return
+			
+			# Otherwise, repath to the throne
+			print("Enemy %s: No adjacent building, repathing to throne" % self)
+			repath()
+
+
+func _check_adjacent_building() -> Building:
+	# Check all 8 adjacent tiles for buildings
+	var adjacent_tiles = [
+		current_tile + Vector2i(-1, -1), current_tile + Vector2i(0, -1), current_tile + Vector2i(1, -1),
+		current_tile + Vector2i(-1,  0),                                  current_tile + Vector2i(1,  0),
+		current_tile + Vector2i(-1,  1), current_tile + Vector2i(0,  1), current_tile + Vector2i(1,  1)
+	]
+	
+	if not building_grid:
+		return null
+		
+	for tile in adjacent_tiles:
+		var building = building_grid.get_building(tile)
+		if building and building is Building:
+			return building
+	
+	return null
+
+
+func _start_building_attack(building: Building) -> void:
+	print("Enemy %s: Starting attack on building %s" % [self, building])
+	attacking_building = building
+	state = State.ATTACKING_BUILDING
+	attack_timer = 0.0
+	sprite.modulate = Color(1.5, 1.0, 1.0)  # Red tint while attacking
+
+
+func _process_building_attack(delta: float) -> void:
+	if not attacking_building or not is_instance_valid(attacking_building):
+		print("Enemy %s: Building destroyed or invalid, back to moving" % self)
+		sprite.modulate = Color.WHITE
+		attacking_building = null
+		state = State.MOVING
+		repath()
+		return
+	
+	# Check if building is still adjacent
+	var adjacent_building = _check_adjacent_building()
+	if adjacent_building != attacking_building:
+		print("Enemy %s: No longer adjacent to building, back to moving" % self)
+		sprite.modulate = Color.WHITE
+		attacking_building = null
+		state = State.MOVING
+		repath()
+		return
+	
+	print("Enemy %s: Attacking building %s (HP: %.1f)" % [self, attacking_building, attacking_building.hp])
+	
+	attack_timer += delta
+	if attack_timer >= ATTACK_INTERVAL:
+		attack_timer -= ATTACK_INTERVAL
+		var damage = wall_dps * ATTACK_INTERVAL
+		attacking_building.take_damage(damage)
+		print("Enemy %s: Dealt %.1f damage to building. Remaining HP: %.1f" % [self, damage, attacking_building.hp])
+		
+		# Check if building was destroyed
+		if attacking_building.hp <= 0:
+			print("Enemy %s: Building destroyed!" % self)
+			sprite.modulate = Color.WHITE
+			attacking_building = null
+			state = State.MOVING
 			repath()
 
 
