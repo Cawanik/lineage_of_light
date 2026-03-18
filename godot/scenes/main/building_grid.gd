@@ -37,11 +37,21 @@ func world_to_tile(world_pos: Vector2) -> Vector2i:
 	return Vector2i(roundi((fx + fy) * 0.5), roundi((fy - fx) * 0.5))
 
 
+func _get_ysort() -> Node2D:
+	return get_parent()  # BuildingGrid is child of YSort
+
+
 func place_building(tile: Vector2i, building: Node2D) -> void:
 	if buildings.has(tile):
 		return
 	buildings[tile] = building
 	building.position = tile_to_world(tile)
+	# Add to YSort (not BuildingGrid) so it sorts with player
+	var ysort = _get_ysort()
+	if building.get_parent() == self:
+		remove_child(building)
+	if building.get_parent() != ysort:
+		ysort.add_child(building)
 
 
 func remove_building(tile: Vector2i) -> Node2D:
@@ -56,8 +66,41 @@ func get_building(tile: Vector2i) -> Node2D:
 	return buildings.get(tile, null)
 
 
+func is_border(tile: Vector2i) -> bool:
+	var iso = Config.game.get("iso", {})
+	var w = iso.get("grid_width", 32)
+	var h = iso.get("grid_height", 32)
+	return tile.x <= 1 or tile.y <= 1 or tile.x >= w - 2 or tile.y >= h - 2
+
+
 func is_occupied(tile: Vector2i) -> bool:
-	return buildings.has(tile) or wall_nodes.has(tile)
+	return buildings.has(tile) or wall_nodes.has(tile) or is_border(tile)
+
+
+func move_building(from_tile: Vector2i, to_tile: Vector2i) -> bool:
+	if not buildings.has(from_tile):
+		return false
+	if buildings.has(to_tile):
+		return false
+	var building = buildings[from_tile]
+	if not building.can_move:
+		return false
+	buildings.erase(from_tile)
+	buildings[to_tile] = building
+	building.position = tile_to_world(to_tile)
+	return true
+
+
+func find_nearest_building(world_pos: Vector2, max_dist: float = 30.0) -> Vector2i:
+	var closest = Vector2i(-9999, -9999)
+	var closest_dist = max_dist
+	for tile in buildings:
+		var wpos = tile_to_world(tile)
+		var dist = world_pos.distance_to(wpos)
+		if dist < closest_dist:
+			closest_dist = dist
+			closest = tile
+	return closest
 
 
 var grid_offset: Vector2 = Vector2.ZERO

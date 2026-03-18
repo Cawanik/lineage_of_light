@@ -5,8 +5,8 @@
 	"iso": {
 		"cell_size": 64,
 		"iso_ratio": 0.5,
-		"grid_width": 30,
-		"grid_height": 30,
+		"grid_width": 32,
+		"grid_height": 32,
 		"ground_seed": 42,
 		"grid_offset_y": 8.0,
 		"tile_draw_offset_y": -20.0

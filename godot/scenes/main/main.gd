@@ -31,7 +31,6 @@ func _ready() -> void:
 	# Place throne on tile
 	var throne_tile = Vector2i(14, 15)
 	var throne = throne_scene.instantiate()
-	building_grid.add_child(throne)
 	building_grid.place_building(throne_tile, throne)
 
 	# Lich King on adjacent tile
@@ -89,6 +88,22 @@ func _on_menu_visibility_changed() -> void:
 		active_tool = null
 
 
+func _process(_delta: float) -> void:
+	if active_tool:
+		active_tool.update()
+
+
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F7:
+		MapExporter.export_map(building_grid, wall_system)
+		return
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F5:
+		wall_system.toggle_adjust()
+		return
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F6:
+		var throne = $YSort/BuildingGrid.get_node_or_null("Throne")
+		if throne:
+			throne.toggle_adjust()
+		return
 	if active_tool and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		active_tool.click()

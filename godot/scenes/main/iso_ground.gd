@@ -8,11 +8,12 @@ var ISO_RATIO: float = 0.5
 
 var tiles_loaded: Array[Texture2D] = []
 var tile_weights: Array[float] = []
+var border_tile: Texture2D = null
 
 var grid: Dictionary = {}
 
-var grid_width: int = 30
-var grid_height: int = 30
+var grid_width: int = 32
+var grid_height: int = 32
 var ground_seed: int = 42
 var tile_draw_offset_y: float = 0.0
 
@@ -21,12 +22,13 @@ func _ready() -> void:
 	var iso = Config.game.get("iso", {})
 	CELL_SIZE = iso.get("cell_size", 64)
 	ISO_RATIO = iso.get("iso_ratio", 0.5)
-	grid_width = iso.get("grid_width", 30)
-	grid_height = iso.get("grid_height", 30)
+	grid_width = iso.get("grid_width", 32)
+	grid_height = iso.get("grid_height", 32)
 	ground_seed = iso.get("ground_seed", 42)
 	tile_draw_offset_y = iso.get("tile_draw_offset_y", 0.0)
 
 	_load_tiles()
+	_load_border_tile()
 	_generate_grid()
 	queue_redraw()
 
@@ -50,6 +52,16 @@ func _load_tiles() -> void:
 			tile_weights.append(def["weight"])
 
 
+func _load_border_tile() -> void:
+	var path = "res://assets/sprites/tiles/iso_wheat_0.png"
+	if ResourceLoader.exists(path):
+		border_tile = load(path)
+
+
+func is_border(x: int, y: int) -> bool:
+	return x <= 1 or y <= 1 or x >= grid_width - 2 or y >= grid_height - 2
+
+
 func _generate_grid() -> void:
 	# Build cumulative weights for weighted random
 	var total_weight = 0.0
@@ -64,13 +76,16 @@ func _generate_grid() -> void:
 
 	for y in range(grid_height):
 		for x in range(grid_width):
-			var roll = rng.randf() * total_weight
-			var tile_idx = 0
-			for i in range(cumulative.size()):
-				if roll <= cumulative[i]:
-					tile_idx = i
-					break
-			grid[Vector2i(x, y)] = tile_idx
+			if is_border(x, y):
+				pass  # border uses single tile
+			else:
+				var roll = rng.randf() * total_weight
+				var tile_idx = 0
+				for i in range(cumulative.size()):
+					if roll <= cumulative[i]:
+						tile_idx = i
+						break
+				grid[Vector2i(x, y)] = tile_idx
 
 
 func _draw() -> void:
@@ -79,15 +94,19 @@ func _draw() -> void:
 
 	for y in range(grid_height):
 		for x in range(grid_width):
-			var tile_idx = grid.get(Vector2i(x, y), 0)
-			if tile_idx >= tiles_loaded.size():
-				continue
-
 			# Isometric position: diamond layout
 			var screen_x = (x - y) * (CELL_SIZE * 0.5)
 			var screen_y = (x + y) * (CELL_SIZE * ISO_RATIO * 0.5) + 20.0
 
-			var tex = tiles_loaded[tile_idx]
+			var tex: Texture2D
+			if is_border(x, y) and border_tile:
+				tex = border_tile
+			else:
+				var tile_idx = grid.get(Vector2i(x, y), 0)
+				if tile_idx >= tiles_loaded.size():
+					continue
+				tex = tiles_loaded[tile_idx]
+
 			var draw_pos = Vector2(
 				screen_x - tex.get_width() * 0.5,
 				screen_y - tex.get_height() * 0.5

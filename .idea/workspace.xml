@@ -4,39 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b152a851-bdcb-4d31-8dff-9b65944e675b" name="Changes" comment="">
+    <list default="true" id="b152a851-bdcb-4d31-8dff-9b65944e675b" name="Changes" comment="ебанная сетка">
       <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/editor/editor_layout.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/editor_layout.cfg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/editor/filesystem_cache10" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/filesystem_cache10" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/editor/filesystem_update4" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/filesystem_update4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/editor/project_metadata.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/project_metadata.cfg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/editor/script_editor_cache.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/script_editor_cache.cfg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/global_script_class_cache.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/global_script_class_cache.cfg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/uid_cache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/uid_cache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/grass_stone_image.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/grass_stone_image.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/grass_stone_image.png.import" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_grass_0.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_grass_0.png.import" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_grass_1.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_grass_1.png.import" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_grass_2.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_grass_2.png.import" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_grass_3.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_grass_3.png.import" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_0.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_0.png.import" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_1.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_1.png.import" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_2.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_2.png.import" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_3.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/iso_tile_3.png.import" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/stone_wall_image.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/stone_wall_image.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/stone_wall_image.png.import" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/tiles/stone_wall_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/tiles/stone_wall_metadata.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/config/buildings.json" beforeDir="false" afterPath="$PROJECT_DIR$/godot/config/buildings.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/config/game.json" beforeDir="false" afterPath="$PROJECT_DIR$/godot/config/game.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/godot/project.godot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/scenes/buildings/building.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/buildings/building.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/scenes/buildings/throne.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/buildings/throne.tscn" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/scenes/buildings/wall_system.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/buildings/wall_system.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/scenes/main/building_grid.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/main/building_grid.gd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/scenes/main/iso_ground.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/main/iso_ground.gd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/scenes/main/main.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/main/main.gd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/scenes/main/main.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/main/main.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/scenes/ui/build_menu.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/ui/build_menu.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/scripts/tools/build_tool.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scripts/tools/build_tool.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/scripts/tools/demolish_tool.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scripts/tools/demolish_tool.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/scripts/tools/move_tool.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scripts/tools/move_tool.gd" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +33,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="2" />
+    <option name="cachedIndexableFilesCount" value="928" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -125,6 +114,15 @@
       <updated>1773690966271</updated>
       <workItem from="1773690967294" duration="31616000" />
     </task>
+    <task id="LOCAL-00001" summary="ебанная сетка">
+      <option name="closed" value="true" />
+      <created>1773769579707</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1773769579707</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -152,5 +150,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="ебанная сетка" />
+    <option name="LAST_COMMIT_MESSAGE" value="ебанная сетка" />
   </component>
 </project>
