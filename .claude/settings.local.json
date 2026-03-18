@@ -58,7 +58,12 @@
       "Bash(mkdir -p \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/buildings/skeleton_archer\")",
       "Bash(unzip -o character.zip)",
       "Bash(rm character.zip)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(ls frame_0*.png)",
+      "Bash(mv frame_021.png frame_018.png)",
+      "Bash(mv frame_022.png frame_019.png)",
+      "Bash(mv frame_023.png frame_020.png)",
+      "Bash(rm -f frame_021.png.import frame_022.png.import frame_023.png.import)"
     ]
   }
 }

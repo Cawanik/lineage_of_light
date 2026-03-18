@@ -44,6 +44,7 @@ func setup(type: String) -> void:
 	move_cost = data.get("move_cost", 0)
 
 	_create_tile_collision()
+	_setup_unit(data)
 
 
 func _create_tile_collision() -> void:
@@ -70,6 +71,39 @@ func _create_tile_collision() -> void:
 
 	body.add_child(shape)
 	add_child(body)
+
+
+func _setup_unit(data: Dictionary) -> void:
+	var unit_path = data.get("unit_idle", "")
+	if unit_path == "":
+		return
+
+	var unit_sprite = AnimatedSprite2D.new()
+	unit_sprite.name = "UnitSprite"
+	var frames = SpriteFrames.new()
+
+	var idle_name = "idle"
+	frames.add_animation(idle_name)
+	frames.set_animation_speed(idle_name, 6.0)
+	frames.set_animation_loop(idle_name, true)
+	for i in range(100):
+		var path = unit_path + "/frame_%03d.png" % i
+		if ResourceLoader.exists(path):
+			frames.add_frame(idle_name, load(path))
+		else:
+			break
+
+	if frames.has_animation("default"):
+		frames.remove_animation("default")
+
+	unit_sprite.sprite_frames = frames
+	var unit_offset = data.get("unit_offset", [0.0, 0.0])
+	var jitter = data.get("unit_offset_jitter", 0)
+	var jx = randf_range(-jitter, jitter)
+	var jy = randf_range(-jitter, jitter)
+	unit_sprite.position = Vector2(unit_offset[0] + jx, unit_offset[1] + jy)
+	add_child(unit_sprite)
+	unit_sprite.play(idle_name)
 
 
 func take_damage(amount: float) -> void:

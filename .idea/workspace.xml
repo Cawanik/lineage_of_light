@@ -4,28 +4,72 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b152a851-bdcb-4d31-8dff-9b65944e675b" name="Changes" comment="ебанная сетка">
+    <list default="true" id="b152a851-bdcb-4d31-8dff-9b65944e675b" name="Changes" comment="Сетка всё та же">
       <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/editor/editor_layout.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/editor_layout.cfg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/editor/filesystem_cache10" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/filesystem_cache10" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/editor/filesystem_update4" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/filesystem_update4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/.godot/editor/project_metadata.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/project_metadata.cfg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/editor/script_editor_cache.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/editor/script_editor_cache.cfg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/global_script_class_cache.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/global_script_class_cache.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_013.png-3697604113f83caafb0e911d9f3c76c7.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_013.png-3697604113f83caafb0e911d9f3c76c7.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_013.png-3697604113f83caafb0e911d9f3c76c7.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_013.png-3697604113f83caafb0e911d9f3c76c7.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_014.png-8c5b9551badf8d058b5b8c4115d9a22c.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_014.png-8c5b9551badf8d058b5b8c4115d9a22c.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_014.png-8c5b9551badf8d058b5b8c4115d9a22c.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_014.png-8c5b9551badf8d058b5b8c4115d9a22c.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_015.png-4d45d4c0ee7630afc4772d5fce8b3a29.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_015.png-4d45d4c0ee7630afc4772d5fce8b3a29.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_015.png-4d45d4c0ee7630afc4772d5fce8b3a29.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_015.png-4d45d4c0ee7630afc4772d5fce8b3a29.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_016.png-d440ceb2f927f1c19f0e78816a881a85.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_016.png-d440ceb2f927f1c19f0e78816a881a85.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_016.png-d440ceb2f927f1c19f0e78816a881a85.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_016.png-d440ceb2f927f1c19f0e78816a881a85.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_017.png-8136b9f215ae6170aa7f183df1911873.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_017.png-8136b9f215ae6170aa7f183df1911873.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_017.png-8136b9f215ae6170aa7f183df1911873.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_017.png-8136b9f215ae6170aa7f183df1911873.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_018.png-d20d527e13b2246979294b04ed1ebab6.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_018.png-d20d527e13b2246979294b04ed1ebab6.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_018.png-d20d527e13b2246979294b04ed1ebab6.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_018.png-d20d527e13b2246979294b04ed1ebab6.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_019.png-2d0d07bbf9f9b404ceb63d40b4409ce6.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_019.png-2d0d07bbf9f9b404ceb63d40b4409ce6.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_019.png-2d0d07bbf9f9b404ceb63d40b4409ce6.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_019.png-2d0d07bbf9f9b404ceb63d40b4409ce6.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_020.png-3dfb693d86a8564a6e47e8ea275d5fd7.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_020.png-3dfb693d86a8564a6e47e8ea275d5fd7.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_020.png-3dfb693d86a8564a6e47e8ea275d5fd7.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_020.png-3dfb693d86a8564a6e47e8ea275d5fd7.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_021.png-216cc32cc791601086459eff05170c3a.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_021.png-216cc32cc791601086459eff05170c3a.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_021.png-216cc32cc791601086459eff05170c3a.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_021.png-216cc32cc791601086459eff05170c3a.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_022.png-a48d07c3625ab91ca5f80aa9e3473c50.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_022.png-a48d07c3625ab91ca5f80aa9e3473c50.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_022.png-a48d07c3625ab91ca5f80aa9e3473c50.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_022.png-a48d07c3625ab91ca5f80aa9e3473c50.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_023.png-2d9dc4b356e37fafa0a868cddd571957.ctex" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_023.png-2d9dc4b356e37fafa0a868cddd571957.ctex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/.godot/imported/frame_023.png-2d9dc4b356e37fafa0a868cddd571957.md5" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/imported/frame_023.png-2d9dc4b356e37fafa0a868cddd571957.md5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/.godot/uid_cache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/godot/.godot/uid_cache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/buildings/skeleton_archer/metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/buildings/skeleton_archer/metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_013.png" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_013.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_013.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_013.png.import" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_014.png" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_014.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_014.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_014.png.import" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_015.png" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_015.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_015.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_015.png.import" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_016.png" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_016.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_016.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_016.png.import" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_017.png" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_017.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_017.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_017.png.import" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_018.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_018.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_019.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_019.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_020.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_020.png.import" beforeDir="false" afterPath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_020.png.import" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_021.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_021.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_022.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_022.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_023.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_023.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_024.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_024.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_025.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke/south/frame_025.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke_loop/south/frame_013.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke_loop/south/frame_013.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke_loop/south/frame_014.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/assets/sprites/player/wizard/animations/smoke_loop/south/frame_014.png.import" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/config/buildings.json" beforeDir="false" afterPath="$PROJECT_DIR$/godot/config/buildings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/config/game.json" beforeDir="false" afterPath="$PROJECT_DIR$/godot/config/game.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/godot/project.godot" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/scenes/buildings/building.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/buildings/building.gd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/scenes/buildings/throne.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/buildings/throne.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/scenes/buildings/wall_system.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/buildings/wall_system.gd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/scenes/main/building_grid.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/main/building_grid.gd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/scenes/main/iso_ground.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/main/iso_ground.gd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/godot/scenes/main/main.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scenes/main/main.gd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/scripts/tools/build_tool.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scripts/tools/build_tool.gd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/scripts/tools/demolish_tool.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scripts/tools/demolish_tool.gd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/scripts/tools/move_tool.gd" beforeDir="false" afterPath="$PROJECT_DIR$/godot/scripts/tools/move_tool.gd" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +166,15 @@
       <option name="project" value="LOCAL" />
       <updated>1773769579707</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Сетка всё та же">
+      <option name="closed" value="true" />
+      <created>1773792669341</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1773792669341</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -153,6 +205,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="ебанная сетка" />
-    <option name="LAST_COMMIT_MESSAGE" value="ебанная сетка" />
+    <MESSAGE value="Сетка всё та же" />
+    <option name="LAST_COMMIT_MESSAGE" value="Сетка всё та же" />
   </component>
 </project>

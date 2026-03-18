@@ -11,6 +11,7 @@ extends Node2D
 
 var active_tool: BaseTool = null
 var tools: Dictionary = {}
+var place_tool: PlaceBuildingTool = PlaceBuildingTool.new()
 
 var throne_scene: PackedScene = preload("res://scenes/buildings/throne.tscn")
 
@@ -20,6 +21,7 @@ func _ready() -> void:
 		"build": BuildTool.new(),
 		"demolish": DemolishTool.new(),
 		"move": MoveTool.new(),
+		"place": place_tool,
 	}
 
 	build_menu.building_selected.connect(_on_building_selected)
@@ -80,6 +82,9 @@ func _on_move_button_pressed() -> void:
 func _on_building_selected(building_type: String) -> void:
 	if building_type == "wall":
 		_set_tool("build")
+	else:
+		place_tool.set_building_type(building_type)
+		_set_tool("place")
 
 
 func _on_menu_visibility_changed() -> void:

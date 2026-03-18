@@ -3,3 +3,5 @@ res://scripts/utils/map_exporter.gd
 res://scenes/main/building_grid.gd
 res://scenes/main/iso_ground.gd
 res://scenes/buildings/wall_system.gd
+res://scripts/tools/place_building_tool.gd
+res://scenes/buildings/building.gd
