@@ -1,3 +1,17 @@
+# ==========================================
+# main.gd — Главная сцена, тут всё начинается, ёб твою мать
+# ==========================================
+# _ready() — инициализирует инструменты (build/demolish/move/place), подключает сигналы, ставит трон и Лича
+# _set_tool(tool_name) — переключает активный инструмент, деактивирует старый, активирует новый
+# _on_build_button_pressed() — нажали кнопку строительства — открываем меню, нахуй
+# _on_demolish_button_pressed() — включает инструмент сноса
+# _on_move_button_pressed() — включает инструмент перемещения
+# _on_building_selected(building_type) — выбрали здание в меню: wall -> build tool, остальное -> place tool
+# _on_menu_visibility_changed() — если меню закрылось а build tool активен — деактивируем его
+# _process(_delta) — каждый кадр дёргает update() активного инструмента
+# _input(event) — F7 экспорт карты, F5 adjust стен, F6 adjust трона, ЛКМ -> клик инструмента
+# ==========================================
+
 extends Node2D
 
 @onready var placement_grid = $PlacementGrid
@@ -10,6 +24,7 @@ extends Node2D
 
 var active_tool: BaseTool = null
 var tools: Dictionary = {}
+var place_tool: PlaceBuildingTool = PlaceBuildingTool.new()
 
 var throne_scene: PackedScene = preload("res://scenes/buildings/throne.tscn")
 
@@ -19,6 +34,7 @@ func _ready() -> void:
 		"build": BuildTool.new(),
 		"demolish": DemolishTool.new(),
 		"move": MoveTool.new(),
+		"place": place_tool,
 	}
 
 	build_menu.building_selected.connect(_on_building_selected)
@@ -30,7 +46,6 @@ func _ready() -> void:
 	# Place throne on tile
 	var throne_tile = Vector2i(14, 15)
 	var throne = throne_scene.instantiate()
-	building_grid.add_child(throne)
 	building_grid.place_building(throne_tile, throne)
 
 	# Sync PathfindingSystem
@@ -91,6 +106,9 @@ func _on_move_button_pressed() -> void:
 func _on_building_selected(building_type: String) -> void:
 	if building_type == "wall":
 		_set_tool("build")
+	else:
+		place_tool.set_building_type(building_type)
+		_set_tool("place")
 
 
 func _on_menu_visibility_changed() -> void:
@@ -99,7 +117,23 @@ func _on_menu_visibility_changed() -> void:
 		active_tool = null
 
 
+func _process(_delta: float) -> void:
+	if active_tool:
+		active_tool.update()
+
+
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F7:
+		MapExporter.export_map(building_grid, wall_system)
+		return
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F5:
+		wall_system.toggle_adjust()
+		return
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F6:
+		var throne = $YSort/BuildingGrid.get_node_or_null("Throne")
+		if throne:
+			throne.toggle_adjust()
+		return
 	if active_tool and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		active_tool.click()
 

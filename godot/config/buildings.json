@@ -5,7 +5,27 @@
 		"desc": "Трон Короля Лича. Если будет разрушен — игра проиграна.",
 		"hp": 500,
 		"sprite": "res://assets/sprites/lich_king/throne.png",
-		"sprite_offset": [0.0, -84.0]
+		"sprite_offset": [0.0, -32.0],
+		"can_build": false,
+		"can_demolish": false,
+		"can_move": true,
+		"move_cost": 0
+	},
+	"archer_tower": {
+		"name": "Башня лучников",
+		"cost": 50,
+		"desc": "Тёмная башня со скелетами-лучниками. Стреляет по врагам.",
+		"hp": 200,
+		"sprite": "res://assets/sprites/buildings/skeleton_archer_tower.png",
+		"sprite_offset": [0.0, -48.0],
+		"hotkey": "2",
+		"can_build": true,
+		"can_demolish": true,
+		"can_move": true,
+		"move_cost": 25,
+		"unit_idle": "res://assets/sprites/buildings/skeleton_archer/animations/breathing-idle/south",
+		"unit_offset": [0.0, -85.0],
+		"unit_offset_jitter": 5
 	},
 	"wall": {
 		"name": "Стена",
@@ -13,6 +33,10 @@
 		"hp": 100,
 		"desc": "Каменная стена с башенками на стыках",
 		"hotkey": "1",
+		"can_build": true,
+		"can_demolish": true,
+		"can_move": true,
+		"move_cost": 5,
 		"height": 28.0,
 		"thickness": 6.0,
 		"shrink": 5.0,
@@ -33,6 +57,8 @@
 		"fade_radius": 50.0,
 		"demolish_snap_radius": 16.0,
 		"transparency_alpha": 0.5,
+		"wall_offset": [0.0, -5.0],
+		"pillar_offset": [0.0, -5.0],
 		"colors": {
 			"top": "#6a6580",
 			"front": "#4a4460",

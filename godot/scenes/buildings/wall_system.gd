@@ -1,3 +1,47 @@
+# ==========================================
+# wall_system.gd — Ёбаная система стен в стиле AoE, процедурная нахуй
+# ==========================================
+# _poly(points, color) — рисует полигон на текущем WallDrawNode, хуле
+# _line(from, to, color, width) — рисует линию на текущем WallDrawNode
+# _ready() — включает y_sort, грузит конфиг, находит BuildingGrid
+# _load_config() — тащит все настройки стен из конфига: размеры, цвета, офсеты, вся хуйня
+# _process(_delta) — каждый кадр: ребилд если надо, прозрачность, превью для build/demolish/move
+# _make_edge_key(a, b) — делает уникальный ключ для ребра между двумя нодами, сортирует чтоб не ебаться с порядком
+# place_wall_between(a, b) — ставит стену между двумя точками, создаёт коллизию, помечает на ребилд
+# _create_collision(key, a, b) — создаёт StaticBody2D с прямоугольной коллизией вдоль стены
+# place_wall_line(from, to) — строит линию стен от точки до точки, сука удобно
+# remove_wall_between(a, b) — удаляет стену между точками, чистит осиротевшие ноды
+# _node_has_edges(node) — проверяет, есть ли хоть одно ребро у ноды
+# _get_neighbors(pos) — возвращает 8 соседей (кардинальные + диагональные), ёпт
+# _node_edge_count(node) — считает сколько рёбер у ноды, пиздец простая функция
+# grid_to_world(grid_pos) — конвертит координаты сетки в мировые, через BuildingGrid если есть
+# world_to_grid(world_pos) — обратная конвертация, из мировых в сетку
+# _get_ysort() — возвращает родителя (YSort), нахуй
+# _update_demolish_hover() — подсвечивает ближайшую ноду при наведении в режиме сноса
+# _set_node_highlight(node_pos, highlighted, color) — красит ноду и все подключённые стены
+# demolish_hovered() — сносит подсвеченную ноду со всеми стенами, ёбаный бульдозер
+# clear_demolish_mode() — выключает режим сноса, убирает подсветку
+# _update_build_preview() — обновляет превью строительства по позиции мыши
+# _redraw_build_preview() — перерисовывает превью: столб + стены к соседям, зелёное/жёлтое
+# place_at_preview() — ставит ноду и соединяет стенами с соседями, хуяк и готово
+# clear_build_mode() — выключает режим строительства, чистит превью
+# _update_move_preview() — обновляет превью перемещения: фаза select или place
+# _redraw_move_preview() — рисует синее превью столба и стен на новой позиции
+# move_select() — фаза 1: выбираем ноду для перемещения
+# move_place() — фаза 2: перемещаем ноду на новое место, переподключаем стены
+# clear_move_mode() — выключает режим перемещения, чистит всё нахуй
+# toggle_adjust() — дебаг: включает режим подгонки офсетов стен/столбов стрелками
+# _update_adjust() — заглушка для дебаг-апдейта, пустая нахер
+# _input(event) — обрабатывает клавиши в adjust-режиме: Tab переключает wall/pillar, стрелки двигают
+# _apply_adjust(delta) — применяет дельту к офсету wall или pillar
+# _update_transparency() — обновляет прозрачность стен/столбов рядом с игроком
+# _rebuild_visuals() — перестраивает все визуальные ноды стен и столбов с нуля, жёстко
+# _draw_wall_edge(from, to) — рисует сегмент стены: фасад, бока, верх, кирпичи, мерлоны — вся ебатория
+# _draw_brick_lines(face) — рисует кирпичную кладку на фасаде стены, процедурно, сука красиво
+# _draw_merlons(from, to, perp) — рисует зубцы (мерлоны) сверху стены, как в замке, блять
+# _draw_pillar(pos) — рисует цилиндрический столб с кирпичами и мерлоном наверху, ебаный арт
+# ==========================================
+
 class_name WallSystem
 extends Node2D
 
@@ -35,12 +79,15 @@ var visual_nodes: Array[Node2D] = []
 var _needs_rebuild: bool = false
 var _target: WallDrawNode = null
 var building_grid: BuildingGrid = null
+var _adjust_mode: bool = false
+var _adjust_target: String = "wall"  # "wall" or "pillar"
 # Visual lookup: edge_key -> WallDrawNode, node Vector2i -> WallDrawNode
 var wall_visuals: Dictionary = {}   # StringName -> WallDrawNode
 var pillar_visuals: Dictionary = {} # Vector2i -> WallDrawNode
-var player: Node2D = null
 var FADE_RADIUS: float = 50.0
 var DEMOLISH_SNAP_RADIUS: float = 16.0
+var wall_offset: Vector2 = Vector2.ZERO
+var pillar_offset: Vector2 = Vector2.ZERO
 
 var demolish_mode: bool = false
 var hovered_node: Vector2i = Vector2i(-9999, -9999)
@@ -85,7 +132,13 @@ func _load_config() -> void:
 	WALL_THICK = w.get("thickness", 6.0)
 	WALL_SEGMENT_HP = w.get("hp", 100.0)
 	FADE_RADIUS = w.get("fade_radius", 50.0)
+	OcclusionFade.fade_radius = FADE_RADIUS
+	OcclusionFade.fade_alpha = w.get("transparency_alpha", 0.5)
 	DEMOLISH_SNAP_RADIUS = w.get("demolish_snap_radius", 16.0)
+	var wo = w.get("wall_offset", [0.0, 0.0])
+	wall_offset = Vector2(wo[0], wo[1])
+	var po = w.get("pillar_offset", [0.0, 0.0])
+	pillar_offset = Vector2(po[0], po[1])
 
 	var wc = w.get("colors", {})
 	col_top = Color(wc.get("top", "#6a6580"))
@@ -108,6 +161,8 @@ func _process(_delta: float) -> void:
 		_update_build_preview()
 	if move_mode:
 		_update_move_preview()
+	if _adjust_mode:
+		_update_adjust()
 
 
 func _make_edge_key(a: Vector2i, b: Vector2i) -> StringName:
@@ -339,9 +394,10 @@ func _redraw_build_preview() -> void:
 	var wpos = grid_to_world(pos)
 	var already_exists = nodes.has(pos)
 
-	# Draw pillar preview
+	# Draw pillar preview (with pillar_offset)
+	var ppos = wpos + pillar_offset
 	var pillar_wdn = WallDrawNode.new()
-	pillar_wdn.position = Vector2(wpos.x, wpos.y + 0.5)
+	pillar_wdn.position = Vector2(ppos.x, ppos.y + 0.5)
 	pillar_wdn.z_index = 100
 	pillar_wdn.modulate = Color(0.4, 1.0, 0.4, 0.7) if not already_exists else Color(1.0, 1.0, 0.4, 0.5)
 	_target = pillar_wdn
@@ -349,7 +405,7 @@ func _redraw_build_preview() -> void:
 	_target = null
 	build_preview_draw.add_child(pillar_wdn)
 
-	# Draw wall previews to adjacent existing nodes
+	# Draw wall previews to adjacent existing nodes (with wall_offset)
 	var cardinal = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 	for dir in cardinal:
 		var neighbor = pos + dir
@@ -358,14 +414,14 @@ func _redraw_build_preview() -> void:
 			var edge_exists = edges.has(key)
 
 			var nwpos = grid_to_world(neighbor)
-			var draw_from = wpos
-			var draw_to = nwpos
+			var draw_from = wpos + wall_offset
+			var draw_to = nwpos + wall_offset
 			# Shrink at upper end
 			var shrink = 5.0
 			if draw_from.y < draw_to.y:
-				draw_from = wpos + (nwpos - wpos).normalized() * shrink
+				draw_from = wpos + wall_offset + (nwpos - wpos).normalized() * shrink
 			elif draw_to.y < draw_from.y:
-				draw_to = nwpos + (wpos - nwpos).normalized() * shrink
+				draw_to = nwpos + wall_offset + (wpos - nwpos).normalized() * shrink
 
 			var wall_wdn = WallDrawNode.new()
 			var sort_y = minf(draw_from.y, draw_to.y)
@@ -444,9 +500,10 @@ func _redraw_move_preview() -> void:
 
 	var wpos = grid_to_world(move_preview_node)
 
-	# Draw pillar preview at target
+	# Draw pillar preview at target (with pillar_offset)
+	var ppos = wpos + pillar_offset
 	var pillar_wdn = WallDrawNode.new()
-	pillar_wdn.position = Vector2(wpos.x, wpos.y + 0.5)
+	pillar_wdn.position = Vector2(ppos.x, ppos.y + 0.5)
 	pillar_wdn.z_index = 100
 	pillar_wdn.modulate = Color(0.4, 0.6, 1.0, 0.7)  # blue tint for move
 	_target = pillar_wdn
@@ -454,19 +511,19 @@ func _redraw_move_preview() -> void:
 	_target = null
 	build_preview_draw.add_child(pillar_wdn)
 
-	# Draw wall previews to adjacent existing nodes (excluding the one being moved)
+	# Draw wall previews to adjacent existing nodes (excluding the one being moved, with wall_offset)
 	var cardinal = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 	for dir in cardinal:
 		var neighbor = move_preview_node + dir
 		if nodes.has(neighbor) and neighbor != move_selected_node:
 			var nwpos = grid_to_world(neighbor)
-			var draw_from = wpos
-			var draw_to = nwpos
+			var draw_from = wpos + wall_offset
+			var draw_to = nwpos + wall_offset
 			var shrink = 5.0
 			if draw_from.y < draw_to.y:
-				draw_from = wpos + (nwpos - wpos).normalized() * shrink
+				draw_from = wpos + wall_offset + (nwpos - wpos).normalized() * shrink
 			elif draw_to.y < draw_from.y:
-				draw_to = nwpos + (wpos - nwpos).normalized() * shrink
+				draw_to = nwpos + wall_offset + (wpos - nwpos).normalized() * shrink
 
 			var wall_wdn = WallDrawNode.new()
 			var sort_y = minf(draw_from.y, draw_to.y)
@@ -582,36 +639,69 @@ func _update_wall_visual_damage(key: StringName) -> void:
 	wall_visuals[key].self_modulate = tint
 
 
-func _find_player() -> void:
-	if player != null:
+# === ADJUST MODE (debug) ===
+
+func toggle_adjust() -> void:
+	_adjust_mode = not _adjust_mode
+	if _adjust_mode:
+		print("[WallAdjust] ON — Tab to switch wall/pillar, Arrows to move, Enter to print")
+	else:
+		print("[WallAdjust] OFF")
+
+
+func _update_adjust() -> void:
+	pass
+
+
+func _input(event: InputEvent) -> void:
+	if not _adjust_mode:
 		return
-	var ysort = _get_ysort()
-	for child in ysort.get_children():
-		if child is Player:
-			player = child
-			break
+	if not (event is InputEventKey and event.pressed):
+		return
+
+	var s = 1.0 if not event.shift_pressed else 5.0
+
+	match event.keycode:
+		KEY_TAB:
+			_adjust_target = "pillar" if _adjust_target == "wall" else "wall"
+			print("[WallAdjust] target: %s | wall=%s pillar=%s" % [_adjust_target, wall_offset, pillar_offset])
+		KEY_UP:
+			_apply_adjust(Vector2(0, -s))
+		KEY_DOWN:
+			_apply_adjust(Vector2(0, s))
+		KEY_LEFT:
+			_apply_adjust(Vector2(-s, 0))
+		KEY_RIGHT:
+			_apply_adjust(Vector2(s, 0))
+		KEY_ENTER:
+			print("[WallAdjust] \"wall_offset\": [%.1f, %.1f]" % [wall_offset.x, wall_offset.y])
+			print("[WallAdjust] \"pillar_offset\": [%.1f, %.1f]" % [pillar_offset.x, pillar_offset.y])
+
+
+func _apply_adjust(delta: Vector2) -> void:
+	if _adjust_target == "wall":
+		wall_offset += delta
+	else:
+		pillar_offset += delta
+	_needs_rebuild = true
+	print("[WallAdjust] %s offset: %s" % [_adjust_target, wall_offset if _adjust_target == "wall" else pillar_offset])
 
 
 func _update_transparency() -> void:
-	_find_player()
-	if player == null:
-		return
+	OcclusionFade.find_player(get_tree())
 
 	# Find which nodes are close to player
-	var fade_nodes: Dictionary = {}  # Vector2i -> true
+	var fade_nodes: Dictionary = {}
 	for node_pos in nodes:
 		var wpos = grid_to_world(node_pos)
-		var diff_y = wpos.y - player.position.y
-		var diff_x = absf(wpos.x - player.position.x)
-		# Node is "in front of" player and close
-		if diff_y > 0 and diff_y < FADE_RADIUS and diff_x < FADE_RADIUS:
+		if OcclusionFade.should_fade(wpos):
 			fade_nodes[node_pos] = true
 
 	# Apply transparency to pillars
 	for node_pos in pillar_visuals:
 		var wdn: WallDrawNode = pillar_visuals[node_pos]
 		if is_instance_valid(wdn):
-			wdn.modulate.a = 0.5 if fade_nodes.has(node_pos) else 1.0
+			wdn.modulate.a = OcclusionFade.fade_alpha if fade_nodes.has(node_pos) else 1.0
 
 	# Apply transparency to walls: fade if either endpoint is faded
 	for key in wall_visuals:
@@ -624,7 +714,7 @@ func _update_transparency() -> void:
 		var a = Vector2i(int(a_parts[0]), int(a_parts[1]))
 		var b = Vector2i(int(b_parts[0]), int(b_parts[1]))
 		var should_fade = fade_nodes.has(a) or fade_nodes.has(b)
-		wdn.modulate.a = 0.5 if should_fade else 1.0
+		wdn.modulate.a = OcclusionFade.fade_alpha if should_fade else 1.0
 
 
 func _rebuild_visuals() -> void:
@@ -644,8 +734,8 @@ func _rebuild_visuals() -> void:
 		var b_parts = parts[1].split(",")
 		var a = Vector2i(int(a_parts[0]), int(a_parts[1]))
 		var b = Vector2i(int(b_parts[0]), int(b_parts[1]))
-		var wa = grid_to_world(a)
-		var wb = grid_to_world(b)
+		var wa = grid_to_world(a) + wall_offset
+		var wb = grid_to_world(b) + wall_offset
 
 		# Shorten wall at the upper end (smaller Y) so pillar is visible
 		var draw_from = wa
@@ -673,7 +763,7 @@ func _rebuild_visuals() -> void:
 	for node_pos in nodes:
 		var _count = _node_edge_count(node_pos)
 		if true:  # always draw pillar for every node
-			var wpos = grid_to_world(node_pos)
+			var wpos = grid_to_world(node_pos) + pillar_offset
 			var wdn = WallDrawNode.new()
 			wdn.position = Vector2(wpos.x, wpos.y + 0.5)
 			_target = wdn

@@ -52,7 +52,18 @@
       "Bash(cd \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/lich_king\" && curl --fail -L -o lich_king.zip \"https://api.pixellab.ai/mcp/characters/412c8ea6-5e66-48ad-ab77-b69d97eac8ce/download\" && unzip -o lich_king.zip && rm lich_king.zip && ls -R)",
       "Bash(cd \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/lich_king\" && rm -rf rotations metadata.json south.png && curl --fail -L -o lich_king.zip \"https://api.pixellab.ai/mcp/characters/47bc84f6-96cb-4550-8e20-cd9ffe6fac78/download\" && unzip -o lich_king.zip && rm lich_king.zip && ls rotations/)",
       "Bash(cd \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/lich_king\" && curl --fail -L -o lich_full.zip \"https://api.pixellab.ai/mcp/characters/47bc84f6-96cb-4550-8e20-cd9ffe6fac78/download\" && unzip -o lich_full.zip && rm lich_full.zip && ls -R animations/)",
-      "Bash(cd \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/lich_king\" && curl --fail -L -o throne.png \"https://api.pixellab.ai/mcp/map-objects/8ae29145-1316-4341-99c9-345f40a0febb/download\" && echo \"OK\")"
+      "Bash(cd \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/lich_king\" && curl --fail -L -o throne.png \"https://api.pixellab.ai/mcp/map-objects/8ae29145-1316-4341-99c9-345f40a0febb/download\" && echo \"OK\")",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(mkdir -p \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/buildings/skeleton_archer\")",
+      "Bash(unzip -o character.zip)",
+      "Bash(rm character.zip)",
+      "Bash(cd:*)",
+      "Bash(ls frame_0*.png)",
+      "Bash(mv frame_021.png frame_018.png)",
+      "Bash(mv frame_022.png frame_019.png)",
+      "Bash(mv frame_023.png frame_020.png)",
+      "Bash(rm -f frame_021.png.import frame_022.png.import frame_023.png.import)"
     ]
   }
 }

@@ -3,23 +3,12 @@
 [ext_resource type="Script" path="res://scenes/buildings/throne.gd" id="1_throne"]
 [ext_resource type="Texture2D" path="res://assets/sprites/lich_king/throne.png" id="2_throne_tex"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_col"]
-size = Vector2(28, 14)
-
 [node name="Throne" type="Node2D"]
 script = ExtResource("1_throne")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 0
 texture = ExtResource("2_throne_tex")
-
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
-collision_layer = 1
-collision_mask = 0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(0, 0)
-shape = SubResource("RectangleShape2D_col")
 
 [node name="HPBarBG" type="ColorRect" parent="."]
 offset_left = -20
