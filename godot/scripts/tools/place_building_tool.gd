@@ -24,6 +24,7 @@ func set_building_type(type: String) -> void:
 
 
 func _on_activate() -> void:
+	OcclusionFade.build_mode_active = true
 	var ysort = wall_system.get_parent()
 	if ysort:
 		building_grid = ysort.get_node_or_null("BuildingGrid")
@@ -32,12 +33,14 @@ func _on_activate() -> void:
 
 func _on_deactivate() -> void:
 	_remove_preview()
+	OcclusionFade.build_mode_active = false
 
 
 func _on_update() -> void:
 	if not preview or not building_grid:
 		return
 	var mouse_pos = wall_system.get_global_mouse_position()
+	OcclusionFade.build_mode_cursor = mouse_pos
 	var tile = building_grid.world_to_tile(mouse_pos)
 	var world_pos = building_grid.tile_to_world(tile)
 	preview.position = world_pos
