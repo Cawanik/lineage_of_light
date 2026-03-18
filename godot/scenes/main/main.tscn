@@ -2,26 +2,25 @@
 
 [ext_resource type="Script" uid="uid://b64r8rlke5tm8" path="res://scenes/main/main.gd" id="1_main"]
 [ext_resource type="PackedScene" uid="uid://cplayer001" path="res://scenes/player/player.tscn" id="2_player"]
-[ext_resource type="Script" path="res://scenes/main/iso_ground.gd" id="3_isoground"]
+[ext_resource type="Script" uid="uid://bt3wkenme1gmn" path="res://scenes/main/iso_ground.gd" id="3_isoground"]
 [ext_resource type="PackedScene" path="res://scenes/ui/placement_grid.tscn" id="4_grid"]
 [ext_resource type="PackedScene" path="res://scenes/ui/build_menu.tscn" id="5_buildmenu"]
 [ext_resource type="Texture2D" uid="uid://cem1epv6u4nfd" path="res://assets/sprites/ui/build_icon.png" id="6_build_icon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/demolish_icon.png" id="9_demolish_icon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/move_icon.png" id="10_move_icon"]
 [ext_resource type="Script" uid="uid://bsrp63a0whs1w" path="res://scenes/buildings/wall_system.gd" id="7_wallsys"]
 [ext_resource type="Shader" uid="uid://chvk7my6p63ne" path="res://shaders/perspective.gdshader" id="8_perspective"]
-[ext_resource type="Script" path="res://scenes/buildings/lich_king.gd" id="11_lich_script"]
-[ext_resource type="PackedScene" uid="uid://cthrone01" path="res://scenes/buildings/throne.tscn" id="12_throne"]
-[ext_resource type="Script" path="res://scenes/main/building_grid.gd" id="13_building_grid"]
+[ext_resource type="Texture2D" uid="uid://cunivojqf3woq" path="res://assets/sprites/ui/demolish_icon.png" id="9_demolish_icon"]
+[ext_resource type="Texture2D" uid="uid://brb5ajhv771n5" path="res://assets/sprites/ui/move_icon.png" id="10_move_icon"]
+[ext_resource type="Script" uid="uid://1bhism2jbrs4" path="res://scenes/buildings/lich_king.gd" id="11_lich_script"]
+[ext_resource type="Script" uid="uid://c7y3fesie4s6o" path="res://scenes/main/building_grid.gd" id="13_building_grid"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_perspective"]
 shader = ExtResource("8_perspective")
-shader_parameter/strength = 0.0470000022325
+shader_parameter/strength = 0.03
 
 [node name="Main" type="Node2D" unique_id=374095360]
 script = ExtResource("1_main")
 
-[node name="Ground" type="Node2D" parent="."]
+[node name="Ground" type="Node2D" parent="." unique_id=1951511986]
 script = ExtResource("3_isoground")
 
 [node name="YSort" type="Node2D" parent="." unique_id=2014673856]
@@ -33,11 +32,10 @@ position = Vector2(0, 480)
 [node name="Camera2D" type="Camera2D" parent="YSort/Player" unique_id=1262091022]
 zoom = Vector2(2, 2)
 
-[node name="BuildingGrid" type="Node2D" parent="YSort"]
+[node name="BuildingGrid" type="Node2D" parent="YSort" unique_id=1749865954]
 script = ExtResource("13_building_grid")
 
-[node name="LichKing" type="AnimatedSprite2D" parent="YSort"]
-texture_filter = 0
+[node name="LichKing" type="AnimatedSprite2D" parent="YSort" unique_id=75313314]
 script = ExtResource("11_lich_script")
 
 [node name="WallSystem" type="Node2D" parent="YSort" unique_id=1326952089]
@@ -63,7 +61,7 @@ layer = 11
 
 [node name="BuildMenu" parent="UILayer" unique_id=780159822 instance=ExtResource("5_buildmenu")]
 
-[node name="Toolbar" type="PanelContainer" parent="UILayer"]
+[node name="Toolbar" type="PanelContainer" parent="UILayer" unique_id=1436742479]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -76,26 +74,26 @@ offset_bottom = -10.0
 grow_horizontal = 0
 grow_vertical = 0
 
-[node name="Grid" type="GridContainer" parent="UILayer/Toolbar"]
+[node name="Grid" type="GridContainer" parent="UILayer/Toolbar" unique_id=1609133747]
 layout_mode = 2
-columns = 2
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
+columns = 2
 
-[node name="BuildButton" type="TextureButton" parent="UILayer/Toolbar/Grid"]
-layout_mode = 2
+[node name="BuildButton" type="TextureButton" parent="UILayer/Toolbar/Grid" unique_id=1193212580]
 custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
 texture_normal = ExtResource("6_build_icon")
 stretch_mode = 0
 
-[node name="DemolishButton" type="TextureButton" parent="UILayer/Toolbar/Grid"]
-layout_mode = 2
+[node name="DemolishButton" type="TextureButton" parent="UILayer/Toolbar/Grid" unique_id=1559226436]
 custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
 texture_normal = ExtResource("9_demolish_icon")
 stretch_mode = 0
 
-[node name="MoveButton" type="TextureButton" parent="UILayer/Toolbar/Grid"]
-layout_mode = 2
+[node name="MoveButton" type="TextureButton" parent="UILayer/Toolbar/Grid" unique_id=24047342]
 custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
 texture_normal = ExtResource("10_move_icon")
 stretch_mode = 0

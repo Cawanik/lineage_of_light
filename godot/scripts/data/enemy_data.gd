@@ -1,4 +1,4 @@
-class_name EnemyData
+wwclass_name EnemyData
 extends RefCounted
 
 # Enemy definitions matching art bible epochs
