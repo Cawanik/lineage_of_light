@@ -306,10 +306,10 @@ func _process_movement(delta: float) -> void:
 			print("Enemy %s: Path exhausted at tile %s, checking for adjacent building" % [self, current_tile])
 			
 			# Check if we can attack a building directly
-			var adjacent_building = _check_adjacent_building()
-			if adjacent_building:
-				print("Enemy %s: Found adjacent building at path end: %s" % [self, adjacent_building])
-				_start_building_attack(adjacent_building)
+			var building_at_path_end = _check_adjacent_building()
+			if building_at_path_end:
+				print("Enemy %s: Found adjacent building at path end: %s" % [self, building_at_path_end])
+				_start_building_attack(building_at_path_end)
 				return
 			
 			# Otherwise, repath
@@ -351,10 +351,10 @@ func _process_wall_attack(delta: float) -> void:
 			await get_tree().process_frame
 			
 			# Check if we can now attack a building directly
-			var adjacent_building = _check_adjacent_building()
-			if adjacent_building:
-				print("Enemy %s: Found adjacent building after wall destruction: %s" % [self, adjacent_building])
-				_start_building_attack(adjacent_building)
+			var building_after_wall = _check_adjacent_building()
+			if building_after_wall:
+				print("Enemy %s: Found adjacent building after wall destruction: %s" % [self, building_after_wall])
+				_start_building_attack(building_after_wall)
 				return
 			
 			# Otherwise, repath to the throne
@@ -399,8 +399,8 @@ func _process_building_attack(delta: float) -> void:
 		return
 	
 	# Check if building is still adjacent
-	var adjacent_building = _check_adjacent_building()
-	if adjacent_building != attacking_building:
+	var current_adjacent = _check_adjacent_building()
+	if current_adjacent != attacking_building:
 		print("Enemy %s: No longer adjacent to building, back to moving" % self)
 		sprite.modulate = Color.WHITE
 		attacking_building = null
