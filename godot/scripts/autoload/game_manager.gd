@@ -90,6 +90,12 @@ func free_cell(grid_pos: Vector2i) -> void:
 	occupied_cells.erase(grid_pos)
 
 
+func on_throne_destroyed() -> void:
+	print("GameManager: Throne destroyed! Game Over!")
+	is_game_active = false
+	game_over.emit()
+
+
 func reset_game() -> void:
 	gold = 150
 	lives = 20

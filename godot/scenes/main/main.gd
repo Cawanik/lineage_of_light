@@ -47,6 +47,10 @@ func _ready() -> void:
 	var throne_tile = Vector2i(14, 15)
 	var throne = throne_scene.instantiate()
 	building_grid.place_building(throne_tile, throne)
+	
+	# Connect throne destruction to game over
+	throne.throne_destroyed.connect(GameManager.on_throne_destroyed)
+	print("Throne destruction signal connected to GameManager")
 
 	# Sync PathfindingSystem
 	var ps = get_node_or_null("/root/PathfindingSystem")

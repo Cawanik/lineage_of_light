@@ -49,6 +49,9 @@ func disable_edge(a: Vector2i, b: Vector2i) -> void:
 	var id_b = _to_id(b)
 	if astar.are_points_connected(id_a, id_b):
 		astar.disconnect_points(id_a, id_b)
+		print("PathfindingSystem: Disabled edge %s-%s" % [a, b])
+	else:
+		print("PathfindingSystem: Edge %s-%s was already disabled" % [a, b])
 	path_grid_changed.emit()
 
 
@@ -69,10 +72,22 @@ func set_tile_solid(tile: Vector2i, solid: bool) -> void:
 func get_path_to_throne(from: Vector2i) -> Array[Vector2i]:
 	if from == throne_tile:
 		return [throne_tile] as Array[Vector2i]
+	
+	print("PathfindingSystem: Computing path from %s to %s" % [from, throne_tile])
 	var path_ids = astar.get_id_path(_to_id(from), _to_id(throne_tile))
 	var result: Array[Vector2i] = []
 	for id in path_ids:
 		result.append(_to_tile(id))
+	print("PathfindingSystem: Found path with %d steps: %s" % [result.size(), result])
+	
+	# Validate path doesn't go through walls
+	if result.size() > 1:
+		for i in range(result.size() - 1):
+			var a = result[i]
+			var b = result[i + 1]
+			if not astar.are_points_connected(_to_id(a), _to_id(b)):
+				print("PathfindingSystem: WARNING - Path includes disconnected edge %s-%s!" % [a, b])
+	
 	return result
 
 

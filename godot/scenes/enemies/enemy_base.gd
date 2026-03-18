@@ -38,6 +38,7 @@ var move_progress: float = 0.0
 
 # FSM
 enum State { MOVING, ATTACKING_WALL, ATTACKING_BUILDING, DEAD }
+enum ThroneAccess { BLOCKED, CLEAR_PATH, ADJACENT }
 var state: State = State.MOVING
 var attacking_edge_key: StringName = &""
 var attacking_building: Building = null
@@ -147,22 +148,9 @@ func repath() -> void:
 
 
 func _check_wall_ahead() -> void:
-	if not wall_system:
-		print("Enemy %s: No wall_system!" % self)
-		return
-	
-	var key = _make_edge_key(current_tile, target_tile)
-	print("Enemy %s: Checking wall from %s to %s, key=%s" % [self, current_tile, target_tile, key])
-	print("  Wall exists: %s" % wall_system.edges.has(key))
-	print("  Total edges in wall_system: %d" % wall_system.edges.size())
-	
-	if wall_system.edges.has(key):
-		print("Enemy %s: Found wall! Switching to ATTACKING_WALL state" % self)
-		state = State.ATTACKING_WALL
-		attacking_edge_key = key
-		attack_timer = 0.0
-	else:
-		print("Enemy %s: No wall found, continuing movement" % self)
+	# PHYSICS SEPARATION: Wall checking is now handled in _process_movement
+	# This function only maintains tile-based pathfinding logic
+	print("Enemy %s: Moving from %s to %s" % [self, current_tile, target_tile])
 
 
 func _process(delta: float) -> void:
@@ -198,6 +186,7 @@ func _process_movement(delta: float) -> void:
 	if not building_grid:
 		return
 
+	# TILE-BASED MOVEMENT: Move directly between tile centers
 	var from_world = building_grid.tile_to_world(current_tile)
 	var to_world = building_grid.tile_to_world(target_tile)
 	var tile_distance = from_world.distance_to(to_world)
@@ -209,79 +198,40 @@ func _process_movement(delta: float) -> void:
 
 	var target_pos = from_world.lerp(to_world, clampf(move_progress, 0.0, 1.0))
 	
-	# Use CharacterBody2D physics for collision with walls
-	body.velocity = (target_pos - body.global_position) * current_speed * 2.0
+	# PHYSICS SEPARATION: Only use CharacterBody2D for wall collision detection
+	# Set target position first
+	var desired_movement = target_pos - body.global_position
+	body.velocity = desired_movement.normalized() * current_speed
+	
+	# Test for wall collision using move_and_slide
+	var original_position = body.global_position
+	body.global_position = original_position  # Reset position
+	body.velocity = desired_movement.normalized() * current_speed
 	body.move_and_slide()
 	
-	# Check if we hit a wall (collision detected)
-	if body.get_slide_collision_count() > 0:
-		print("Enemy %s: Hit wall! Position: %s, Target: %s" % [self, current_tile, target_tile])
-		
-		# Check if there's a clear path to the entrance (17,15) - the intended way in
-		var ps = get_node_or_null("/root/PathfindingSystem")
-		var entrance_tile = Vector2i(17, 15)
-		var path_to_entrance = []
-		
-		if ps:
-			path_to_entrance = ps.get_path_to_throne(current_tile)
-			
-		# If we can reach entrance, continue moving (collision might be temporary)
-		if path_to_entrance.size() > 1 and entrance_tile in path_to_entrance:
-			print("Enemy %s: Path to entrance exists, trying to move around collision" % self)
-			# Try to move slightly in a different direction to get unstuck
-			var collision = body.get_slide_collision(0)
-			if collision:
-				# Move perpendicular to collision normal
-				var perpendicular = collision.get_normal().rotated(PI/2) * current_speed * 0.5
-				body.velocity = perpendicular
-				body.move_and_slide()
-			global_position = body.global_position
-			return
-		
-		# No path to entrance - attack the wall blocking our way
-		print("Enemy %s: No path to entrance, attacking wall!" % self)
-		
-		# Find the actual wall edge we're colliding with
-		var collision = body.get_slide_collision(0)
-		if collision and wall_system:
-			# Find closest wall edge to our position
-			var closest_key = ""
-			var closest_distance = 999999.0
-			
-			for edge_key in wall_system.edges.keys():
-				# Parse edge key to get tile positions
-				var parts = edge_key.split("-")
-				if parts.size() == 2:
-					var tile1_parts = parts[0].split(",")
-					var tile2_parts = parts[1].split(",")
-					if tile1_parts.size() == 2 and tile2_parts.size() == 2:
-						var tile1 = Vector2i(int(tile1_parts[0]), int(tile1_parts[1]))
-						var tile2 = Vector2i(int(tile2_parts[0]), int(tile2_parts[1]))
-						var edge_center = (tile1 + tile2) * 0.5
-						var distance = current_tile.distance_to(edge_center)
-						# Only attack walls within 1.5 tiles (adjacent only)
-						if distance <= 1.5 and distance < closest_distance:
-							closest_distance = distance
-							closest_key = edge_key
-			
-			if closest_key != "":
-				attacking_edge_key = closest_key
-				print("Enemy %s: Found closest wall edge: %s (distance: %.1f)" % [self, attacking_edge_key, closest_distance])
-			else:
-				attacking_edge_key = _make_edge_key(current_tile, target_tile)
-				print("Enemy %s: Using fallback edge key: %s" % [self, attacking_edge_key])
+	var collision_detected = body.get_slide_collision_count() > 0
+	if collision_detected:
+		print("Enemy %s: Wall collision detected at %s -> %s" % [self, current_tile, target_tile])
+		# Reset body position after collision test
+		body.global_position = original_position
+	
+	if collision_detected:
+		# WALL HIT: Switch to attacking nearest wall
+		var closest_wall = _find_nearest_wall_edge()
+		if closest_wall != "":
+			attacking_edge_key = closest_wall
+			state = State.ATTACKING_WALL
+			attack_timer = 0.0
+			print("Enemy %s: Attacking wall %s" % [self, attacking_edge_key])
 		else:
-			attacking_edge_key = _make_edge_key(current_tile, target_tile)
-			
-		state = State.ATTACKING_WALL
-		attack_timer = 0.0
-		
-		# Update Node2D position to match body
-		global_position = body.global_position
+			# No wall found, try alternate pathfinding
+			print("Enemy %s: No wall found for collision, repathing" % self)
+			repath()
 		return
 	
-	# Update Node2D position to match body
-	global_position = body.global_position
+	# NO COLLISION: Update positions normally
+	global_position = target_pos
+	body.global_position = target_pos
 
 	if move_progress >= 1.0:
 		current_tile = target_tile
@@ -302,19 +252,58 @@ func _process_movement(delta: float) -> void:
 			target_tile = tile_path[path_index]
 			_check_wall_ahead()
 		else:
-			# Path exhausted without reaching throne
-			print("Enemy %s: Path exhausted at tile %s, checking for adjacent building" % [self, current_tile])
+			# Path exhausted - now check throne accessibility with priority system
+			print("Enemy %s: Path exhausted at tile %s, evaluating throne accessibility" % [self, current_tile])
 			
-			# Check if we can attack a building directly
+			var throne_priority = _evaluate_throne_accessibility()
+			if throne_priority == ThroneAccess.ADJACENT:
+				# Throne is adjacent - highest priority
+				var throne = _get_throne_building()
+				if throne:
+					print("Enemy %s: Throne adjacent! Starting throne attack" % self)
+					_start_building_attack(throne)
+					return
+			elif throne_priority == ThroneAccess.CLEAR_PATH:
+				# Clear path to throne - repath directly
+				print("Enemy %s: Clear path to throne available, repathing" % self)
+				repath()
+				return
+			
+			# No throne access - check for other adjacent buildings to attack
 			var building_at_path_end = _check_adjacent_building()
 			if building_at_path_end:
 				print("Enemy %s: Found adjacent building at path end: %s" % [self, building_at_path_end])
 				_start_building_attack(building_at_path_end)
 				return
 			
-			# Otherwise, repath
-			print("Enemy %s: No adjacent building, repathing from %s" % [self, current_tile])
+			# No adjacent buildings - repath and try again
+			print("Enemy %s: No adjacent targets, repathing from %s" % [self, current_tile])
 			repath()
+
+
+func _find_nearest_wall_edge() -> String:
+	if not wall_system:
+		return ""
+	
+	var closest_key = ""
+	var closest_distance = 999999.0
+	
+	for edge_key in wall_system.edges.keys():
+		var parts = str(edge_key).split("-")
+		if parts.size() == 2:
+			var tile1_parts = parts[0].split(",")
+			var tile2_parts = parts[1].split(",")
+			if tile1_parts.size() == 2 and tile2_parts.size() == 2:
+				var tile1 = Vector2i(int(tile1_parts[0]), int(tile1_parts[1]))
+				var tile2 = Vector2i(int(tile2_parts[0]), int(tile2_parts[1]))
+				var edge_center = (tile1 + tile2) * 0.5
+				var distance = current_tile.distance_to(edge_center)
+				# Only attack walls within 1.5 tiles (adjacent only)
+				if distance <= 1.5 and distance < closest_distance:
+					closest_distance = distance
+					closest_key = edge_key
+	
+	return closest_key
 
 
 func _process_wall_attack(delta: float) -> void:
@@ -344,22 +333,55 @@ func _process_wall_attack(delta: float) -> void:
 		print("Enemy %s: Dealt %.1f damage to wall %s. Remaining HP: %.1f, Destroyed: %s" % [self, wall_dps * ATTACK_INTERVAL, attacking_edge_key, remaining_hp, destroyed])
 		
 		if destroyed:
-			print("Enemy %s: Wall destroyed! Path should now be clear to throne" % self)
+			print("Enemy %s: Wall destroyed! Switching back to movement" % self)
 			sprite.modulate = Color.WHITE  # Remove attack tint
+			
+			# PHYSICS FIX: Stabilize position and velocity to prevent teleportation
+			_stabilize_physics_after_wall_destruction()
+			
 			state = State.MOVING
 			# Give PathfindingSystem a moment to update after wall destruction
 			await get_tree().process_frame
 			
-			# Check if we can now attack a building directly
-			var building_after_wall = _check_adjacent_building()
-			if building_after_wall:
-				print("Enemy %s: Found adjacent building after wall destruction: %s" % [self, building_after_wall])
-				_start_building_attack(building_after_wall)
-				return
-			
-			# Otherwise, repath to the throne
-			print("Enemy %s: No adjacent building, repathing to throne" % self)
+			# Simple transition: go back to movement and repath
+			print("Enemy %s: Wall destroyed, repathing to find new route" % self)
 			repath()
+
+
+func _evaluate_throne_accessibility() -> ThroneAccess:
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if not ps:
+		return ThroneAccess.BLOCKED
+	
+	# Check if throne is adjacent (highest priority) 
+	var throne_tile = ps.throne_tile
+	var distance = current_tile.distance_to(throne_tile)
+	if distance <= 1.5:  # Adjacent (including diagonal)
+		print("Enemy %s: Throne ADJACENT at distance %.1f" % [self, distance])
+		return ThroneAccess.ADJACENT
+	
+	# Check if there's a clear path to throne (no walls blocking)
+	var path_to_throne = ps.get_path_to_throne(current_tile)
+	if path_to_throne.size() > 1:  # Valid path exists
+		print("Enemy %s: CLEAR_PATH to throne found (%d steps)" % [self, path_to_throne.size()])
+		return ThroneAccess.CLEAR_PATH
+	
+	print("Enemy %s: Throne BLOCKED - no valid path" % self)
+	return ThroneAccess.BLOCKED
+
+
+func _get_throne_building() -> Building:
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if not ps or not building_grid:
+		return null
+		
+	var throne_building = building_grid.get_building(ps.throne_tile)
+	if throne_building and throne_building is Building:
+		print("Enemy %s: Found throne building at %s" % [self, ps.throne_tile])
+		return throne_building
+	
+	print("Enemy %s: No throne building found at %s" % [self, ps.throne_tile])
+	return null
 
 
 func _check_adjacent_building() -> Building:
@@ -381,12 +403,60 @@ func _check_adjacent_building() -> Building:
 	return null
 
 
+var attack_anchor_position: Vector2
+
+func _anchor_for_building_attack(building: Building) -> void:
+	# Set stable attack position near the building, with collision padding
+	var building_pos = building.global_position
+	var offset = (global_position - building_pos).normalized() * 32.0  # 32px distance
+	attack_anchor_position = building_pos + offset
+
+
+func _maintain_attack_anchor() -> void:
+	# Keep enemy at stable attack position to prevent bouncing
+	if attack_anchor_position != Vector2.ZERO:
+		body.global_position = attack_anchor_position
+		global_position = attack_anchor_position
+
+
+func _stabilize_physics_after_wall_destruction() -> void:
+	# CRITICAL: Prevent teleportation bug when walls are destroyed
+	print("Enemy %s: Stabilizing physics after wall destruction at position %s" % [self, body.global_position])
+	
+	# Stop all velocity immediately
+	body.velocity = Vector2.ZERO
+	
+	# Validate and clamp position to prevent out-of-bounds teleportation
+	var current_pos = body.global_position
+	var world_bounds = Rect2(0, 0, 30 * 64, 30 * 64)  # 30x30 grid * 64px cell size
+	
+	if not world_bounds.has_point(current_pos):
+		print("Enemy %s: Position out of bounds! Clamping from %s" % [self, current_pos])
+		current_pos = Vector2(
+			clampf(current_pos.x, world_bounds.position.x + 32, world_bounds.end.x - 32),
+			clampf(current_pos.y, world_bounds.position.y + 32, world_bounds.end.y - 32)
+		)
+		body.global_position = current_pos
+		global_position = current_pos
+		
+	# Update current tile to match stabilized position
+	if building_grid:
+		current_tile = building_grid.world_to_tile(current_pos)
+		print("Enemy %s: Stabilized at tile %s, world pos %s" % [self, current_tile, current_pos])
+	
+	# Reset attack anchor
+	attack_anchor_position = Vector2.ZERO
+
+
 func _start_building_attack(building: Building) -> void:
 	print("Enemy %s: Starting attack on building %s" % [self, building])
 	attacking_building = building
 	state = State.ATTACKING_BUILDING
 	attack_timer = 0.0
 	sprite.modulate = Color(1.5, 1.0, 1.0)  # Red tint while attacking
+	
+	# PHYSICS FIX: Anchor position to prevent bouncing during attack
+	_anchor_for_building_attack(building)
 
 
 func _process_building_attack(delta: float) -> void:
@@ -394,9 +464,14 @@ func _process_building_attack(delta: float) -> void:
 		print("Enemy %s: Building destroyed or invalid, back to moving" % self)
 		sprite.modulate = Color.WHITE
 		attacking_building = null
+		body.velocity = Vector2.ZERO  # Stop movement to prevent physics issues
 		state = State.MOVING
 		repath()
 		return
+	
+	# PHYSICS FIX: Maintain stable attack position, disable collision physics during attack
+	body.velocity = Vector2.ZERO  # Prevent bouncing from collisions
+	_maintain_attack_anchor()
 	
 	# Check if building is still adjacent
 	var current_adjacent = _check_adjacent_building()
@@ -422,6 +497,7 @@ func _process_building_attack(delta: float) -> void:
 			print("Enemy %s: Building destroyed!" % self)
 			sprite.modulate = Color.WHITE
 			attacking_building = null
+			body.velocity = Vector2.ZERO
 			state = State.MOVING
 			repath()
 
