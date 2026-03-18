@@ -107,6 +107,22 @@ func on_throne_destroyed() -> void:
 	
 	print("GameManager: Stopped %d enemies. Game Over signal emitted." % enemies.size())
 	game_over.emit()
+	
+	# Show game over screen after a short delay
+	await get_tree().create_timer(1.5).timeout
+	_show_game_over_screen()
+
+func _show_game_over_screen() -> void:
+	var game_over_scene = preload("res://scenes/ui/game_over_screen.tscn")
+	var game_over_instance = game_over_scene.instantiate()
+	
+	# Add to current scene's UI layer
+	var current_scene = get_tree().current_scene
+	var ui_layer = current_scene.get_node_or_null("UILayer")
+	if ui_layer:
+		ui_layer.add_child(game_over_instance)
+	else:
+		current_scene.add_child(game_over_instance)
 
 
 func reset_game() -> void:
