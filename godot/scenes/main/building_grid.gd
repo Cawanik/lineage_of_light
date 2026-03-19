@@ -121,7 +121,7 @@ func is_occupied(tile: Vector2i) -> bool:
 func move_building(from_tile: Vector2i, to_tile: Vector2i) -> bool:
 	if not buildings.has(from_tile):
 		return false
-	if buildings.has(to_tile):
+	if is_occupied(to_tile) and to_tile != from_tile:
 		return false
 	var building = buildings[from_tile]
 	if not building.can_move:

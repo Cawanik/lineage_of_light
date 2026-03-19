@@ -1,0 +1,36 @@
+{
+	"magic_bolt": {
+		"name": "Магическая стрела",
+		"speed": 250.0,
+		"damage": 15.0,
+		"homing": true,
+		"hit_radius": 10.0,
+		"lifetime": 4.0,
+		"trail": true,
+		"trail_length": 12,
+		"trail_color": "#9933cccc",
+		"scale": 0.5
+	},
+	"arrow": {
+		"name": "Стрела",
+		"speed": 300.0,
+		"damage": 10.0,
+		"homing": false,
+		"hit_radius": 8.0,
+		"lifetime": 3.0,
+		"trail": false,
+		"scale": 0.4
+	},
+	"fireball": {
+		"name": "Огненный шар",
+		"speed": 150.0,
+		"damage": 30.0,
+		"homing": false,
+		"hit_radius": 15.0,
+		"lifetime": 5.0,
+		"trail": true,
+		"trail_length": 8,
+		"trail_color": "#ff6600aa",
+		"scale": 0.8
+	}
+}

@@ -160,6 +160,9 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_update_animation(input)
 
+	# Обновляем позицию курсора для occlusion
+	OcclusionFade.cursor_pos = get_global_mouse_position()
+
 	# Плавный зум
 	_target_zoom = clampf(_target_zoom, zoom_min, zoom_max)
 	var current_zoom = camera.zoom.x
@@ -221,6 +224,17 @@ func _input(event: InputEvent) -> void:
 		move_target = get_global_mouse_position()
 		using_mouse_move = true
 		_reset_afk()
+
+	if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
+		_cast_magic_bolt()
+
+
+func _cast_magic_bolt() -> void:
+	# Рандомная точка в пределах 2 тайлов (128px)
+	var angle = randf() * TAU
+	var dist = randf_range(64.0, 128.0)
+	var target = global_position + Vector2(cos(angle), sin(angle)) * dist
+	Projectile.spawn(get_tree(), "magic_bolt", global_position, target)
 
 
 func _on_sit_finished() -> void:

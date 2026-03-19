@@ -91,6 +91,8 @@ func _start_building_move(tile: Vector2i) -> void:
 		_preview_sprite = Sprite2D.new()
 		_preview_sprite.texture = building.sprite.texture
 		_preview_sprite.position = Vector2(offset[0], offset[1])
+		var sc = data.get("sprite_scale", [1.0, 1.0])
+		_preview_sprite.scale = Vector2(sc[0], sc[1])
 		_preview_sprite.modulate = Color(0.4, 0.8, 1.0, 0.5)
 		_preview_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		_preview_node.add_child(_preview_sprite)

@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cprojectile01"]
+
+[ext_resource type="Script" path="res://scenes/projectiles/projectile.gd" id="1_proj"]
+
+[node name="Projectile" type="Node2D"]
+z_index = 50
+script = ExtResource("1_proj")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 0

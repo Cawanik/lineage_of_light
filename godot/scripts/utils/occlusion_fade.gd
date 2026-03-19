@@ -16,9 +16,9 @@ extends RefCounted
 
 static var player: Node2D = null
 static var fade_radius: float = 50.0
-static var fade_alpha: float = 0.5
-static var build_mode_cursor: Vector2 = Vector2.ZERO
-static var build_mode_active: bool = false
+static var fade_alpha: float = 0.2
+static var cursor_pos: Vector2 = Vector2.ZERO
+static var cursor_fade_active: bool = true
 
 
 static func find_player(tree: SceneTree) -> void:
@@ -43,9 +43,9 @@ static func should_fade(object_world_pos: Vector2) -> bool:
 	var diff_x = absf(object_world_pos.x - player.position.x)
 	var player_fade = diff_y > 0 and diff_y < fade_radius and diff_x < fade_radius
 
-	if build_mode_active:
-		var cdiff_y = object_world_pos.y - build_mode_cursor.y
-		var cdiff_x = absf(object_world_pos.x - build_mode_cursor.x)
+	if cursor_fade_active:
+		var cdiff_y = object_world_pos.y - cursor_pos.y
+		var cdiff_x = absf(object_world_pos.x - cursor_pos.x)
 		var cursor_fade = cdiff_y > 0 and cdiff_y < fade_radius and cdiff_x < fade_radius
 		return player_fade or cursor_fade
 

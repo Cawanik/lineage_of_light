@@ -78,7 +78,9 @@
       "Bash(for dir:*)",
       "Bash(do mkdir:*)",
       "Bash(cp \"$SRC/$dir/\"*.png \"animations/wand-cast/$dir/\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(sed -i '/OcclusionFade.build_mode_active/d' godot/scripts/tools/build_tool.gd godot/scripts/tools/place_building_tool.gd)",
+      "Bash(sed -i '/OcclusionFade.build_mode_cursor/d' godot/scripts/tools/build_tool.gd godot/scripts/tools/place_building_tool.gd)"
     ]
   }
 }
