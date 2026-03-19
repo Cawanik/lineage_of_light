@@ -27,12 +27,25 @@
 		"unit_offset": [0.0, -85.0],
 		"unit_offset_jitter": 5
 	},
-	"wall": {
+	"wall_block": {
 		"name": "Стена",
 		"cost": 10,
 		"hp": 100,
-		"desc": "Каменная стена с башенками на стыках",
+		"desc": "Каменная стена. Блокирует путь врагам.",
+		"sprite": "res://assets/sprites/buildings/wall_segment.png",
+		"sprite_offset": [0.0, -18.0],
+		"sprite_scale": [1.2, 1.2],
 		"hotkey": "1",
+		"can_build": true,
+		"can_demolish": true,
+		"can_move": true,
+		"move_cost": 5
+	},
+	"wall": {
+		"name": "Стена (процедурная)",
+		"cost": 10,
+		"hp": 100,
+		"desc": "Каменная стена с башенками на стыках",
 		"can_build": true,
 		"can_demolish": true,
 		"can_move": true,

@@ -28,6 +28,8 @@ var move_threshold: float = 5.0
 
 var last_direction: String = "south"
 var move_target: Vector2 = Vector2.ZERO
+var _target_zoom: float = 2.0
+var _zoom_smooth_speed: float = 8.0
 var using_mouse_move: bool = false
 var afk_timer: float = 0.0
 var is_afk: bool = false
@@ -48,6 +50,7 @@ func _ready() -> void:
 	zoom_speed = p.get("zoom_speed", 0.1)
 	zoom_min = p.get("zoom_min", 0.5)
 	zoom_max = p.get("zoom_max", 4.0)
+	_target_zoom = camera.zoom.x
 	afk_timeout = p.get("afk_timeout", 10.0)
 	move_threshold = p.get("move_threshold", 5.0)
 
@@ -157,6 +160,13 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_update_animation(input)
 
+	# Плавный зум
+	_target_zoom = clampf(_target_zoom, zoom_min, zoom_max)
+	var current_zoom = camera.zoom.x
+	if absf(current_zoom - _target_zoom) > 0.001:
+		var new_zoom = lerpf(current_zoom, _target_zoom, _zoom_smooth_speed * delta)
+		camera.zoom = Vector2(new_zoom, new_zoom)
+
 
 func _reset_afk() -> void:
 	afk_timer = 0.0
@@ -204,11 +214,9 @@ func _input(event: InputEvent) -> void:
 			_spawn_marker(move_target)
 			_reset_afk()
 		elif event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
-			var new_zoom = clampf(camera.zoom.x + zoom_speed, zoom_min, zoom_max)
-			camera.zoom = Vector2(new_zoom, new_zoom)
+			_target_zoom = clampf(_target_zoom + zoom_speed, zoom_min, zoom_max)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
-			var new_zoom = clampf(camera.zoom.x - zoom_speed, zoom_min, zoom_max)
-			camera.zoom = Vector2(new_zoom, new_zoom)
+			_target_zoom = clampf(_target_zoom - zoom_speed, zoom_min, zoom_max)
 	elif event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		move_target = get_global_mouse_position()
 		using_mouse_move = true

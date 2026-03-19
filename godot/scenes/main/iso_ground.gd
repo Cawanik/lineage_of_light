@@ -1,125 +1,149 @@
 # ==========================================
-# iso_ground.gd — Изометрическая земля, трава и всякая хуйня
+# iso_ground.gd — Изометрическая земля на TileMapLayer
 # ==========================================
-# _ready() — грузит конфиг, тайлы, бордюры, генерит сетку и ставит на перерисовку
-# _load_tiles() — загружает текстуры травы с весами из конфига, 8 вариантов, ёпт
-# _load_border_tile() — загружает текстуру бордюра (пшеница), если есть
-# is_border(x, y) — проверяет, тайл на границе карты или нет, блять
-# _generate_grid() — генерит сетку тайлов по весам через seeded RNG, чтоб карта была одинаковая
-# _draw() — рисует все тайлы в изометрии: бордюр на краях, рандомная трава внутри
+# Рисуешь тайлы сам кисточкой в редакторе, блять
+# Скрипт только создаёт TileSet с палитрой
+# is_border(x, y) — проверяет тайл на бордюрность по source_id
+# _update_marker() — рисует маркер трона в редакторе поверх тайлов
 # ==========================================
 
+@tool
 class_name IsoGround
-extends Node2D
+extends TileMapLayer
 
-## Isometric tile ground with weighted random placement
+@export_group("Маркеры")
+@export var throne_tile: Vector2i = Vector2i(14, 15):
+	set(v):
+		throne_tile = v
+		_update_marker()
 
-var CELL_SIZE: int = 64
-var ISO_RATIO: float = 0.5
+@export_group("Тайлы земли")
+@export var ground_tiles: Array[Texture2D] = []:
+	set(v):
+		ground_tiles = v
+		_rebuild_tileset()
 
-var tiles_loaded: Array[Texture2D] = []
-var tile_weights: Array[float] = []
-var border_tile: Texture2D = null
+@export_group("Особые тайлы")
+@export var special_tiles: Array[Texture2D] = []:
+	set(v):
+		special_tiles = v
+		_rebuild_tileset()
+@export var special_texture_offset: Vector2i = Vector2i(0, 0):
+	set(v):
+		special_texture_offset = v
+		_rebuild_tileset()
 
-var grid: Dictionary = {}
+@export_group("Смещение текстур")
+@export var ground_texture_offset: Vector2i = Vector2i(0, 0):
+	set(v):
+		ground_texture_offset = v
+		_rebuild_tileset()
 
-var grid_width: int = 32
-var grid_height: int = 32
-var ground_seed: int = 42
-var tile_draw_offset_y: float = 0.0
+var _initialized: bool = false
+var _ground_count: int = 0
+var _special_start_id: int = 0
+var _special_count: int = 0
+var _marker: Node2D = null
 
 
 func _ready() -> void:
-	var iso = Config.game.get("iso", {})
-	CELL_SIZE = iso.get("cell_size", 64)
-	ISO_RATIO = iso.get("iso_ratio", 0.5)
-	grid_width = iso.get("grid_width", 32)
-	grid_height = iso.get("grid_height", 32)
-	ground_seed = iso.get("ground_seed", 42)
-	tile_draw_offset_y = iso.get("tile_draw_offset_y", 0.0)
-
-	_load_tiles()
-	_load_border_tile()
-	_generate_grid()
-	queue_redraw()
+	_initialized = true
+	_rebuild_tileset()
+	_update_marker()
 
 
-func _load_tiles() -> void:
-	var tw = Config.game.get("tile_weights", {})
-	var tile_defs = [
-		{"path": "res://assets/sprites/tiles/iso_grass_0.png", "weight": tw.get("grass_wildflower", 15.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_1.png", "weight": tw.get("grass_mushroom", 15.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_2.png", "weight": tw.get("grass_leaves", 15.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_3.png", "weight": tw.get("grass_sparse", 15.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_4.png", "weight": tw.get("grass_dandelion", 10.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_5.png", "weight": tw.get("grass_daisy", 10.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_6.png", "weight": tw.get("grass_clover", 10.0)},
-		{"path": "res://assets/sprites/tiles/iso_grass_7.png", "weight": tw.get("grass_twigs", 10.0)},
-	]
+func _rebuild_tileset() -> void:
+	if not _initialized:
+		return
 
-	for def in tile_defs:
-		if ResourceLoader.exists(def["path"]):
-			tiles_loaded.append(load(def["path"]))
-			tile_weights.append(def["weight"])
+	var ts = TileSet.new()
+	ts.tile_shape = TileSet.TILE_SHAPE_ISOMETRIC
+	ts.tile_layout = TileSet.TILE_LAYOUT_DIAMOND_DOWN
+	ts.tile_offset_axis = TileSet.TILE_OFFSET_AXIS_VERTICAL
+	ts.tile_size = Vector2i(64, 32)
+
+	var source_id = 0
+
+	# Ground tiles
+	_ground_count = 0
+	for tex in ground_tiles:
+		if tex == null:
+			continue
+		var src = TileSetAtlasSource.new()
+		src.texture = tex
+		src.texture_region_size = Vector2i(64, 64)
+		src.create_tile(Vector2i(0, 0))
+		ts.add_source(src, source_id)
+		source_id += 1
+		_ground_count += 1
+
+	# Special tiles
+	_special_start_id = source_id
+	_special_count = 0
+	for tex in special_tiles:
+		if tex == null:
+			continue
+		var src = TileSetAtlasSource.new()
+		src.texture = tex
+		src.texture_region_size = Vector2i(64, 64)
+		src.create_tile(Vector2i(0, 0))
+		ts.add_source(src, source_id)
+		source_id += 1
+		_special_count += 1
+
+	tile_set = ts
+
+	# Применяем offsets
+	for i in range(ts.get_source_count()):
+		var sid = ts.get_source_id(i)
+		var src = ts.get_source(sid) as TileSetAtlasSource
+		if src:
+			var td = src.get_tile_data(Vector2i(0, 0), 0)
+			if td:
+				if sid >= _special_start_id:
+					td.texture_origin = special_texture_offset
+				else:
+					td.texture_origin = ground_texture_offset
 
 
-func _load_border_tile() -> void:
-	var path = "res://assets/sprites/tiles/iso_wheat_0.png"
-	if ResourceLoader.exists(path):
-		border_tile = load(path)
+func _update_marker() -> void:
+	if not Engine.is_editor_hint():
+		if _marker and is_instance_valid(_marker):
+			_marker.queue_free()
+			_marker = null
+		return
+
+	if not _initialized:
+		return
+
+	if not _marker or not is_instance_valid(_marker):
+		_marker = Node2D.new()
+		_marker.name = "ThroneMarker"
+		_marker.z_index = 100
+		add_child(_marker)
+
+	var center = map_to_local(throne_tile)
+	_marker.position = center
+
+	_marker.queue_redraw()
+	if not _marker.draw.is_connected(_draw_marker):
+		_marker.draw.connect(_draw_marker)
+
+
+func _draw_marker() -> void:
+	if not _marker or not is_instance_valid(_marker):
+		return
+	var hw = 32.0
+	var hh = 16.0
+	var diamond = PackedVector2Array([
+		Vector2(0, -hh), Vector2(hw, 0), Vector2(0, hh), Vector2(-hw, 0)
+	])
+	_marker.draw_colored_polygon(diamond, Color(0.6, 0.0, 0.8, 0.4))
+	for i in range(4):
+		_marker.draw_line(diamond[i], diamond[(i + 1) % 4], Color(0.8, 0.0, 1.0, 0.8), 2.0)
+	_marker.draw_string(ThemeDB.fallback_font, Vector2(-20, -22), "THRONE", HORIZONTAL_ALIGNMENT_CENTER, -1, 12, Color(1, 1, 1, 0.9))
 
 
 func is_border(x: int, y: int) -> bool:
-	return x <= 1 or y <= 1 or x >= grid_width - 2 or y >= grid_height - 2
-
-
-func _generate_grid() -> void:
-	# Build cumulative weights for weighted random
-	var total_weight = 0.0
-	var cumulative: Array[float] = []
-	for w in tile_weights:
-		total_weight += w
-		cumulative.append(total_weight)
-
-	# Use seeded RNG for consistent map
-	var rng = RandomNumberGenerator.new()
-	rng.seed = ground_seed
-
-	for y in range(grid_height):
-		for x in range(grid_width):
-			if is_border(x, y):
-				pass  # border uses single tile
-			else:
-				var roll = rng.randf() * total_weight
-				var tile_idx = 0
-				for i in range(cumulative.size()):
-					if roll <= cumulative[i]:
-						tile_idx = i
-						break
-				grid[Vector2i(x, y)] = tile_idx
-
-
-func _draw() -> void:
-	if tiles_loaded.is_empty():
-		return
-
-	for y in range(grid_height):
-		for x in range(grid_width):
-			# Isometric position: diamond layout
-			var screen_x = (x - y) * (CELL_SIZE * 0.5)
-			var screen_y = (x + y) * (CELL_SIZE * ISO_RATIO * 0.5) + 20.0
-
-			var tex: Texture2D
-			if is_border(x, y) and border_tile:
-				tex = border_tile
-			else:
-				var tile_idx = grid.get(Vector2i(x, y), 0)
-				if tile_idx >= tiles_loaded.size():
-					continue
-				tex = tiles_loaded[tile_idx]
-
-			var draw_pos = Vector2(
-				screen_x - tex.get_width() * 0.5,
-				screen_y - tex.get_height() * 0.5
-			)
-			draw_texture(tex, draw_pos)
+	var cell_source = get_cell_source_id(Vector2i(x, y))
+	return cell_source >= _special_start_id and cell_source != -1

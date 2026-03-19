@@ -53,6 +53,9 @@ func setup(type: String) -> void:
 	var offset = data.get("sprite_offset", [0.0, 0.0])
 	sprite.position = Vector2(offset[0], offset[1])
 
+	var sc = data.get("sprite_scale", [1.0, 1.0])
+	sprite.scale = Vector2(sc[0], sc[1])
+
 	can_build = data.get("can_build", true)
 	can_demolish = data.get("can_demolish", true)
 	can_move = data.get("can_move", true)
@@ -152,7 +155,8 @@ func toggle_adjust() -> void:
 	_adjust_mode = not _adjust_mode
 	queue_redraw()
 	if _adjust_mode:
-		print("[BuildingAdjust] ON for %s — Arrows to move sprite, Enter to print" % building_type)
+		print("[BuildingAdjust] ON for %s" % building_type)
+		print("  Arrows = move offset, +/- = scale, Shift = x5, Enter = print")
 	else:
 		print("[BuildingAdjust] OFF")
 
@@ -164,6 +168,7 @@ func _input(event: InputEvent) -> void:
 		return
 
 	var s = 1.0 if not event.shift_pressed else 5.0
+	var scale_step = 0.05 if not event.shift_pressed else 0.2
 
 	match event.keycode:
 		KEY_UP:
@@ -174,14 +179,21 @@ func _input(event: InputEvent) -> void:
 			sprite.position.x -= s
 		KEY_RIGHT:
 			sprite.position.x += s
+		KEY_EQUAL, KEY_KP_ADD:
+			sprite.scale += Vector2(scale_step, scale_step)
+		KEY_MINUS, KEY_KP_SUBTRACT:
+			sprite.scale -= Vector2(scale_step, scale_step)
+			sprite.scale = Vector2(maxf(sprite.scale.x, 0.1), maxf(sprite.scale.y, 0.1))
 		KEY_ENTER:
-			print("[BuildingAdjust] \"%s\" sprite_offset: [%.1f, %.1f]" % [building_type, sprite.position.x, sprite.position.y])
+			print("[BuildingAdjust] \"%s\":" % building_type)
+			print("  sprite_offset: [%.1f, %.1f]" % [sprite.position.x, sprite.position.y])
+			print("  sprite_scale: [%.2f, %.2f]" % [sprite.scale.x, sprite.scale.y])
 			return
 		_:
 			return
 
 	queue_redraw()
-	print("[BuildingAdjust] offset: %s" % sprite.position)
+	print("[BuildingAdjust] offset: %s  scale: %s" % [sprite.position, sprite.scale])
 
 
 func _draw() -> void:
