@@ -14,17 +14,22 @@
 
 extends Node2D
 
+@export var throne_start_tile: Vector2i = Vector2i(14, 15)
+
 @onready var placement_grid = $PlacementGrid
 @onready var build_menu = $UILayer/BuildMenu
-@onready var build_button: TextureButton = $UILayer/Toolbar/Grid/BuildButton
-@onready var demolish_button: TextureButton = $UILayer/Toolbar/Grid/DemolishButton
-@onready var move_button: TextureButton = $UILayer/Toolbar/Grid/MoveButton
+@onready var build_button: TextureButton = $UILayer/Toolbar/Grid/Slot1/BuildButton
+@onready var demolish_button: TextureButton = $UILayer/Toolbar/Grid/Slot2/DemolishButton
+@onready var move_button: TextureButton = $UILayer/Toolbar/Grid/Slot3/MoveButton
 @onready var wall_system: WallSystem = $YSort/WallSystem
 @onready var building_grid: BuildingGrid = $YSort/BuildingGrid
 
 var active_tool: BaseTool = null
+var active_tool_name: String = ""
 var tools: Dictionary = {}
 var place_tool: PlaceBuildingTool = PlaceBuildingTool.new()
+const SLOT_ACTIVE_COLOR = Color(0.7, 0.4, 1.0, 1.0)
+const SLOT_DEFAULT_COLOR = Color(1.0, 1.0, 1.0, 1.0)
 
 var throne_scene: PackedScene = preload("res://scenes/buildings/throne.tscn")
 
@@ -43,42 +48,49 @@ func _ready() -> void:
 	demolish_button.pressed.connect(_on_demolish_button_pressed)
 	move_button.pressed.connect(_on_move_button_pressed)
 
-	# Place throne on tile
-	var throne_tile = Vector2i(14, 15)
+	# Place throne on tile (берём позицию из Ground)
+	var ground = get_node_or_null("Ground") as IsoGround
+	if ground:
+		throne_start_tile = ground.throne_tile
 	var throne = throne_scene.instantiate()
-	building_grid.place_building(throne_tile, throne)
-	
+	building_grid.place_building(throne_start_tile, throne)
+
 	# Connect throne destruction to game over
 	throne.throne_destroyed.connect(GameManager.on_throne_destroyed)
-	print("Throne destruction signal connected to GameManager")
 
 	# Sync PathfindingSystem
 	var ps = get_node_or_null("/root/PathfindingSystem")
 	if ps:
-		ps.throne_tile = throne_tile
-		# Throne was marked solid by place_building — undo it so enemies can path to it
-		ps.set_tile_solid(throne_tile, false)
-
-	# Simple wall defense around throne (14,15)
-	# Create a 7x7 wall box with throne in center and entrance from the right
-	var throne_center = throne_tile
-	
-	# Top wall (full)
-	wall_system.place_wall_line(throne_center + Vector2i(-3, -3), throne_center + Vector2i(3, -3))
-	# Bottom wall (full)  
-	wall_system.place_wall_line(throne_center + Vector2i(-3, 3), throne_center + Vector2i(3, 3))
-	# Left wall (full)
-	wall_system.place_wall_line(throne_center + Vector2i(-3, -3), throne_center + Vector2i(-3, 3))
-	# Right wall (with entrance gap in the middle)
-	wall_system.place_wall_line(throne_center + Vector2i(3, -3), throne_center + Vector2i(3, -1))
-	wall_system.place_wall_line(throne_center + Vector2i(3, 1), throne_center + Vector2i(3, 3))
-	
-	print("Throne at: %s, Wall box: %s to %s" % [throne_center, throne_center + Vector2i(-3, -3), throne_center + Vector2i(3, 3)])
+		ps.throne_tile = throne_start_tile
+		ps.set_tile_solid(throne_start_tile, false)
 
 	# Connect wave signals
-	WaveManager.wave_started.connect(_on_wave_started)
-	WaveManager.wave_completed.connect(_on_wave_completed)
-	WaveManager.all_waves_completed.connect(_on_all_waves_completed)
+	if WaveManager:
+		WaveManager.wave_started.connect(_on_wave_started)
+		WaveManager.wave_completed.connect(_on_wave_completed)
+		WaveManager.all_waves_completed.connect(_on_all_waves_completed)
+
+
+func _get_tool_slot(tool_name: String) -> Node:
+	match tool_name:
+		"build", "place":
+			return $UILayer/Toolbar/Grid/Slot1
+		"demolish":
+			return $UILayer/Toolbar/Grid/Slot2
+		"move":
+			return $UILayer/Toolbar/Grid/Slot3
+	return null
+
+
+func _update_slot_highlights() -> void:
+	for i in range(1, 10):
+		var slot = get_node_or_null("UILayer/Toolbar/Grid/Slot%d" % i)
+		if slot:
+			slot.modulate = SLOT_DEFAULT_COLOR
+	if active_tool_name != "":
+		var active_slot = _get_tool_slot(active_tool_name)
+		if active_slot:
+			active_slot.modulate = SLOT_ACTIVE_COLOR
 
 
 func _set_tool(tool_name: String) -> void:
@@ -86,17 +98,22 @@ func _set_tool(tool_name: String) -> void:
 	if active_tool:
 		active_tool.deactivate()
 		active_tool = null
+		active_tool_name = ""
 	build_menu.visible = false
 	if not same and tools.has(tool_name):
 		active_tool = tools[tool_name]
+		active_tool_name = tool_name
 		active_tool.activate(wall_system)
+	_update_slot_highlights()
 
 
 func _on_build_button_pressed() -> void:
 	if active_tool:
 		active_tool.deactivate()
 		active_tool = null
+		active_tool_name = ""
 	build_menu.toggle_menu()
+	_update_slot_highlights()
 
 
 func _on_demolish_button_pressed() -> void:
@@ -119,6 +136,8 @@ func _on_menu_visibility_changed() -> void:
 	if not build_menu.visible and active_tool == tools.get("build"):
 		active_tool.deactivate()
 		active_tool = null
+		active_tool_name = ""
+		_update_slot_highlights()
 
 
 func _process(_delta: float) -> void:
@@ -137,9 +156,13 @@ func _input(event: InputEvent) -> void:
 		wall_system.toggle_adjust()
 		return
 	if event is InputEventKey and event.pressed and event.keycode == KEY_F6:
-		var throne = $YSort/BuildingGrid.get_node_or_null("Throne")
-		if throne:
-			throne.toggle_adjust()
+		# Adjust ближайшего здания к мыши
+		var mouse_pos = get_global_mouse_position()
+		var tile = building_grid.find_nearest_building(mouse_pos, 60.0)
+		if tile != Vector2i(-9999, -9999):
+			var b = building_grid.get_building(tile)
+			if b and b.has_method("toggle_adjust"):
+				b.toggle_adjust()
 		return
 	if active_tool and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		active_tool.click()

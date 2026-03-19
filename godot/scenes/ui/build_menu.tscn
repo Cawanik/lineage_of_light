@@ -1,37 +1,56 @@
 [gd_scene format=3 uid="uid://cbuildmenu01"]
 
 [ext_resource type="Script" path="res://scenes/ui/build_menu.gd" id="1_menu"]
+[ext_resource type="Texture2D" uid="uid://c23r1a58j6l6y" path="res://assets/sprites/ui/toolbar_bg.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://dyajeqqccfgyk" path="res://assets/sprites/ui/slot_bg.png" id="3_slot"]
 
-[node name="BuildMenu" type="PanelContainer"]
+[node name="BuildMenu" type="TextureRect"]
+texture_filter = 0
 anchors_preset = 6
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -100.0
-offset_bottom = 100.0
+offset_left = -180.0
+offset_top = -130.0
+offset_right = -10.0
+offset_bottom = 130.0
 grow_horizontal = 0
 grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 5
 script = ExtResource("1_menu")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
+theme_override_constants/separation = 4
 
-[node name="Title" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Title" type="Label" parent="Margin/VBox"]
 layout_mode = 2
-text = "СТРОИТЕЛЬСТВО"
+text = "СТРОЙ"
 horizontal_alignment = 1
 
-[node name="Separator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
 layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
-[node name="ItemList" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ItemList" type="GridContainer" parent="Margin/VBox/Scroll"]
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+columns = 2

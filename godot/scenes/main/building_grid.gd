@@ -100,6 +100,10 @@ func get_building(tile: Vector2i) -> Node2D:
 
 
 func is_border(tile: Vector2i) -> bool:
+	var ground = get_tree().current_scene.get_node_or_null("Ground")
+	if ground and ground is IsoGround:
+		return ground.is_border(tile.x, tile.y)
+	# Fallback
 	var iso = Config.game.get("iso", {})
 	var w = iso.get("grid_width", 32)
 	var h = iso.get("grid_height", 32)
@@ -177,18 +181,35 @@ func _draw() -> void:
 	var hw = CELL_SIZE * 0.5
 	var hh = CELL_SIZE * ISO_RATIO * 0.5
 
-	var iso = Config.game.get("iso", {})
-	var gw = iso.get("grid_width", 32)
-	var gh = iso.get("grid_height", 32)
-	for y in range(gh):
-		for x in range(gw):
-			var center = tile_to_world(Vector2i(x, y))
+	var ground = get_tree().current_scene.get_node_or_null("Ground")
+	if ground and ground is IsoGround:
+		var cells = ground.get_used_cells()
+		for tile in cells:
+			var local_pos = ground.map_to_local(tile)
+			var center = local_pos + ground.position
 			var diamond = [
 				center + Vector2(0, -hh),
 				center + Vector2(hw, 0),
 				center + Vector2(0, hh),
 				center + Vector2(-hw, 0),
 			]
-			var col = Color.YELLOW if not is_occupied(Vector2i(x, y)) else Color.RED
+			var col = Color.YELLOW if not is_occupied(tile) else Color.RED
 			for i in range(4):
 				draw_line(diamond[i], diamond[(i + 1) % 4], Color(col, 0.3), 1.0)
+	else:
+		# Fallback без TileMapLayer
+		var iso = Config.game.get("iso", {})
+		var gw = iso.get("grid_width", 32)
+		var gh = iso.get("grid_height", 32)
+		for y in range(gh):
+			for x in range(gw):
+				var center = tile_to_world(Vector2i(x, y))
+				var diamond = [
+					center + Vector2(0, -hh),
+					center + Vector2(hw, 0),
+					center + Vector2(0, hh),
+					center + Vector2(-hw, 0),
+				]
+				var col = Color.YELLOW if not is_occupied(Vector2i(x, y)) else Color.RED
+				for i in range(4):
+					draw_line(diamond[i], diamond[(i + 1) % 4], Color(col, 0.3), 1.0)

@@ -63,7 +63,22 @@
       "Bash(mv frame_021.png frame_018.png)",
       "Bash(mv frame_022.png frame_019.png)",
       "Bash(mv frame_023.png frame_020.png)",
-      "Bash(rm -f frame_021.png.import frame_022.png.import frame_023.png.import)"
+      "Bash(rm -f frame_021.png.import frame_022.png.import frame_023.png.import)",
+      "Bash(pip install:*)",
+      "Bash(unzip -o character.zip -d temp_extract)",
+      "Bash(mkdir -p \"animations/wand-cast/south\")",
+      "Bash(cp \"temp_extract/animations/custom-standing still, raising small magic wand upward wi/south/\"*.png animations/wand-cast/south/)",
+      "Bash(rm -rf temp_extract character.zip)",
+      "Bash(mv frame_011.png frame_009.png)",
+      "Bash(mv frame_012.png frame_010.png)",
+      "Bash(mv frame_013.png frame_011.png)",
+      "Bash(mv frame_014.png frame_012.png)",
+      "Bash(rm -f frame_011.png.import frame_012.png.import frame_013.png.import frame_014.png.import)",
+      "Bash(SRC=\"temp_extract/animations/custom-standing still, raising small magic wand upward wi\")",
+      "Bash(for dir:*)",
+      "Bash(do mkdir:*)",
+      "Bash(cp \"$SRC/$dir/\"*.png \"animations/wand-cast/$dir/\")",
+      "Bash(done)"
     ]
   }
 }

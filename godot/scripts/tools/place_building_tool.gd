@@ -45,6 +45,8 @@ func _on_update() -> void:
 	var data = Config.buildings.get(building_type, {})
 	var offset = data.get("sprite_offset", [0.0, 0.0])
 	preview.offset = Vector2(offset[0], offset[1])
+	var sc = data.get("sprite_scale", [1.0, 1.0])
+	preview.scale = Vector2(sc[0], sc[1])
 
 	if building_grid.is_occupied(tile):
 		preview.modulate = Color(1.0, 0.3, 0.3, 0.5)
