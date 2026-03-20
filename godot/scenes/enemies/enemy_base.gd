@@ -8,6 +8,9 @@ extends Node2D
 @onready var accent_sprite: ColorRect = $Body/AccentSprite
 @onready var hp_bar_bg: ColorRect = $Body/HPBarBG
 @onready var hp_bar: ColorRect = $Body/HPBar
+var anim_sprite: AnimatedSprite2D = null
+var has_anim_sprite: bool = false
+const ANIM_DIRECTIONS = ["south", "south-east", "east", "north-east", "north"]
 
 var enemy_type: String = "hero_barbarian"
 var enemy_data: Dictionary = {}
@@ -65,13 +68,16 @@ func _ready() -> void:
 	if enemy_data.is_empty():
 		enemy_data = EnemyData.ENEMIES[enemy_type]
 
-	sprite.color = enemy_data["color"]
-	accent_sprite.color = enemy_data["accent"]
-
 	body.collision_layer = 2
-	body.collision_mask = 1  # Collide with walls (layer 1)
+	body.collision_mask = 1
 
-	# Add to enemies group for GameManager control
+	# Пробуем загрузить спрайты
+	_setup_animated_sprite()
+
+	if not has_anim_sprite:
+		sprite.color = enemy_data["color"]
+		accent_sprite.color = enemy_data["accent"]
+
 	add_to_group("enemies")
 
 	var ps = get_node_or_null("/root/PathfindingSystem")
@@ -79,12 +85,143 @@ func _ready() -> void:
 		ps.path_grid_changed.connect(_on_path_grid_changed)
 
 
+func _setup_animated_sprite() -> void:
+	var sprite_path = enemy_data.get("sprite_path", "")
+	if sprite_path == "":
+		return
+
+	var walk_anim_name = enemy_data.get("walk_anim", "walking-8-frames")
+	var attack_anim_name = enemy_data.get("attack_anim", "")
+
+	var frames = SpriteFrames.new()
+
+	# Загружаем walk анимации для 5 направлений + зеркала
+	for dir in ANIM_DIRECTIONS:
+		var dir_key = dir.replace("-", "_")
+		var anim_name = "walk_" + dir_key
+		frames.add_animation(anim_name)
+		frames.set_animation_speed(anim_name, 8.0)
+		frames.set_animation_loop(anim_name, true)
+		for i in range(20):
+			var path = sprite_path + "animations/" + walk_anim_name + "/" + dir + "/frame_%03d.png" % i
+			if ResourceLoader.exists(path):
+				frames.add_frame(anim_name, load(path))
+			else:
+				break
+
+	# Зеркальные направления
+	for dir in ["south-west", "west", "north-west"]:
+		var dir_key = dir.replace("-", "_")
+		var mirror_dir = dir.replace("west", "east")
+		var mirror_key = mirror_dir.replace("-", "_")
+		var anim_name = "walk_" + dir_key
+		var mirror_name = "walk_" + mirror_key
+		frames.add_animation(anim_name)
+		frames.set_animation_speed(anim_name, 8.0)
+		frames.set_animation_loop(anim_name, true)
+		if frames.has_animation(mirror_name):
+			for i in range(frames.get_frame_count(mirror_name)):
+				frames.add_frame(anim_name, frames.get_frame_texture(mirror_name, i))
+
+	# Attack анимации
+	if attack_anim_name != "":
+		for dir in ANIM_DIRECTIONS:
+			var dir_key = dir.replace("-", "_")
+			var anim_name = "attack_" + dir_key
+			frames.add_animation(anim_name)
+			frames.set_animation_speed(anim_name, 10.0)
+			frames.set_animation_loop(anim_name, true)
+			for i in range(20):
+				var path = sprite_path + "animations/" + attack_anim_name + "/" + dir + "/frame_%03d.png" % i
+				if ResourceLoader.exists(path):
+					frames.add_frame(anim_name, load(path))
+				else:
+					break
+		# Зеркала атаки
+		for dir in ["south-west", "west", "north-west"]:
+			var dir_key = dir.replace("-", "_")
+			var mirror_dir = dir.replace("west", "east")
+			var mirror_key = mirror_dir.replace("-", "_")
+			var anim_name = "attack_" + dir_key
+			var mirror_name = "attack_" + mirror_key
+			frames.add_animation(anim_name)
+			frames.set_animation_speed(anim_name, 10.0)
+			frames.set_animation_loop(anim_name, true)
+			if frames.has_animation(mirror_name):
+				for i in range(frames.get_frame_count(mirror_name)):
+					frames.add_frame(anim_name, frames.get_frame_texture(mirror_name, i))
+
+	# Idle = первый фрейм walk
+	for dir in ANIM_DIRECTIONS:
+		var dir_key = dir.replace("-", "_")
+		var idle_name = "idle_" + dir_key
+		var walk_name = "walk_" + dir_key
+		frames.add_animation(idle_name)
+		frames.set_animation_speed(idle_name, 1.0)
+		frames.set_animation_loop(idle_name, true)
+		if frames.has_animation(walk_name) and frames.get_frame_count(walk_name) > 0:
+			frames.add_frame(idle_name, frames.get_frame_texture(walk_name, 0))
+
+	if frames.has_animation("default"):
+		frames.remove_animation("default")
+
+	anim_sprite = AnimatedSprite2D.new()
+	anim_sprite.sprite_frames = frames
+	anim_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	anim_sprite.position = Vector2(0, -12)
+	body.add_child(anim_sprite)
+	anim_sprite.play("walk_south")
+
+	# Прячем ColorRect
+	sprite.visible = false
+	accent_sprite.visible = false
+	has_anim_sprite = true
+
+
+func _update_enemy_anim(direction: Vector2) -> void:
+	if not has_anim_sprite:
+		return
+	var dir_key = _vec_to_dir_key(direction)
+	var anim_prefix = "walk_"
+	if state == State.ATTACKING_WALL or state == State.ATTACKING_BUILDING:
+		anim_prefix = "attack_"
+	var anim_name = anim_prefix + dir_key
+	if anim_sprite.sprite_frames.has_animation(anim_name):
+		if anim_sprite.animation != anim_name:
+			anim_sprite.play(anim_name)
+	# Flip для западных направлений
+	anim_sprite.flip_h = dir_key.find("west") != -1
+
+
+func _vec_to_dir_key(dir: Vector2) -> String:
+	if dir.length() < 0.01:
+		return "south"
+	var deg = rad_to_deg(dir.angle())
+	if deg < 0:
+		deg += 360.0
+	if deg < 22.5 or deg >= 337.5:
+		return "east"
+	elif deg < 67.5:
+		return "south_east"
+	elif deg < 112.5:
+		return "south"
+	elif deg < 157.5:
+		return "south_west"
+	elif deg < 202.5:
+		return "west"
+	elif deg < 247.5:
+		return "north_west"
+	elif deg < 292.5:
+		return "north"
+	else:
+		return "north_east"
+
+
 func set_victory_state() -> void:
 	"""Called by GameManager when throne is destroyed - stop all AI activity"""
 	state = State.VICTORY
 	sprite.modulate = Color.GRAY  # Visual indication
 	body.velocity = Vector2.ZERO
-	print("Enemy %s: Entering VICTORY state - throne destroyed!" % self)
 
 
 func _on_path_grid_changed() -> void:
@@ -103,68 +240,41 @@ func _deferred_repath() -> void:
 
 
 func repath() -> void:
-	print("=== EnemyBase.repath START ===")
-	print("current_tile: ", current_tile)
 	
 	var ps = get_node_or_null("/root/PathfindingSystem")
-	print("PathfindingSystem found: ", ps != null)
 	if not ps:
 		push_error("EnemyBase: PathfindingSystem not found!")
 		return
 
-	print("Getting path to throne from: ", current_tile)
 	tile_path = ps.get_path_to_throne(current_tile)
-	print("Initial path size: ", tile_path.size())
 	
 	if tile_path.is_empty():
-		print("No path with walls, trying path ignoring walls")
 		tile_path = ps.get_path_ignoring_walls(current_tile)
-		print("Path ignoring walls size: ", tile_path.size())
 
 	path_index = 0
 	move_progress = 0.0
 
-	print("EnemyBase repath from=%s path_size=%d bg=%s" % [current_tile, tile_path.size(), building_grid != null])
 
 	if tile_path.is_empty():
-		print("EnemyBase: No path to throne found (throne may be destroyed)")
 		# If game is over, enter victory state
 		if not GameManager.is_game_active:
 			set_victory_state()
 		return
 
-	print("Path found: ", tile_path)
-	
-	# Debug: Check if path goes through the entrance
-	var entrance_tile = Vector2i(17, 15)  # Should be the entrance at (17,15)
-	if entrance_tile in tile_path:
-		print("✓ Path goes through entrance at %s" % entrance_tile)
-	else:
-		print("✗ Path does NOT go through entrance at %s" % entrance_tile)
-		print("  Path tiles near entrance: ")
-		for tile in tile_path:
-			if tile.distance_to(entrance_tile) <= 2:
-				print("    %s (distance: %.1f)" % [tile, tile.distance_to(entrance_tile)])
-
 	# Skip current tile if it's first in path
 	if tile_path[0] == current_tile and tile_path.size() > 1:
 		path_index = 1
-		print("Skipping current tile in path, path_index now: ", path_index)
 
 	if path_index < tile_path.size():
 		target_tile = tile_path[path_index]
-		print("Set target_tile: ", target_tile)
 		_check_wall_ahead()
 	
 	state = State.MOVING
-	print("State set to MOVING")
-	print("=== EnemyBase.repath END ===")
 
 
 func _check_wall_ahead() -> void:
 	# PHYSICS SEPARATION: Wall checking is now handled in _process_movement
-	# This function only maintains tile-based pathfinding logic
-	print("Enemy %s: Moving from %s to %s" % [self, current_tile, target_tile])
+	pass
 
 
 func _process(delta: float) -> void:
@@ -187,9 +297,6 @@ func _process(delta: float) -> void:
 		sprite.modulate = Color.WHITE
 
 	# Debug state info (every 1 second)
-	if fmod(Time.get_ticks_msec(), 1000) < 16:  # ~60fps = 16ms frames
-		print("Enemy %s: State=%s, Pos=%s, Target=%s" % [self, State.keys()[state], current_tile, target_tile])
-
 	match state:
 		State.MOVING:
 			_process_movement(delta)
@@ -220,7 +327,10 @@ func _process_movement(delta: float) -> void:
 		move_progress += (current_speed * delta) / tile_distance
 
 	var target_pos = from_world.lerp(to_world, clampf(move_progress, 0.0, 1.0))
-	
+
+	# Обновляем анимацию по направлению движения
+	_update_enemy_anim(to_world - from_world)
+
 	# PHYSICS SEPARATION: Only use CharacterBody2D for wall collision detection
 	# Set target position first
 	var desired_movement = target_pos - body.global_position
@@ -234,7 +344,6 @@ func _process_movement(delta: float) -> void:
 	
 	var collision_detected = body.get_slide_collision_count() > 0
 	if collision_detected:
-		print("Enemy %s: Wall collision detected at %s -> %s" % [self, current_tile, target_tile])
 		# Reset body position after collision test
 		body.global_position = original_position
 	
@@ -245,10 +354,9 @@ func _process_movement(delta: float) -> void:
 			attacking_edge_key = closest_wall
 			state = State.ATTACKING_WALL
 			attack_timer = 0.0
-			print("Enemy %s: Attacking wall %s" % [self, attacking_edge_key])
+			_update_enemy_anim(to_world - from_world)
 		else:
 			# No wall found, try alternate pathfinding
-			print("Enemy %s: No wall found for collision, repathing" % self)
 			repath()
 		return
 	
@@ -276,31 +384,26 @@ func _process_movement(delta: float) -> void:
 			_check_wall_ahead()
 		else:
 			# Path exhausted - now check throne accessibility with priority system
-			print("Enemy %s: Path exhausted at tile %s, evaluating throne accessibility" % [self, current_tile])
 			
 			var throne_priority = _evaluate_throne_accessibility()
 			if throne_priority == ThroneAccess.ADJACENT:
 				# Throne is adjacent - highest priority
 				var throne = _get_throne_building()
 				if throne:
-					print("Enemy %s: Throne adjacent! Starting throne attack" % self)
 					_start_building_attack(throne)
 					return
 			elif throne_priority == ThroneAccess.CLEAR_PATH:
 				# Clear path to throne - repath directly
-				print("Enemy %s: Clear path to throne available, repathing" % self)
 				repath()
 				return
 			
 			# No throne access - check for other adjacent buildings to attack
 			var building_at_path_end = _check_adjacent_building()
 			if building_at_path_end:
-				print("Enemy %s: Found adjacent building at path end: %s" % [self, building_at_path_end])
 				_start_building_attack(building_at_path_end)
 				return
 			
 			# No adjacent buildings - repath and try again
-			print("Enemy %s: No adjacent targets, repathing from %s" % [self, current_tile])
 			repath()
 
 
@@ -331,19 +434,16 @@ func _find_nearest_wall_edge() -> String:
 
 func _process_wall_attack(delta: float) -> void:
 	if not wall_system:
-		print("Enemy %s: No wall_system, back to moving" % self)
 		state = State.MOVING
 		return
 
 	# Check if wall still exists (might have been destroyed by another enemy)
 	if not wall_system.edges.has(attacking_edge_key):
-		print("Enemy %s: Wall destroyed, back to moving" % self)
 		sprite.modulate = Color.WHITE  # Remove attack tint
 		state = State.MOVING
 		repath()
 		return
 
-	print("Enemy %s: Attacking wall %s (HP: %s)" % [self, attacking_edge_key, wall_system.edge_hp.get(attacking_edge_key, 0)])
 	
 	# Visual effect while attacking
 	sprite.modulate = Color(1.5, 1.0, 1.0)  # Slight red tint while attacking
@@ -353,10 +453,8 @@ func _process_wall_attack(delta: float) -> void:
 		attack_timer -= ATTACK_INTERVAL
 		var destroyed = wall_system.damage_wall_edge(attacking_edge_key, wall_dps * ATTACK_INTERVAL)
 		var remaining_hp = wall_system.edge_hp.get(attacking_edge_key, 0)
-		print("Enemy %s: Dealt %.1f damage to wall %s. Remaining HP: %.1f, Destroyed: %s" % [self, wall_dps * ATTACK_INTERVAL, attacking_edge_key, remaining_hp, destroyed])
 		
 		if destroyed:
-			print("Enemy %s: Wall destroyed! Switching back to movement" % self)
 			sprite.modulate = Color.WHITE  # Remove attack tint
 			
 			# PHYSICS FIX: Stabilize position and velocity to prevent teleportation
@@ -367,7 +465,6 @@ func _process_wall_attack(delta: float) -> void:
 			await get_tree().process_frame
 			
 			# Simple transition: go back to movement and repath
-			print("Enemy %s: Wall destroyed, repathing to find new route" % self)
 			repath()
 
 
@@ -380,16 +477,13 @@ func _evaluate_throne_accessibility() -> ThroneAccess:
 	var throne_tile = ps.throne_tile
 	var distance = current_tile.distance_to(throne_tile)
 	if distance <= 1.5:  # Adjacent (including diagonal)
-		print("Enemy %s: Throne ADJACENT at distance %.1f" % [self, distance])
 		return ThroneAccess.ADJACENT
 	
 	# Check if there's a clear path to throne (no walls blocking)
 	var path_to_throne = ps.get_path_to_throne(current_tile)
 	if path_to_throne.size() > 1:  # Valid path exists
-		print("Enemy %s: CLEAR_PATH to throne found (%d steps)" % [self, path_to_throne.size()])
 		return ThroneAccess.CLEAR_PATH
 	
-	print("Enemy %s: Throne BLOCKED - no valid path" % self)
 	return ThroneAccess.BLOCKED
 
 
@@ -400,10 +494,8 @@ func _get_throne_building() -> Building:
 		
 	var throne_building = building_grid.get_building(ps.throne_tile)
 	if throne_building and throne_building is Building:
-		print("Enemy %s: Found throne building at %s" % [self, ps.throne_tile])
 		return throne_building
 	
-	print("Enemy %s: No throne building found at %s" % [self, ps.throne_tile])
 	return null
 
 
@@ -444,7 +536,6 @@ func _maintain_attack_anchor() -> void:
 
 func _stabilize_physics_after_wall_destruction() -> void:
 	# CRITICAL: Prevent teleportation bug when walls are destroyed
-	print("Enemy %s: Stabilizing physics after wall destruction at position %s" % [self, body.global_position])
 	
 	# Stop all velocity immediately
 	body.velocity = Vector2.ZERO
@@ -454,7 +545,6 @@ func _stabilize_physics_after_wall_destruction() -> void:
 	var world_bounds = Rect2(0, 0, 30 * 64, 30 * 64)  # 30x30 grid * 64px cell size
 	
 	if not world_bounds.has_point(current_pos):
-		print("Enemy %s: Position out of bounds! Clamping from %s" % [self, current_pos])
 		current_pos = Vector2(
 			clampf(current_pos.x, world_bounds.position.x + 32, world_bounds.end.x - 32),
 			clampf(current_pos.y, world_bounds.position.y + 32, world_bounds.end.y - 32)
@@ -465,17 +555,17 @@ func _stabilize_physics_after_wall_destruction() -> void:
 	# Update current tile to match stabilized position
 	if building_grid:
 		current_tile = building_grid.world_to_tile(current_pos)
-		print("Enemy %s: Stabilized at tile %s, world pos %s" % [self, current_tile, current_pos])
 	
 	# Reset attack anchor
 	attack_anchor_position = Vector2.ZERO
 
 
 func _start_building_attack(building: Building) -> void:
-	print("Enemy %s: Starting attack on building %s" % [self, building])
 	attacking_building = building
 	state = State.ATTACKING_BUILDING
 	attack_timer = 0.0
+	var dir_to_building = building.global_position - body.global_position
+	_update_enemy_anim(dir_to_building)
 	sprite.modulate = Color(1.5, 1.0, 1.0)  # Red tint while attacking
 	
 	# PHYSICS FIX: Anchor position to prevent bouncing during attack
@@ -484,7 +574,6 @@ func _start_building_attack(building: Building) -> void:
 
 func _process_building_attack(delta: float) -> void:
 	if not attacking_building or not is_instance_valid(attacking_building):
-		print("Enemy %s: Building destroyed or invalid, back to moving" % self)
 		sprite.modulate = Color.WHITE
 		attacking_building = null
 		body.velocity = Vector2.ZERO  # Stop movement to prevent physics issues
@@ -499,25 +588,21 @@ func _process_building_attack(delta: float) -> void:
 	# Check if building is still adjacent
 	var current_adjacent = _check_adjacent_building()
 	if current_adjacent != attacking_building:
-		print("Enemy %s: No longer adjacent to building, back to moving" % self)
 		sprite.modulate = Color.WHITE
 		attacking_building = null
 		state = State.MOVING
 		repath()
 		return
 	
-	print("Enemy %s: Attacking building %s (HP: %.1f)" % [self, attacking_building, attacking_building.hp])
 	
 	attack_timer += delta
 	if attack_timer >= ATTACK_INTERVAL:
 		attack_timer -= ATTACK_INTERVAL
 		var damage = wall_dps * ATTACK_INTERVAL
 		attacking_building.take_damage(damage)
-		print("Enemy %s: Dealt %.1f damage to building. Remaining HP: %.1f" % [self, damage, attacking_building.hp])
 		
 		# Check if building was destroyed
 		if attacking_building.hp <= 0:
-			print("Enemy %s: Building destroyed!" % self)
 			sprite.modulate = Color.WHITE
 			attacking_building = null
 			body.velocity = Vector2.ZERO
@@ -529,7 +614,6 @@ func _reached_throne() -> void:
 	if is_dead:
 		return
 		
-	print("Enemy %s: Reached throne! Dealing %d damage" % [self, damage_to_base])
 	is_dead = true
 	state = State.DEAD
 	

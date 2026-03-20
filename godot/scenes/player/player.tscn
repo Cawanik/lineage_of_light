@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" path="res://scenes/player/player.gd" id="1_player"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_col"]
-size = Vector2(20, 12)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_col"]
+radius = 8.0
+height = 24.0
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 1
@@ -11,8 +12,10 @@ collision_mask = 1
 script = ExtResource("1_player")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 10)
-shape = SubResource("RectangleShape2D_col")
+position = Vector2(0, 12)
+shape = SubResource("CapsuleShape2D_col")
+rotation = 1.5708
+debug_color = Color(0.6, 0.0, 1.0, 0.5)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -4)

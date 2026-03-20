@@ -12,19 +12,43 @@ extends TextureRect
 
 signal building_selected(building_type: String)
 
-@onready var item_list: GridContainer = $Margin/VBox/Scroll/ItemList
+@export_group("Настройки слотов")
+@export var slot_texture: Texture2D = preload("res://assets/sprites/ui/slot_bg.png")
+@export var slot_size: Vector2 = Vector2(40, 40)
+@export var slot_padding: float = 4.0
+@export_group("Внутренние отступы")
+@export var margin_left: int = 16
+@export var margin_top: int = 20
+@export var margin_right: int = 16
+@export var margin_bottom: int = 20
+
+@export_group("Заголовок")
+@export var title_text: String = "СТРОЙ"
+@export var font_size: int = 16
+@export var cost_font_size: int = 12
+@export var hotkey_font_size: int = 12
+
+@onready var item_list: VBoxContainer = $Margin/VBox/Scroll/ItemList
+@onready var title_label: Label = $Margin/VBox/Title
 
 var is_open: bool = false
 var selected_building: String = ""
 var BUILDINGS: Dictionary = {}
 
-var slot_bg: Texture2D = preload("res://assets/sprites/ui/slot_bg.png")
-
 
 func _ready() -> void:
 	visible = false
-	BUILDINGS = Config.buildings
-	_build_slots()
+	var margin = $Margin as MarginContainer
+	if margin:
+		margin.add_theme_constant_override("margin_left", margin_left)
+		margin.add_theme_constant_override("margin_top", margin_top)
+		margin.add_theme_constant_override("margin_right", margin_right)
+		margin.add_theme_constant_override("margin_bottom", margin_bottom)
+	if title_label:
+		title_label.text = title_text
+	if not Engine.is_editor_hint():
+		BUILDINGS = Config.buildings
+		_build_slots()
 
 
 func _build_slots() -> void:
@@ -32,54 +56,107 @@ func _build_slots() -> void:
 		var data = BUILDINGS[key]
 		if not data.has("hotkey"):
 			continue
+		_add_building_row(key, data)
 
-		# Слот-контейнер
-		var slot = TextureRect.new()
-		slot.texture = slot_bg
-		slot.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		slot.custom_minimum_size = Vector2(70, 70)
-		slot.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-		slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		slot.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		slot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	# Тестовые пустые строки для проверки скролла
+	for i in range(6):
+		_add_empty_row()
 
-		# Кнопка поверх слота
-		var btn = Button.new()
-		btn.anchor_left = 0.0
-		btn.anchor_top = 0.0
-		btn.anchor_right = 1.0
-		btn.anchor_bottom = 1.0
-		btn.offset_left = 4.0
-		btn.offset_top = 4.0
-		btn.offset_right = -4.0
-		btn.offset_bottom = -4.0
-		btn.flat = true
-		btn.clip_contents = true
 
-		# Иконка внутри кнопки
-		var sprite_path = data.get("sprite", "")
-		if sprite_path != "" and ResourceLoader.exists(sprite_path):
-			var icon = TextureRect.new()
-			icon.texture = load(sprite_path)
-			icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			icon.anchor_right = 1.0
-			icon.anchor_bottom = 1.0
-			icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			btn.add_child(icon)
+func _add_building_row(key: String, data: Dictionary) -> void:
+	# Вся строка — кнопка
+	var row_btn = Button.new()
+	row_btn.flat = true
+	row_btn.custom_minimum_size = Vector2(0, slot_size.y)
+	row_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	row_btn.pressed.connect(_on_slot_pressed.bind(key))
+	row_btn.mouse_entered.connect(func(): row_btn.modulate = Color(1.2, 1.1, 1.3, 1.0))
+	row_btn.mouse_exited.connect(func(): row_btn.modulate = Color.WHITE)
 
-		# Тултип с инфой
-		var hotkey = data.get("hotkey", "")
-		var cost = data.get("cost", 0)
-		var hp = data.get("hp", 0)
-		var name_str = data.get("name", key)
-		var desc = data.get("desc", "")
-		btn.tooltip_text = "%s [%s]\nСтоимость: %d\nHP: %d\n%s" % [name_str, hotkey, cost, hp, desc]
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-		btn.pressed.connect(_on_slot_pressed.bind(key))
-		slot.add_child(btn)
-		item_list.add_child(slot)
+	# Иконка
+	var icon_rect = TextureRect.new()
+	icon_rect.custom_minimum_size = slot_size
+	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var sprite_path = data.get("sprite", "")
+	if sprite_path != "" and ResourceLoader.exists(sprite_path):
+		icon_rect.texture = load(sprite_path)
+
+	row.add_child(icon_rect)
+
+	# Текст справа
+	var info = VBoxContainer.new()
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	info.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var hotkey = data.get("hotkey", "")
+	var name_str = data.get("name", key)
+
+	# Название с clip — если длинное, обрезается
+	var name_label = Label.new()
+	name_label.text = name_str
+	name_label.add_theme_color_override("font_color", Color("#e8e0ff"))
+	name_label.add_theme_font_size_override("font_size", font_size)
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	info.add_child(name_label)
+
+	# Хоткей + стоимость в одной строке
+	var bottom_row = HBoxContainer.new()
+	bottom_row.add_theme_constant_override("separation", 4)
+	bottom_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var hotkey_label = Label.new()
+	hotkey_label.text = "[%s]" % hotkey
+	hotkey_label.add_theme_color_override("font_color", Color("#9988bb"))
+	hotkey_label.add_theme_font_size_override("font_size", hotkey_font_size)
+	bottom_row.add_child(hotkey_label)
+
+	var cost_label = Label.new()
+	cost_label.text = "%d g" % data.get("cost", 0)
+	cost_label.add_theme_color_override("font_color", Color("#f0d060"))
+	cost_label.add_theme_font_size_override("font_size", cost_font_size)
+	bottom_row.add_child(cost_label)
+
+	info.add_child(bottom_row)
+
+	row.add_child(info)
+
+	# Тултип
+	var hp = data.get("hp", 0)
+	var desc = data.get("desc", "")
+	row_btn.tooltip_text = "%s\nHP: %d\n%s" % [data.get("name", key), hp, desc]
+
+	row_btn.add_child(row)
+	item_list.add_child(row_btn)
+
+
+func _add_empty_row() -> void:
+	var row = HBoxContainer.new()
+
+	var icon_container = TextureRect.new()
+	icon_container.texture = slot_texture
+	icon_container.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon_container.custom_minimum_size = slot_size
+	icon_container.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_container.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon_container.modulate = Color(1, 1, 1, 0.3)
+	row.add_child(icon_container)
+
+	var label = Label.new()
+	label.text = "???"
+	label.add_theme_color_override("font_color", Color("#666666"))
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(label)
+
+	item_list.add_child(row)
 
 
 func _create_wall_icon() -> TextureRect:

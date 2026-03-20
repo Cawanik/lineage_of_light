@@ -1,19 +1,10 @@
 # ==========================================
 # place_building_tool.gd — Инструмент размещения зданий
 # ==========================================
-# set_building_type(type) — задаёт тип здания, которое будем хуярить
-# _on_activate() — находит BuildingGrid и создаёт превью
-# _on_deactivate() — убирает превью нахуй
-# _on_update() — таскает превью за мышкой, красит в красный если занято
-# _on_click() — ставит здание на тайл, списывает золото, блять
-# _create_preview() — создаёт полупрозрачный спрайт-призрак
-# _remove_preview() — удаляет превью из сцены
-# ==========================================
 
 class_name PlaceBuildingTool
 extends BaseTool
 
-var building_grid: BuildingGrid = null
 var building_type: String = ""
 var preview: Sprite2D = null
 var building_scene: PackedScene = preload("res://scenes/buildings/building.tscn")
@@ -24,9 +15,6 @@ func set_building_type(type: String) -> void:
 
 
 func _on_activate() -> void:
-	var ysort = wall_system.get_parent()
-	if ysort:
-		building_grid = ysort.get_node_or_null("BuildingGrid")
 	_create_preview()
 
 
@@ -35,12 +23,12 @@ func _on_deactivate() -> void:
 
 
 func _on_update() -> void:
-	if not preview or not building_grid:
+	var bg = get_building_grid()
+	if not preview or not bg:
 		return
 	var mouse_pos = wall_system.get_global_mouse_position()
-	var tile = building_grid.world_to_tile(mouse_pos)
-	var world_pos = building_grid.tile_to_world(tile)
-	preview.position = world_pos
+	var tile = bg.world_to_tile(mouse_pos)
+	preview.position = bg.tile_to_world(tile)
 
 	var data = Config.buildings.get(building_type, {})
 	var offset = data.get("sprite_offset", [0.0, 0.0])
@@ -48,18 +36,19 @@ func _on_update() -> void:
 	var sc = data.get("sprite_scale", [1.0, 1.0])
 	preview.scale = Vector2(sc[0], sc[1])
 
-	if building_grid.is_occupied(tile):
-		preview.modulate = Color(1.0, 0.3, 0.3, 0.5)
-	else:
-		preview.modulate = Color(0.4, 1.0, 0.4, 0.5)
+	preview.modulate = get_preview_color(tile)
 
 
 func _on_click() -> void:
-	if not building_grid:
+	var bg = get_building_grid()
+	if not bg:
 		return
 	var mouse_pos = wall_system.get_global_mouse_position()
-	var tile = building_grid.world_to_tile(mouse_pos)
-	if building_grid.is_occupied(tile):
+	var tile = bg.world_to_tile(mouse_pos)
+
+	if not can_place_at(tile):
+		if not bg.is_occupied(tile):
+			flash_blocked_path()
 		return
 
 	var data = Config.buildings.get(building_type, {})
@@ -68,8 +57,10 @@ func _on_click() -> void:
 		return
 
 	var building = building_scene.instantiate()
-	building_grid.place_building(tile, building)
+	bg.place_building(tile, building)
 	building.setup(building_type)
+
+	DustEffect.spawn(wall_system.get_tree(), bg.tile_to_world(tile))
 
 
 func _create_preview() -> void:
@@ -77,7 +68,6 @@ func _create_preview() -> void:
 	var sprite_path = data.get("sprite", "")
 	if sprite_path == "" or not ResourceLoader.exists(sprite_path):
 		return
-
 	preview = Sprite2D.new()
 	preview.texture = load(sprite_path)
 	preview.modulate = Color(0.4, 1.0, 0.4, 0.5)

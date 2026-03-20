@@ -16,7 +16,6 @@
 class_name MoveTool
 extends BaseTool
 
-var building_grid: BuildingGrid = null
 var _moving_building_tile: Vector2i = Vector2i(-9999, -9999)
 var _moving_building: bool = false
 var _hovered_building_tile: Vector2i = Vector2i(-9999, -9999)
@@ -27,15 +26,12 @@ var _last_preview_tile: Vector2i = Vector2i(-9999, -9999)
 
 func _on_activate() -> void:
 	wall_system.move_mode = true
-	var ysort = wall_system.get_parent()
-	if ysort:
-		building_grid = ysort.get_node_or_null("BuildingGrid")
 
 
 func _on_deactivate() -> void:
 	# Reset building hover
-	if _hovered_building_tile != Vector2i(-9999, -9999) and building_grid:
-		var b = building_grid.get_building(_hovered_building_tile)
+	if _hovered_building_tile != Vector2i(-9999, -9999) and get_building_grid():
+		var b = get_building_grid().get_building(_hovered_building_tile)
 		if b:
 			b.modulate = Color.WHITE
 	_hovered_building_tile = Vector2i(-9999, -9999)
@@ -57,11 +53,11 @@ func _on_click() -> void:
 		return
 
 	# Check if clicking on a building first
-	if building_grid and wall_system.move_phase == "select":
+	if get_building_grid() and wall_system.move_phase == "select":
 		var mouse_pos = wall_system.get_global_mouse_position()
-		var tile = building_grid.find_nearest_building(mouse_pos, 30.0)
+		var tile = get_building_grid().find_nearest_building(mouse_pos, 30.0)
 		if tile != Vector2i(-9999, -9999):
-			var building = building_grid.get_building(tile)
+			var building = get_building_grid().get_building(tile)
 			if building and building.can_move:
 				_start_building_move(tile)
 				return
@@ -78,7 +74,7 @@ func _start_building_move(tile: Vector2i) -> void:
 	_moving_building_tile = tile
 	wall_system.move_mode = false
 
-	var building = building_grid.get_building(tile)
+	var building = get_building_grid().get_building(tile)
 	if building:
 		building.modulate = Color(0.5, 0.7, 1.0)
 
@@ -101,11 +97,24 @@ func _start_building_move(tile: Vector2i) -> void:
 
 func _finish_building_move() -> void:
 	var mouse_pos = wall_system.get_global_mouse_position()
-	var target_tile = building_grid.world_to_tile(mouse_pos)
+	var target_tile = get_building_grid().world_to_tile(mouse_pos)
 
-	var building = building_grid.get_building(_moving_building_tile)
-	if building_grid.move_building(_moving_building_tile, target_tile):
-		building = building_grid.get_building(target_tile)
+	# Проверяем не заблокирует ли перемещение путь
+	if target_tile != _moving_building_tile:
+		var bg = get_building_grid()
+		# Тайл занят или за картой — просто не даём переместить
+		if bg.is_occupied(target_tile) and target_tile != _moving_building_tile:
+			return
+		# Тайл свободный, но блокирует путь — рисуем путь
+		if not can_place_at(target_tile, _moving_building_tile):
+			flash_blocked_path()
+			return
+
+	var bg = get_building_grid()
+	var building = bg.get_building(_moving_building_tile)
+	if bg.move_building(_moving_building_tile, target_tile):
+		DustEffect.spawn(wall_system.get_tree(), bg.tile_to_world(target_tile))
+		building = bg.get_building(target_tile)
 		if building:
 			building.modulate = Color.WHITE
 	else:
@@ -119,21 +128,21 @@ func _finish_building_move() -> void:
 
 
 func _update_building_hover() -> void:
-	if not building_grid:
+	if not get_building_grid():
 		return
 	var mouse_pos = wall_system.get_global_mouse_position()
-	var tile = building_grid.find_nearest_building(mouse_pos, 30.0)
+	var tile = get_building_grid().find_nearest_building(mouse_pos, 30.0)
 
 	if tile != _hovered_building_tile:
 		# Reset old hover
 		if _hovered_building_tile != Vector2i(-9999, -9999):
-			var old_b = building_grid.get_building(_hovered_building_tile)
+			var old_b = get_building_grid().get_building(_hovered_building_tile)
 			if old_b and old_b.can_move:
 				old_b.modulate = Color.WHITE
 		_hovered_building_tile = tile
 		# Set new hover
 		if _hovered_building_tile != Vector2i(-9999, -9999):
-			var new_b = building_grid.get_building(_hovered_building_tile)
+			var new_b = get_building_grid().get_building(_hovered_building_tile)
 			if new_b and new_b.can_move:
 				new_b.modulate = Color(0.3, 0.5, 1.0)
 
@@ -142,12 +151,14 @@ func _update_building_preview() -> void:
 	if not _preview_node:
 		return
 	var mouse_pos = wall_system.get_global_mouse_position()
-	var tile = building_grid.world_to_tile(mouse_pos)
+	var tile = get_building_grid().world_to_tile(mouse_pos)
 	if tile != _last_preview_tile:
 		_last_preview_tile = tile
-		_preview_node.position = building_grid.tile_to_world(tile)
-		var occupied = building_grid.is_occupied(tile) and tile != _moving_building_tile
-		_preview_sprite.modulate = Color(1.0, 0.3, 0.3, 0.5) if occupied else Color(0.4, 0.8, 1.0, 0.5)
+		_preview_node.position = get_building_grid().tile_to_world(tile)
+		var color = get_preview_color(tile, _moving_building_tile)
+		if color.g > 0.5:
+			color = Color(0.4, 0.8, 1.0, 0.5)
+		_preview_sprite.modulate = color
 
 
 func _clear_preview() -> void:
@@ -160,7 +171,7 @@ func _clear_preview() -> void:
 
 func _reset_building_move() -> void:
 	if _moving_building:
-		var building = building_grid.get_building(_moving_building_tile)
+		var building = get_building_grid().get_building(_moving_building_tile)
 		if building:
 			building.modulate = Color.WHITE
 	_clear_preview()

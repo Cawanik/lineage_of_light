@@ -96,7 +96,12 @@ func remove_building(tile: Vector2i) -> Node2D:
 
 
 func get_building(tile: Vector2i) -> Node2D:
-	return buildings.get(tile, null)
+	if not buildings.has(tile):
+		return null
+	if not is_instance_valid(buildings[tile]):
+		buildings.erase(tile)
+		return null
+	return buildings[tile]
 
 
 func is_border(tile: Vector2i) -> bool:
@@ -110,7 +115,16 @@ func is_border(tile: Vector2i) -> bool:
 	return tile.x <= 1 or tile.y <= 1 or tile.x >= w - 2 or tile.y >= h - 2
 
 
+func is_on_ground(tile: Vector2i) -> bool:
+	var ground = get_tree().current_scene.get_node_or_null("Ground")
+	if ground and ground is IsoGround:
+		return ground.get_cell_source_id(tile) != -1
+	return true
+
+
 func is_occupied(tile: Vector2i) -> bool:
+	if not is_on_ground(tile):
+		return true
 	if buildings.has(tile) or is_border(tile):
 		return true
 	if wall_system and wall_system.nodes.has(tile):

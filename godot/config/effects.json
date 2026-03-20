@@ -1,0 +1,15 @@
+{
+	"build_dust": {
+		"sprite": "res://assets/sprites/effects/dust_puff.png",
+		"frames_path": "res://assets/sprites/effects/dust_puff/",
+		"particle_count": 24,
+		"spread_radius": 8.0,
+		"speed_min": 10.0,
+		"speed_max": 25.0,
+		"lifetime": 1,
+		"scale_min": 0.6,
+		"scale_max": 1.2,
+		"fps": 15.0,
+		"fade_out": true
+	}
+}

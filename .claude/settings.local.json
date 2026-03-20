@@ -80,7 +80,10 @@
       "Bash(cp \"$SRC/$dir/\"*.png \"animations/wand-cast/$dir/\")",
       "Bash(done)",
       "Bash(sed -i '/OcclusionFade.build_mode_active/d' godot/scripts/tools/build_tool.gd godot/scripts/tools/place_building_tool.gd)",
-      "Bash(sed -i '/OcclusionFade.build_mode_cursor/d' godot/scripts/tools/build_tool.gd godot/scripts/tools/place_building_tool.gd)"
+      "Bash(sed -i '/OcclusionFade.build_mode_cursor/d' godot/scripts/tools/build_tool.gd godot/scripts/tools/place_building_tool.gd)",
+      "Bash(mkdir -p \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/enemies/peasant\")",
+      "Bash(mv \"animations/custom-stabbing forward with a pitchfork, thrusting attac\" animations/pitchfork-attack)",
+      "Bash(grep -n \"for.*:$\" godot/scenes/enemies/enemy_base.gd)"
     ]
   }
 }

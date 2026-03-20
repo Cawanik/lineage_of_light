@@ -158,6 +158,7 @@ func _physics_process(delta: float) -> void:
 			is_afk = true
 
 	move_and_slide()
+
 	_update_animation(input)
 
 	# Обновляем позицию курсора для occlusion
@@ -210,6 +211,11 @@ func _vec_to_direction(v: Vector2) -> String:
 
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
+		_cast_magic_bolt()
+
+
+func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			move_target = get_global_mouse_position()
@@ -224,9 +230,6 @@ func _input(event: InputEvent) -> void:
 		move_target = get_global_mouse_position()
 		using_mouse_move = true
 		_reset_afk()
-
-	if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
-		_cast_magic_bolt()
 
 
 func _cast_magic_bolt() -> void:

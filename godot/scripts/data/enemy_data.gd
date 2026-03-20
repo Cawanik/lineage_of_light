@@ -4,15 +4,18 @@ extends RefCounted
 # Enemy definitions matching art bible epochs
 const ENEMIES = {
 	"hero_barbarian": {
-		"name": "Варвар",
+		"name": "Крестьянин",
 		"epoch": 1,
 		"hp": 80,
 		"speed": 60.0,
 		"reward": 10,
 		"damage_to_base": 1,
 		"wall_dps": 15.0,
-		"color": Color("#8b5e3c"),  # Stone Brick (warm)
-		"accent": Color("#f0d060"),  # Pale Gold (torch)
+		"color": Color("#8b5e3c"),
+		"accent": Color("#f0d060"),
+		"sprite_path": "res://assets/sprites/enemies/peasant/",
+		"walk_anim": "walking-8-frames",
+		"attack_anim": "pitchfork-attack",
 	},
 	"hero_knight": {
 		"name": "Рыцарь",

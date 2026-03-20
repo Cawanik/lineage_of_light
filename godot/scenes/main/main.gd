@@ -32,6 +32,8 @@ const SLOT_ACTIVE_COLOR = Color(0.7, 0.4, 1.0, 1.0)
 const SLOT_DEFAULT_COLOR = Color(1.0, 1.0, 1.0, 1.0)
 
 var throne_scene: PackedScene = preload("res://scenes/buildings/throne.tscn")
+var _camera_focused: bool = false
+var _focus_building: Node2D = null
 
 
 func _ready() -> void:
@@ -47,6 +49,12 @@ func _ready() -> void:
 	build_button.pressed.connect(_on_build_button_pressed)
 	demolish_button.pressed.connect(_on_demolish_button_pressed)
 	move_button.pressed.connect(_on_move_button_pressed)
+
+	# Ховер-эффекты на кнопки тулбара
+	for btn in [build_button, demolish_button, move_button]:
+		btn.mouse_entered.connect(func(): btn.modulate = Color(1.3, 1.1, 1.4, 1.0))
+		btn.mouse_exited.connect(func(): btn.modulate = Color.WHITE)
+		btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
 	# Place throne on tile (берём позицию из Ground)
 	var ground = get_node_or_null("Ground") as IsoGround
@@ -144,8 +152,17 @@ func _process(_delta: float) -> void:
 	if active_tool:
 		active_tool.update()
 
+	# Автовозврат камеры при движении игрока
+	if _camera_focused:
+		var player_node = get_node_or_null("YSort/Player") as Player
+		if player_node and player_node.velocity.length() > 1.0:
+			_unfocus_camera()
+
 
 func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F1:
+		_unfocus_camera()
+		return
 	if event is InputEventKey and event.pressed and event.keycode == KEY_F9:
 		_print_matrix()
 		return
@@ -164,12 +181,92 @@ func _input(event: InputEvent) -> void:
 			if b and b.has_method("toggle_adjust"):
 				b.toggle_adjust()
 		return
-	if active_tool and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		active_tool.click()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		if active_tool:
+			active_tool.click()
+		else:
+			_try_focus_building()
 
 	# N key — start next wave (quick hotkey)
 	if event is InputEventKey and event.pressed and event.keycode == KEY_N:
 		WaveManager.start_next_wave()
+
+
+func _try_focus_building() -> void:
+	var mouse_pos = get_global_mouse_position()
+	var tile = building_grid.find_nearest_building(mouse_pos, 30.0)
+	if tile == Vector2i(-9999, -9999):
+		if _camera_focused:
+			_unfocus_camera()
+		return
+	var building = building_grid.get_building(tile)
+	if not building:
+		return
+
+	var player_node = get_node_or_null("YSort/Player") as Player
+	if not player_node or not player_node.camera:
+		return
+
+	# Сбрасываем предыдущий фокус если был
+	if _camera_focused:
+		for t in building_grid.buildings:
+			var b2 = building_grid.get_building(t)
+			if b2:
+				b2.modulate = Color.WHITE
+		BuildingInfoPanel.hide_panel(get_tree())
+
+	_focus_building = building
+	_camera_focused = true
+
+	var target_pos = building_grid.tile_to_world(tile)
+	var camera_offset = target_pos - player_node.global_position
+	# Ограничиваем offset чтобы не вылезти за лимиты камеры
+	var cam = player_node.camera
+	var viewport_size = get_viewport().get_visible_rect().size
+	var half_w = viewport_size.x / (2.0 * cam.zoom.x)
+	var half_h = viewport_size.y / (2.0 * cam.zoom.y)
+	var max_offset_x = maxf(0, (cam.limit_right - cam.limit_left) / 2.0 - half_w)
+	var max_offset_y = maxf(0, (cam.limit_bottom - cam.limit_top) / 2.0 - half_h)
+	camera_offset.x = clampf(camera_offset.x, -max_offset_x, max_offset_x)
+	camera_offset.y = clampf(camera_offset.y, -max_offset_y, max_offset_y)
+
+	var tween = create_tween()
+	tween.tween_property(cam, "offset", camera_offset, 0.4).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+
+	# Отключаем occlusion fade и затемняем все здания кроме выбранного
+	OcclusionFade.focus_mode = true
+	for t in building_grid.buildings:
+		var b = building_grid.get_building(t)
+		if b and b != building:
+			b.modulate = Color(1, 1, 1, 0.3)
+	building.modulate = Color(1, 1, 1, 1)
+
+	# Показываем инфо-панель
+	BuildingInfoPanel.show_for(building, target_pos, get_tree())
+
+
+func _unfocus_camera() -> void:
+	if not _camera_focused:
+		return
+	var player_node = get_node_or_null("YSort/Player") as Player
+	if not player_node or not player_node.camera:
+		return
+
+	_camera_focused = false
+	_focus_building = null
+	BuildingInfoPanel.hide_panel(get_tree())
+
+	# Восстанавливаем прозрачность и occlusion
+	OcclusionFade.focus_mode = false
+	for tile in building_grid.buildings:
+		var b = building_grid.get_building(tile)
+		if b:
+			b.modulate = Color.WHITE
+
+	var tween = create_tween()
+	tween.tween_property(player_node.camera, "offset", Vector2.ZERO, 0.4).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
 
 
 func _on_wave_started(wave_number: int) -> void:

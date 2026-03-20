@@ -15,6 +15,7 @@ var player: Dictionary = {}
 var buildings: Dictionary = {}
 var game: Dictionary = {}
 var projectiles: Dictionary = {}
+var effects: Dictionary = {}
 
 const CONFIG_DIR = "res://config/"
 
@@ -24,6 +25,7 @@ func _ready() -> void:
 	buildings = _load_json(CONFIG_DIR + "buildings.json")
 	game = _load_json(CONFIG_DIR + "game.json")
 	projectiles = _load_json(CONFIG_DIR + "projectiles.json")
+	effects = _load_json(CONFIG_DIR + "effects.json")
 
 
 func _load_json(path: String) -> Dictionary:

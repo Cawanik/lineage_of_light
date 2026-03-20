@@ -50,6 +50,8 @@ func _ready() -> void:
 	_initialized = true
 	_rebuild_tileset()
 	_update_marker()
+	if not Engine.is_editor_hint():
+		call_deferred("_create_border_collision")
 
 
 func _rebuild_tileset() -> void:
@@ -142,6 +144,45 @@ func _draw_marker() -> void:
 	for i in range(4):
 		_marker.draw_line(diamond[i], diamond[(i + 1) % 4], Color(0.8, 0.0, 1.0, 0.8), 2.0)
 	_marker.draw_string(ThemeDB.fallback_font, Vector2(-20, -22), "THRONE", HORIZONTAL_ALIGNMENT_CENTER, -1, 12, Color(1, 1, 1, 0.9))
+
+
+func _create_border_collision() -> void:
+	# Создаём невидимые стенки по краю тайлмапа
+	if not tile_set:
+		return
+	var cells = get_used_cells()
+	var cell_set = {}
+	for c in cells:
+		cell_set[c] = true
+
+	var dirs = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	var outside_cells: Dictionary = {}
+
+	# Собираем пустые тайлы, граничащие с картой
+	for cell in cells:
+		for dir in dirs:
+			var neighbor = cell + dir
+			if not cell_set.has(neighbor):
+				outside_cells[neighbor] = true
+
+	# Ставим StaticBody на каждый пустой тайл за краем карты
+	for cell in outside_cells:
+		var world_pos = map_to_local(cell)
+		var body = StaticBody2D.new()
+		body.position = world_pos
+		body.collision_layer = 1
+		body.collision_mask = 0
+
+		var shape = CollisionShape2D.new()
+		var poly = ConvexPolygonShape2D.new()
+		var hw = 32.0
+		var hh = 16.0
+		poly.points = PackedVector2Array([
+			Vector2(0, -hh), Vector2(hw, 0), Vector2(0, hh), Vector2(-hw, 0)
+		])
+		shape.shape = poly
+		body.add_child(shape)
+		add_child(body)
 
 
 func is_border(x: int, y: int) -> bool:

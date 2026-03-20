@@ -12,7 +12,7 @@
 		"move_cost": 0
 	},
 	"archer_tower": {
-		"name": "Башня лучников",
+		"name": "Лучники",
 		"cost": 50,
 		"desc": "Тёмная башня со скелетами-лучниками. Стреляет по врагам.",
 		"hp": 200,
@@ -25,7 +25,12 @@
 		"move_cost": 25,
 		"unit_idle": "res://assets/sprites/buildings/skeleton_archer/animations/breathing-idle/south",
 		"unit_offset": [0.0, -85.0],
-		"unit_offset_jitter": 5
+		"unit_offset_jitter": 5,
+		"upgrades": [
+			{"name": "Укреплённые лучники", "cost": 75, "hp_bonus": 100, "desc": "+100 HP"},
+			{"name": "Огненные стрелы", "cost": 120, "damage_bonus": 5, "desc": "+5 урон"},
+			{"name": "Двойная башня", "cost": 200, "hp_bonus": 150, "extra_units": 1, "desc": "+150 HP, +1 лучник"}
+		]
 	},
 	"wall_block": {
 		"name": "Стена",
@@ -39,7 +44,11 @@
 		"can_build": true,
 		"can_demolish": true,
 		"can_move": true,
-		"move_cost": 5
+		"move_cost": 5,
+		"upgrades": [
+			{"name": "Укреплённая стена", "cost": 20, "hp_bonus": 50, "desc": "+50 HP"},
+			{"name": "Шипы", "cost": 40, "damage_bonus": 3, "desc": "+3 урон при контакте"}
+		]
 	},
 	"wall": {
 		"name": "Стена (процедурная)",

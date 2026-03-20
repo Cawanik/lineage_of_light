@@ -25,6 +25,7 @@ var can_build: bool = true
 var can_demolish: bool = true
 var can_move: bool = true
 var move_cost: int = 0
+var upgrade_level: int = 0
 var _adjust_mode: bool = false
 
 @onready var sprite: Sprite2D = $Sprite2D
