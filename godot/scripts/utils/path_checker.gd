@@ -31,7 +31,15 @@ static func can_place_building(building_grid: BuildingGrid, tile: Vector2i, free
 	var extra_free = {}
 	if free_tile != Vector2i(-9999, -9999):
 		extra_free[free_tile] = true
-	return _bfs(throne_tile, border_tiles, building_grid, extra_blocked, extra_free)
+
+	# Если перемещаем трон — BFS стартует с новой позиции
+	var bfs_start = throne_tile
+	if free_tile == throne_tile:
+		bfs_start = tile
+		# Трон на новом месте — не блокируем его
+		extra_blocked.erase(tile)
+
+	return _bfs(bfs_start, border_tiles, building_grid, extra_blocked, extra_free)
 
 
 static func has_path_to_border(building_grid: BuildingGrid) -> bool:
