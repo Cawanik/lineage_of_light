@@ -18,6 +18,7 @@ extends BaseTool
 
 var _moving_building_tile: Vector2i = Vector2i(-9999, -9999)
 var _moving_building: bool = false
+var _moving_building_type: String = ""
 var _hovered_building_tile: Vector2i = Vector2i(-9999, -9999)
 var _preview_node: Node2D = null  # container at tile position
 var _preview_sprite: Sprite2D = null
@@ -77,6 +78,7 @@ func _start_building_move(tile: Vector2i) -> void:
 	var building = get_building_grid().get_building(tile)
 	if building:
 		building.modulate = Color(0.5, 0.7, 1.0)
+		_moving_building_type = building.building_type
 
 		# Create preview: container + sprite child
 		var data = Config.buildings.get(building.building_type, {})
@@ -122,8 +124,10 @@ func _finish_building_move() -> void:
 			building.modulate = Color.WHITE
 
 	_clear_preview()
+	_clear_range_highlights()
 	_moving_building = false
 	_moving_building_tile = Vector2i(-9999, -9999)
+	_moving_building_type = ""
 	wall_system.move_mode = true
 
 
@@ -159,6 +163,7 @@ func _update_building_preview() -> void:
 		if color.g > 0.5:
 			color = Color(0.4, 0.8, 1.0, 0.5)
 		_preview_sprite.modulate = color
+		show_attack_range(tile, _moving_building_type)
 
 
 func _clear_preview() -> void:
