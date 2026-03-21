@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://b2cj0ceoixmc3"]
+
+[ext_resource type="Script" uid="uid://56en3rgnf6jj" path="res://scenes/ui/start_wave_button.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dfedlx2siw7l8" path="res://assets/sprites/ui/start_wave_btn.png" id="2_bg"]
+
+[node name="StartWaveButton" type="TextureRect" unique_id=1754267395]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 65.0
+offset_right = 120.0
+offset_bottom = 174.0
+grow_horizontal = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("1_script")
+
+[node name="VBox" type="VBoxContainer" parent="." unique_id=130944735]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 2
+
+[node name="TitleLabel" type="Label" parent="VBox" unique_id=1640481355]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "Пропустить фазу 
+строительства"
+horizontal_alignment = 1
+
+[node name="WaveLabel" type="Label" parent="VBox" unique_id=2019552270]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.4, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "1 / 15"
+horizontal_alignment = 1

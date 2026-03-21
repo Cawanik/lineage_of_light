@@ -24,9 +24,9 @@ signal building_selected(building_type: String)
 
 @export_group("Заголовок")
 @export var title_text: String = "СТРОЙ"
-@export var font_size: int = 16
-@export var cost_font_size: int = 12
-@export var hotkey_font_size: int = 12
+@export var font_size: int = 22
+@export var cost_font_size: int = 22
+@export var hotkey_font_size: int = 22
 
 @onready var item_list: VBoxContainer = $Margin/VBox/Scroll/ItemList
 @onready var title_label: Label = $Margin/VBox/Title

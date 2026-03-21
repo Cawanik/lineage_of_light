@@ -92,6 +92,14 @@ text = "Reset Game"
 layout_mode = 2
 text = "Disable Debug Logs"
 
+[node name="AddGoldButton" type="Button" parent="Background/VBoxContainer/ControlsSection"]
+layout_mode = 2
+text = "+111 Gold"
+
+[node name="AddSoulsButton" type="Button" parent="Background/VBoxContainer/ControlsSection"]
+layout_mode = 2
+text = "+111 Souls"
+
 [node name="HSeparator3" type="HSeparator" parent="Background/VBoxContainer"]
 layout_mode = 2
 

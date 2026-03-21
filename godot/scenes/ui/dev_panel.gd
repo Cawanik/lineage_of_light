@@ -10,6 +10,8 @@ extends Control
 @onready var test_path_button = $Background/VBoxContainer/ControlsSection/TestPathButton
 @onready var reset_game_button = $Background/VBoxContainer/ControlsSection/ResetGameButton
 @onready var toggle_debug_button = $Background/VBoxContainer/ControlsSection/ToggleDebugButton  
+@onready var add_gold_button = $Background/VBoxContainer/ControlsSection/AddGoldButton
+@onready var add_souls_button = $Background/VBoxContainer/ControlsSection/AddSoulsButton
 @onready var toggle_button = $Background/VBoxContainer/ToggleButton
 
 var is_panel_visible: bool = true
@@ -29,6 +31,8 @@ func _ready() -> void:
 	test_path_button.pressed.connect(_on_test_path_pressed)
 	reset_game_button.pressed.connect(_on_reset_game_pressed)
 	toggle_debug_button.pressed.connect(_on_toggle_debug_pressed)
+	add_gold_button.pressed.connect(_on_add_gold_pressed)
+	add_souls_button.pressed.connect(_on_add_souls_pressed)
 	toggle_button.pressed.connect(_on_toggle_pressed)
 	
 	# Connect to game signals for live updates
@@ -114,6 +118,17 @@ func _on_toggle_debug_pressed() -> void:
 	debug_enabled = not debug_enabled
 	toggle_debug_button.text = "Enable Debug Logs" if not debug_enabled else "Disable Debug Logs" 
 	print("DevPanel: Debug logging %s" % ("enabled" if debug_enabled else "disabled"))
+
+
+func _on_add_gold_pressed() -> void:
+	GameManager.gold += 111
+
+
+func _on_add_souls_pressed() -> void:
+	if "souls" in GameManager:
+		GameManager.souls += 111
+	else:
+		GameManager.set("souls", 111)
 
 
 func _on_toggle_pressed() -> void:

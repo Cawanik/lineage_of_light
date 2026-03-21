@@ -37,6 +37,7 @@ func _on_update() -> void:
 	preview.scale = Vector2(sc[0], sc[1])
 
 	preview.modulate = get_preview_color(tile)
+	show_attack_range(tile, building_type)
 
 
 func _on_click() -> void:

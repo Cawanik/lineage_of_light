@@ -34,6 +34,7 @@ const SLOT_DEFAULT_COLOR = Color(1.0, 1.0, 1.0, 1.0)
 var throne_scene: PackedScene = preload("res://scenes/buildings/throne.tscn")
 var _camera_focused: bool = false
 var _focus_building: Node2D = null
+var _focus_range_highlights: Array[Node2D] = []
 
 
 func _ready() -> void:
@@ -243,8 +244,60 @@ func _try_focus_building() -> void:
 			b.modulate = Color(1, 1, 1, 0.3)
 	building.modulate = Color(1, 1, 1, 1)
 
-	# Показываем инфо-панель
+	# Показываем инфо-панель и радиус атаки
 	BuildingInfoPanel.show_for(building, target_pos, get_tree())
+	_show_focus_range(tile, building.building_type)
+
+
+func _show_focus_range(tile: Vector2i, btype: String) -> void:
+	_clear_focus_range()
+	var data = Config.buildings.get(btype, {})
+	var range_cardinal = int(data.get("attack_range_cardinal", 0))
+	var range_diagonal = int(data.get("attack_range_diagonal", 0))
+	if range_cardinal == 0 and range_diagonal == 0:
+		return
+
+	var ground = get_node_or_null("Ground") as TileMapLayer
+	var ysort = get_node_or_null("YSort")
+	if not ground or not ysort:
+		return
+
+	var r = float(range_cardinal) + 0.5
+	for dx in range(-range_cardinal, range_cardinal + 1):
+		for dy in range(-range_cardinal, range_cardinal + 1):
+			if dx == 0 and dy == 0:
+				continue
+			if sqrt(float(dx * dx + dy * dy)) > r:
+				continue
+			var t = tile + Vector2i(dx, dy)
+			if not building_grid.is_on_ground(t):
+				continue
+
+			var marker = Node2D.new()
+			marker.position = ground.map_to_local(t) + ground.position
+			marker.z_index = 85
+			marker.modulate = Color(1, 1, 1, 0.4)
+			var draw_node = marker
+			draw_node.draw.connect(func():
+				var hw = 32.0
+				var hh = 16.0
+				var diamond = PackedVector2Array([
+					Vector2(0, -hh), Vector2(hw, 0), Vector2(0, hh), Vector2(-hw, 0)
+				])
+				draw_node.draw_colored_polygon(diamond, Color(0.3, 0.6, 1.0, 0.3))
+				for i in range(4):
+					draw_node.draw_line(diamond[i], diamond[(i + 1) % 4], Color(0.4, 0.7, 1.0, 0.6), 1.5)
+			)
+			ysort.add_child(marker)
+			marker.queue_redraw()
+			_focus_range_highlights.append(marker)
+
+
+func _clear_focus_range() -> void:
+	for h in _focus_range_highlights:
+		if is_instance_valid(h):
+			h.queue_free()
+	_focus_range_highlights.clear()
 
 
 func _unfocus_camera() -> void:
@@ -257,6 +310,7 @@ func _unfocus_camera() -> void:
 	_camera_focused = false
 	_focus_building = null
 	BuildingInfoPanel.hide_panel(get_tree())
+	_clear_focus_range()
 
 	# Восстанавливаем прозрачность и occlusion
 	OcclusionFade.focus_mode = false

@@ -28,6 +28,13 @@ var move_cost: int = 0
 var upgrade_level: int = 0
 var _adjust_mode: bool = false
 
+# Атака
+var attack_range_cardinal: int = 0
+var attack_range_diagonal: int = 0
+var attack_speed: float = 0.0
+var attack_projectile: String = ""
+var _attack_timer: float = 0.0
+
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var hp_bar_bg: ColorRect = $HPBarBG
 @onready var hp_bar: ColorRect = $HPBar
@@ -39,6 +46,17 @@ const ISO_RATIO = 0.5
 func _process(_delta: float) -> void:
 	OcclusionFade.find_player(get_tree())
 	OcclusionFade.update_node_fade(self)
+
+	# Атака врагов
+	if attack_speed > 0 and PhaseManager.is_combat_phase():
+		_attack_timer -= _delta
+		if _attack_timer <= 0:
+			var target = _find_enemy_in_range()
+			if target:
+				_shoot(target)
+				_attack_timer = 1.0 / attack_speed
+			else:
+				_attack_timer = 0.1  # Быстрее проверяем когда нет цели
 
 
 func setup(type: String) -> void:
@@ -61,6 +79,11 @@ func setup(type: String) -> void:
 	can_demolish = data.get("can_demolish", true)
 	can_move = data.get("can_move", true)
 	move_cost = data.get("move_cost", 0)
+
+	attack_range_cardinal = int(data.get("attack_range_cardinal", 0))
+	attack_range_diagonal = int(data.get("attack_range_diagonal", 0))
+	attack_speed = data.get("attack_speed", 0.0)
+	attack_projectile = data.get("attack_projectile", "")
 
 	_create_tile_collision()
 	_setup_unit(data)
@@ -112,6 +135,20 @@ func _setup_unit(data: Dictionary) -> void:
 		else:
 			break
 
+	# Анимация атаки
+	var attack_path = data.get("unit_attack", "")
+	if attack_path != "":
+		var attack_name = "attack"
+		frames.add_animation(attack_name)
+		frames.set_animation_speed(attack_name, 12.0)
+		frames.set_animation_loop(attack_name, false)
+		for i in range(100):
+			var path = attack_path + "/frame_%03d.png" % i
+			if ResourceLoader.exists(path):
+				frames.add_frame(attack_name, load(path))
+			else:
+				break
+
 	if frames.has_animation("default"):
 		frames.remove_animation("default")
 
@@ -123,6 +160,58 @@ func _setup_unit(data: Dictionary) -> void:
 	unit_sprite.position = Vector2(unit_offset[0] + jx, unit_offset[1] + jy)
 	add_child(unit_sprite)
 	unit_sprite.play(idle_name)
+
+
+func _find_enemy_in_range() -> Node2D:
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	var my_tile = _get_my_tile()
+	if my_tile == Vector2i(-9999, -9999):
+		return null
+
+	var closest: Node2D = null
+	var closest_dist: float = 9999.0
+
+	for enemy in enemies:
+		if not is_instance_valid(enemy) or enemy.is_dead:
+			continue
+		var enemy_tile = enemy.current_tile
+		var dx = absi(enemy_tile.x - my_tile.x)
+		var dy = absi(enemy_tile.y - my_tile.y)
+
+		# Евклидово расстояние — круговой радиус
+		var euclidean = sqrt(float(dx * dx + dy * dy))
+		if euclidean <= float(attack_range_cardinal) + 0.5:
+			var dist = global_position.distance_to(enemy.global_position)
+			if dist < closest_dist:
+				closest_dist = dist
+				closest = enemy
+
+	return closest
+
+
+func _shoot(target: Node2D) -> void:
+	if attack_projectile == "":
+		return
+	Projectile.spawn(get_tree(), attack_projectile, global_position + Vector2(0, -40), target.global_position, target)
+	# Переключаем юнитов на анимацию стрельбы
+	for child in get_children():
+		if child is AnimatedSprite2D and child.name == "UnitSprite":
+			if child.sprite_frames.has_animation("attack"):
+				child.play("attack")
+				if not child.animation_finished.is_connected(_on_unit_attack_finished.bind(child)):
+					child.animation_finished.connect(_on_unit_attack_finished.bind(child), CONNECT_ONE_SHOT)
+
+
+func _on_unit_attack_finished(unit: AnimatedSprite2D) -> void:
+	if is_instance_valid(unit) and unit.sprite_frames.has_animation("idle"):
+		unit.play("idle")
+
+
+func _get_my_tile() -> Vector2i:
+	var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid") as BuildingGrid
+	if bg:
+		return bg.world_to_tile(global_position)
+	return Vector2i(-9999, -9999)
 
 
 func take_damage(amount: float) -> void:

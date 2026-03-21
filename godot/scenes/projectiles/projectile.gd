@@ -21,6 +21,9 @@ var homing: bool = false
 var hit_radius: float = 8.0
 var lifetime: float = 5.0
 var _age: float = 0.0
+var arc_height: float = 40.0
+var _start_pos: Vector2 = Vector2.ZERO
+var _total_dist: float = 0.0
 
 # Визуал
 var trail_enabled: bool = false
@@ -37,8 +40,12 @@ func setup(type: String, from: Vector2, to_pos: Vector2, to_node: Node2D = null)
 	target_pos = to_pos
 	target_node = to_node
 
+	_start_pos = from
+	_total_dist = from.distance_to(to_pos)
+
 	var data = _get_config()
 	speed = data.get("speed", 200.0)
+	arc_height = data.get("arc_height", 40.0)
 	damage = data.get("damage", 10.0)
 	homing = data.get("homing", false)
 	hit_radius = data.get("hit_radius", 8.0)
@@ -76,22 +83,28 @@ func _process(delta: float) -> void:
 	if homing and is_instance_valid(target_node):
 		target_pos = target_node.global_position
 
-	# Движение
-	var dir = (target_pos - position)
-	var dist = dir.length()
+	# Движение по дуге
+	var flat_dir = (target_pos - _start_pos)
+	var traveled = _age * speed
+	var progress = clampf(traveled / _total_dist, 0.0, 1.0) if _total_dist > 0 else 1.0
 
-	if dist < hit_radius:
+	if progress >= 0.99:
 		_on_hit()
 		return
 
-	var move = dir.normalized() * speed * delta
-	if move.length() > dist:
-		position = target_pos
-	else:
-		position += move
+	# Линейная позиция
+	var flat_pos = _start_pos.lerp(target_pos, progress)
 
-	# Поворот спрайта
-	sprite.rotation = dir.angle()
+	# Парабола: arc = 4 * h * t * (1 - t)
+	var arc_y = -arc_height * 4.0 * progress * (1.0 - progress)
+	position = flat_pos + Vector2(0, arc_y)
+
+	# Поворот спрайта по направлению движения
+	var next_progress = clampf(progress + 0.05, 0.0, 1.0)
+	var next_flat = _start_pos.lerp(target_pos, next_progress)
+	var next_arc_y = -arc_height * 4.0 * next_progress * (1.0 - next_progress)
+	var next_pos = next_flat + Vector2(0, next_arc_y)
+	sprite.rotation = (next_pos - position).angle()
 
 	# Трейл
 	if trail_enabled:

@@ -83,7 +83,10 @@
       "Bash(sed -i '/OcclusionFade.build_mode_cursor/d' godot/scripts/tools/build_tool.gd godot/scripts/tools/place_building_tool.gd)",
       "Bash(mkdir -p \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/enemies/peasant\")",
       "Bash(mv \"animations/custom-stabbing forward with a pitchfork, thrusting attac\" animations/pitchfork-attack)",
-      "Bash(grep -n \"for.*:$\" godot/scenes/enemies/enemy_base.gd)"
+      "Bash(grep -n \"for.*:$\" godot/scenes/enemies/enemy_base.gd)",
+      "Bash(rm -rf animations/bow-shot)",
+      "Bash(mkdir -p animations/bow-shot/south)",
+      "Bash(cp \"temp_extract/animations/custom-shooting a bow, drawing bowstring and releasing ar/south/\"*.png animations/bow-shot/south/)"
     ]
   }
 }

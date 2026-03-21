@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://crhdxovukmpdt"]
+
+[ext_resource type="Script" uid="uid://b8kwhoe101yqk" path="res://scenes/ui/currency_bar.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://c5ofggpgj0h1a" path="res://assets/sprites/ui/currency_bar_bg.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://beqb3mjug62c4" path="res://assets/sprites/ui/icon_gold.png" id="3_gold"]
+[ext_resource type="Texture2D" uid="uid://byr4imjdfuytu" path="res://assets/sprites/ui/icon_soul.png" id="4_soul"]
+
+[node name="CurrencyBar" type="TextureRect" unique_id=225147440]
+offset_left = 340.0
+offset_top = -5.0
+offset_right = 940.0
+offset_bottom = 70.0
+mouse_filter = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("1_script")
+
+[node name="HBox" type="HBoxContainer" parent="." unique_id=1419612699]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.55
+anchor_right = 1.0
+anchor_bottom = 0.55
+offset_left = 184.0
+offset_top = -18.25
+offset_right = -182.0
+offset_bottom = 13.75
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="GoldGroup" type="HBoxContainer" parent="HBox" unique_id=1961673599]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="GoldIcon" type="TextureRect" parent="HBox/GoldGroup" unique_id=90199595]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("3_gold")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GoldLabel" type="Label" parent="HBox/GoldGroup" unique_id=1732926662]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.941, 0.816, 0.376, 1)
+theme_override_font_sizes/font_size = 18
+text = "150К"
+clip_text = true
+
+[node name="TimerLabel" type="Label" parent="HBox" unique_id=1871147244]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.85, 0.8, 1)
+theme_override_font_sizes/font_size = 18
+text = "05:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="SoulGroup" type="HBoxContainer" parent="HBox" unique_id=1211065774]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="SoulIcon" type="TextureRect" parent="HBox/SoulGroup" unique_id=1568092030]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("4_soul")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SoulLabel" type="Label" parent="HBox/SoulGroup" unique_id=839530846]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.4, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "150К"
+clip_text = true

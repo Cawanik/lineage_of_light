@@ -32,6 +32,7 @@ func deactivate() -> void:
 		_on_deactivate()
 	is_active = false
 	_clear_path_highlights()
+	_clear_range_highlights()
 
 
 func update() -> void:
@@ -40,7 +41,7 @@ func update() -> void:
 
 
 func click() -> void:
-	if is_active:
+	if is_active and PhaseManager.is_build_phase():
 		_on_click()
 
 
@@ -128,6 +129,71 @@ func _clear_path_highlights() -> void:
 		if is_instance_valid(h):
 			h.queue_free()
 	_path_highlights.clear()
+
+
+var _range_highlights: Array[Node2D] = []
+
+
+func show_attack_range(tile: Vector2i, building_type: String) -> void:
+	_clear_range_highlights()
+	var data = Config.buildings.get(building_type, {})
+	var range_cardinal = int(data.get("attack_range_cardinal", 0))
+	var range_diagonal = int(data.get("attack_range_diagonal", 0))
+	if range_cardinal == 0 and range_diagonal == 0:
+		return
+
+	var bg = get_building_grid()
+	if not bg:
+		return
+
+	var ground = wall_system.get_tree().current_scene.get_node_or_null("Ground") as TileMapLayer
+	if not ground:
+		return
+
+	var ysort = wall_system.get_tree().current_scene.get_node_or_null("YSort")
+	if not ysort:
+		return
+
+	# Собираем тайлы в радиусе (Евклидов круг)
+	var r = float(range_cardinal) + 0.5
+	var tiles_in_range: Array[Vector2i] = []
+	for dx in range(-range_cardinal, range_cardinal + 1):
+		for dy in range(-range_cardinal, range_cardinal + 1):
+			if dx == 0 and dy == 0:
+				continue
+			if sqrt(float(dx * dx + dy * dy)) <= r:
+				tiles_in_range.append(tile + Vector2i(dx, dy))
+
+	for t in tiles_in_range:
+		if not bg.is_on_ground(t):
+			continue
+		var marker = Node2D.new()
+		var world_pos = ground.map_to_local(t) + ground.position
+		marker.position = world_pos
+		marker.z_index = 85
+		marker.modulate = Color(1, 1, 1, 0.4)
+
+		var hw = 32.0
+		var hh = 16.0
+		var draw_node = marker
+		draw_node.draw.connect(func():
+			var diamond = PackedVector2Array([
+				Vector2(0, -hh), Vector2(hw, 0), Vector2(0, hh), Vector2(-hw, 0)
+			])
+			draw_node.draw_colored_polygon(diamond, Color(0.3, 0.6, 1.0, 0.3))
+			for i in range(4):
+				draw_node.draw_line(diamond[i], diamond[(i + 1) % 4], Color(0.4, 0.7, 1.0, 0.6), 1.5)
+		)
+		ysort.add_child(marker)
+		marker.queue_redraw()
+		_range_highlights.append(marker)
+
+
+func _clear_range_highlights() -> void:
+	for h in _range_highlights:
+		if is_instance_valid(h):
+			h.queue_free()
+	_range_highlights.clear()
 
 
 func _find_building_grid() -> BuildingGrid:

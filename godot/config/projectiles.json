@@ -13,12 +13,15 @@
 	},
 	"arrow": {
 		"name": "Стрела",
-		"speed": 300.0,
+		"speed": 200.0,
 		"damage": 10.0,
 		"homing": false,
-		"hit_radius": 8.0,
+		"hit_radius": 12.0,
 		"lifetime": 3.0,
-		"trail": false,
+		"arc_height": 50.0,
+		"trail": true,
+		"trail_length": 6,
+		"trail_color": "#ffffffaa",
 		"scale": 0.4
 	},
 	"fireball": {
