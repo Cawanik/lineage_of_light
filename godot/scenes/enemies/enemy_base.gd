@@ -3,17 +3,21 @@ extends Node2D
 
 ## Grid-based enemy with AStarGrid2D pathfinding and wall attack FSM.
 
-@onready var body: CharacterBody2D = $Body
-@onready var sprite: ColorRect = $Body/Sprite
-@onready var accent_sprite: ColorRect = $Body/AccentSprite
-@onready var hp_bar_bg: ColorRect = $Body/HPBarBG
-@onready var hp_bar: ColorRect = $Body/HPBar
+@onready var sprite: ColorRect = $Sprite
+@onready var accent_sprite: ColorRect = $AccentSprite
+@onready var hp_bar_bg: ColorRect = $HPBarBG
+@onready var hp_bar: ColorRect = $HPBar
 var anim_sprite: AnimatedSprite2D = null
 var has_anim_sprite: bool = false
 const ANIM_DIRECTIONS = ["south", "south-east", "east", "north-east", "north"]
 
+# Визуальный jitter — чтобы враги не стакались
+var visual_jitter: Vector2 = Vector2.ZERO
+const JITTER_RANGE = 8.0
+
 var enemy_type: String = "hero_barbarian"
 var enemy_data: Dictionary = {}
+var brain: EnemyBrain = null
 
 var max_hp: float = 100.0
 var hp: float = 100.0
@@ -62,14 +66,44 @@ func setup(type: String) -> void:
 	reward = enemy_data["reward"]
 	damage_to_base = enemy_data["damage_to_base"]
 	wall_dps = enemy_data.get("wall_dps", 10.0)
+	_init_brain()
+
+
+func _init_brain() -> void:
+	var brain_type = enemy_data.get("brain", "peasant")
+	match brain_type:
+		"peasant":
+			brain = PeasantBrain.new()
+		"knight":
+			brain = KnightBrain.new()
+		"mage":
+			brain = MageBrain.new()
+		_:
+			brain = PeasantBrain.new()
+	brain.setup(self)
+
+
+## Публичные методы для мозгов
+func start_wall_attack(wall_key: String) -> void:
+	attacking_edge_key = wall_key
+	state = State.ATTACKING_WALL
+	attack_timer = 0.0
+
+
+func find_alternative_path() -> Array[Vector2i]:
+	# Ищем путь в обход текущей стены
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if ps and ps.has_method("find_path"):
+		return ps.find_path(current_tile, ps.throne_tile)
+	return []
 
 
 func _ready() -> void:
 	if enemy_data.is_empty():
 		enemy_data = EnemyData.ENEMIES[enemy_type]
 
-	body.collision_layer = 2
-	body.collision_mask = 1
+	# Рандомный jitter при спавне
+	visual_jitter = Vector2(randf_range(-JITTER_RANGE, JITTER_RANGE), randf_range(-JITTER_RANGE * 0.5, JITTER_RANGE * 0.5))
 
 	# Пробуем загрузить спрайты
 	_setup_animated_sprite()
@@ -169,7 +203,7 @@ func _setup_animated_sprite() -> void:
 	anim_sprite.sprite_frames = frames
 	anim_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	anim_sprite.position = Vector2(0, -12)
-	body.add_child(anim_sprite)
+	add_child(anim_sprite)
 	anim_sprite.play("walk_south")
 
 	# Прячем ColorRect
@@ -221,7 +255,7 @@ func set_victory_state() -> void:
 	"""Called by GameManager when throne is destroyed - stop all AI activity"""
 	state = State.VICTORY
 	sprite.modulate = Color.GRAY  # Visual indication
-	body.velocity = Vector2.ZERO
+	pass
 
 
 func _on_path_grid_changed() -> void:
@@ -331,24 +365,9 @@ func _process_movement(delta: float) -> void:
 	# Обновляем анимацию по направлению движения
 	_update_enemy_anim(to_world - from_world)
 
-	# PHYSICS SEPARATION: Only use CharacterBody2D for wall collision detection
-	# Set target position first
-	var desired_movement = target_pos - body.global_position
-	body.velocity = desired_movement.normalized() * current_speed
-	
-	# Test for wall collision using move_and_slide
-	var original_position = body.global_position
-	body.global_position = original_position  # Reset position
-	body.velocity = desired_movement.normalized() * current_speed
-	body.move_and_slide()
-	
-	var collision_detected = body.get_slide_collision_count() > 0
-	if collision_detected:
-		# Reset body position after collision test
-		body.global_position = original_position
-	
-	if collision_detected:
-		# WALL HIT: Switch to attacking nearest wall
+	# Проверяем столкновение с постройкой/стеной на следующем тайле
+	# Игнорируем border тайлы (спавн-зоны) — враги могут по ним ходить
+	if move_progress < 0.3 and building_grid and not building_grid.is_border(target_tile) and (building_grid.buildings.has(target_tile) or (building_grid.wall_system and building_grid.wall_system.nodes.has(target_tile))):
 		var closest_wall = _find_nearest_wall_edge()
 		if closest_wall != "":
 			attacking_edge_key = closest_wall
@@ -356,13 +375,11 @@ func _process_movement(delta: float) -> void:
 			attack_timer = 0.0
 			_update_enemy_anim(to_world - from_world)
 		else:
-			# No wall found, try alternate pathfinding
 			repath()
 		return
-	
-	# NO COLLISION: Update positions normally
-	global_position = target_pos
-	body.global_position = target_pos
+
+	# Двигаемся + jitter
+	global_position = target_pos + visual_jitter
 
 	if move_progress >= 1.0:
 		current_tile = target_tile
@@ -523,14 +540,14 @@ var attack_anchor_position: Vector2
 func _anchor_for_building_attack(building: Building) -> void:
 	# Set stable attack position near the building, with collision padding
 	var building_pos = building.global_position
-	var offset = (global_position - building_pos).normalized() * 32.0  # 32px distance
-	attack_anchor_position = building_pos + offset
+	var offset = (global_position - building_pos).normalized() * 32.0
+	attack_anchor_position = building_pos + offset + visual_jitter
 
 
 func _maintain_attack_anchor() -> void:
 	# Keep enemy at stable attack position to prevent bouncing
 	if attack_anchor_position != Vector2.ZERO:
-		body.global_position = attack_anchor_position
+		global_position = attack_anchor_position
 		global_position = attack_anchor_position
 
 
@@ -538,10 +555,10 @@ func _stabilize_physics_after_wall_destruction() -> void:
 	# CRITICAL: Prevent teleportation bug when walls are destroyed
 	
 	# Stop all velocity immediately
-	body.velocity = Vector2.ZERO
+	pass
 	
 	# Validate and clamp position to prevent out-of-bounds teleportation
-	var current_pos = body.global_position
+	var current_pos = global_position
 	var world_bounds = Rect2(0, 0, 30 * 64, 30 * 64)  # 30x30 grid * 64px cell size
 	
 	if not world_bounds.has_point(current_pos):
@@ -549,7 +566,7 @@ func _stabilize_physics_after_wall_destruction() -> void:
 			clampf(current_pos.x, world_bounds.position.x + 32, world_bounds.end.x - 32),
 			clampf(current_pos.y, world_bounds.position.y + 32, world_bounds.end.y - 32)
 		)
-		body.global_position = current_pos
+		global_position = current_pos
 		global_position = current_pos
 		
 	# Update current tile to match stabilized position
@@ -564,7 +581,7 @@ func _start_building_attack(building: Building) -> void:
 	attacking_building = building
 	state = State.ATTACKING_BUILDING
 	attack_timer = 0.0
-	var dir_to_building = building.global_position - body.global_position
+	var dir_to_building = building.global_position - global_position
 	_update_enemy_anim(dir_to_building)
 	sprite.modulate = Color(1.5, 1.0, 1.0)  # Red tint while attacking
 	
@@ -576,13 +593,13 @@ func _process_building_attack(delta: float) -> void:
 	if not attacking_building or not is_instance_valid(attacking_building):
 		sprite.modulate = Color.WHITE
 		attacking_building = null
-		body.velocity = Vector2.ZERO  # Stop movement to prevent physics issues
+		pass  # Stop movement to prevent physics issues
 		state = State.MOVING
 		repath()
 		return
 	
 	# PHYSICS FIX: Maintain stable attack position, disable collision physics during attack
-	body.velocity = Vector2.ZERO  # Prevent bouncing from collisions
+	pass  # Prevent bouncing from collisions
 	_maintain_attack_anchor()
 	
 	# Check if building is still adjacent
@@ -605,7 +622,7 @@ func _process_building_attack(delta: float) -> void:
 		if attacking_building.hp <= 0:
 			sprite.modulate = Color.WHITE
 			attacking_building = null
-			body.velocity = Vector2.ZERO
+			pass
 			state = State.MOVING
 			repath()
 

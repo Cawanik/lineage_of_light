@@ -86,7 +86,10 @@
       "Bash(grep -n \"for.*:$\" godot/scenes/enemies/enemy_base.gd)",
       "Bash(rm -rf animations/bow-shot)",
       "Bash(mkdir -p animations/bow-shot/south)",
-      "Bash(cp \"temp_extract/animations/custom-shooting a bow, drawing bowstring and releasing ar/south/\"*.png animations/bow-shot/south/)"
+      "Bash(cp \"temp_extract/animations/custom-shooting a bow, drawing bowstring and releasing ar/south/\"*.png animations/bow-shot/south/)",
+      "Bash(rm -rf animations/breathing-idle)",
+      "Bash(mkdir -p animations/breathing-idle/south)",
+      "Bash(cp temp_extract/animations/breathing-idle/south/*.png animations/breathing-idle/south/)"
     ]
   }
 }

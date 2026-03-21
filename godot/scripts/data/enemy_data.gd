@@ -7,10 +7,11 @@ const ENEMIES = {
 		"name": "Крестьянин",
 		"epoch": 1,
 		"hp": 80,
-		"speed": 60.0,
+		"speed": 35.0,
 		"reward": 10,
 		"damage_to_base": 1,
 		"wall_dps": 15.0,
+		"brain": "peasant",
 		"color": Color("#8b5e3c"),
 		"accent": Color("#f0d060"),
 		"sprite_path": "res://assets/sprites/enemies/peasant/",
@@ -23,6 +24,7 @@ const ENEMIES = {
 		"hp": 200,
 		"speed": 40.0,
 		"reward": 20,
+		"brain": "knight",
 		"damage_to_base": 2,
 		"wall_dps": 25.0,
 		"color": Color("#2d5080"),  # Lake Reflect (steel blue)
@@ -34,6 +36,7 @@ const ENEMIES = {
 		"hp": 100,
 		"speed": 50.0,
 		"reward": 25,
+		"brain": "mage",
 		"damage_to_base": 3,
 		"wall_dps": 5.0,
 		"color": Color("#1a1030"),  # Shadow Purple (robes)

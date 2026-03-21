@@ -17,6 +17,7 @@ var night_color: Color = Color(0.8, 0.8, 0.9)
 var day_color: Color = Color(1.0, 1.0, 1.0)
 var transition_time: float = 1.5
 var _canvas_modulate: CanvasModulate = null
+var director: EnemyDirector = null
 
 
 func _ready() -> void:
@@ -73,6 +74,10 @@ func _start_build_phase() -> void:
 func start_combat_phase() -> void:
 	if current_phase == Phase.COMBAT:
 		return
+	# Анализируем поле боя перед началом
+	director = EnemyDirector.new()
+	director.prepare(get_tree())
+
 	current_phase = Phase.COMBAT
 	phase_changed.emit(Phase.COMBAT)
 	_transition_to_day()

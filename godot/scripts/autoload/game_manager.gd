@@ -125,6 +125,26 @@ func _show_game_over_screen() -> void:
 		current_scene.add_child(game_over_instance)
 
 
+var is_paused: bool = false
+
+
+func pause_game() -> void:
+	is_paused = true
+	get_tree().paused = true
+
+
+func resume_game() -> void:
+	is_paused = false
+	get_tree().paused = false
+
+
+func toggle_pause() -> void:
+	if is_paused:
+		resume_game()
+	else:
+		pause_game()
+
+
 func reset_game() -> void:
 	gold = 150
 	lives = 20

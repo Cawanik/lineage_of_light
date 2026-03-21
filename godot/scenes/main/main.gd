@@ -79,6 +79,9 @@ func _ready() -> void:
 		WaveManager.wave_completed.connect(_on_wave_completed)
 		WaveManager.all_waves_completed.connect(_on_all_waves_completed)
 
+	# Connect phase signals
+	PhaseManager.phase_changed.connect(_on_phase_changed)
+
 
 func _get_tool_slot(tool_name: String) -> Node:
 	match tool_name:
@@ -196,6 +199,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _try_focus_building() -> void:
+	if PhaseManager.is_combat_phase():
+		return
 	var mouse_pos = get_global_mouse_position()
 	var tile = building_grid.find_nearest_building(mouse_pos, 30.0)
 	if tile == Vector2i(-9999, -9999):
@@ -321,6 +326,43 @@ func _unfocus_camera() -> void:
 
 	var tween = create_tween()
 	tween.tween_property(player_node.camera, "offset", Vector2.ZERO, 0.4).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
+
+
+func _on_phase_changed(phase) -> void:
+	if phase == PhaseManager.Phase.COMBAT:
+		# Сбрасываем фокус
+		if _camera_focused:
+			_unfocus_camera()
+		# Сбрасываем активный инструмент
+		if active_tool:
+			active_tool.deactivate()
+			active_tool = null
+			active_tool_name = ""
+		# Закрываем меню строительства
+		build_menu.visible = false
+		build_menu.is_open = false
+		_update_slot_highlights()
+		# Скрываем кнопки строительства
+		_set_toolbar_mode("combat")
+	elif phase == PhaseManager.Phase.BUILD:
+		_set_toolbar_mode("build")
+
+
+func _set_toolbar_mode(mode: String) -> void:
+	var toolbar_grid = get_node_or_null("UILayer/Toolbar/Grid")
+	if not toolbar_grid:
+		return
+	if mode == "combat":
+		for slot in toolbar_grid.get_children():
+			# Скрываем содержимое слота, оставляем подложку
+			for child in slot.get_children():
+				child.visible = false
+			slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	elif mode == "build":
+		for slot in toolbar_grid.get_children():
+			for child in slot.get_children():
+				child.visible = true
+			slot.mouse_filter = Control.MOUSE_FILTER_STOP
 
 
 func _on_wave_started(wave_number: int) -> void:

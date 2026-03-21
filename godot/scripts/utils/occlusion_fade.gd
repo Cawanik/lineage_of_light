@@ -45,9 +45,22 @@ static func should_fade(object_world_pos: Vector2) -> bool:
 		var cdiff_y = object_world_pos.y - cursor_pos.y
 		var cdiff_x = absf(object_world_pos.x - cursor_pos.x)
 		var cursor_fade = cdiff_y > 0 and cdiff_y < cursor_fade_radius and cdiff_x < cursor_fade_radius
-		return player_fade or cursor_fade
+		if player_fade or cursor_fade:
+			return true
 
-	return player_fade
+	# Фейд если враг за зданием
+	if player and player.get_tree():
+		var enemies = player.get_tree().get_nodes_in_group("enemies")
+		for enemy in enemies:
+			if not is_instance_valid(enemy):
+				continue
+			var epos = enemy.global_position
+			var edy = object_world_pos.y - epos.y
+			var edx = absf(object_world_pos.x - epos.x)
+			if edy > 0 and edy < fade_radius and edx < fade_radius:
+				return true
+
+	return false
 
 
 static func is_under_cursor(object_world_pos: Vector2) -> bool:

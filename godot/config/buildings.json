@@ -29,7 +29,7 @@
 		"unit_attack": "res://assets/sprites/buildings/skeleton_archer/animations/bow-shot/south",
 		"attack_range_cardinal": 3,
 		"attack_range_diagonal": 2,
-		"attack_speed": 1.5,
+		"attack_speed": 0.8,
 		"attack_projectile": "arrow",
 		"upgrades": [
 			{"name": "Укреплённые лучники", "cost": 75, "hp_bonus": 100, "desc": "+100 HP"},
