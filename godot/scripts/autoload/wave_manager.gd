@@ -24,70 +24,12 @@ func _ready() -> void:
 	enemy_scene = load("res://scenes/enemies/enemy_base.tscn")
 	if not enemy_scene:
 		push_error("WaveManager: Failed to load enemy scene!")
-	_generate_waves()
+	_load_waves()
 
 
-func _generate_waves() -> void:
-	# Epoch I: Barbarians (waves 1-3)
-	wave_defs.append([{"type": "hero_barbarian", "count": 5, "delay": 1.2}])
-	wave_defs.append([{"type": "hero_barbarian", "count": 8, "delay": 1.0}])
-	wave_defs.append([{"type": "hero_barbarian", "count": 12, "delay": 0.8}])
-
-	# Epoch II: Knights join (waves 4-6)
-	wave_defs.append([
-		{"type": "hero_barbarian", "count": 6, "delay": 1.0},
-		{"type": "hero_knight", "count": 3, "delay": 1.5},
-	])
-	wave_defs.append([
-		{"type": "hero_knight", "count": 6, "delay": 1.2},
-		{"type": "hero_barbarian", "count": 4, "delay": 0.8},
-	])
-	wave_defs.append([{"type": "hero_knight", "count": 10, "delay": 1.0}])
-
-	# Epoch III: Mages join (waves 7-9)
-	wave_defs.append([
-		{"type": "hero_knight", "count": 5, "delay": 1.0},
-		{"type": "hero_mage", "count": 3, "delay": 1.5},
-	])
-	wave_defs.append([
-		{"type": "hero_mage", "count": 6, "delay": 1.2},
-		{"type": "hero_barbarian", "count": 8, "delay": 0.6},
-	])
-	wave_defs.append([
-		{"type": "hero_mage", "count": 8, "delay": 1.0},
-		{"type": "hero_knight", "count": 4, "delay": 1.2},
-	])
-
-	# Epoch IV: Alchemists join (waves 10-12)
-	wave_defs.append([
-		{"type": "hero_alchemist", "count": 5, "delay": 1.0},
-		{"type": "hero_mage", "count": 3, "delay": 1.5},
-	])
-	wave_defs.append([
-		{"type": "hero_alchemist", "count": 8, "delay": 0.8},
-		{"type": "hero_knight", "count": 6, "delay": 1.0},
-	])
-	wave_defs.append([
-		{"type": "hero_alchemist", "count": 10, "delay": 0.7},
-		{"type": "hero_mage", "count": 5, "delay": 1.2},
-	])
-
-	# Epoch V: Heirs - final waves (13-15)
-	wave_defs.append([
-		{"type": "hero_heir", "count": 3, "delay": 2.0},
-		{"type": "hero_knight", "count": 8, "delay": 0.8},
-	])
-	wave_defs.append([
-		{"type": "hero_heir", "count": 5, "delay": 1.5},
-		{"type": "hero_mage", "count": 6, "delay": 1.0},
-		{"type": "hero_alchemist", "count": 4, "delay": 0.8},
-	])
-	wave_defs.append([
-		{"type": "hero_heir", "count": 8, "delay": 1.2},
-		{"type": "hero_mage", "count": 8, "delay": 0.8},
-		{"type": "hero_knight", "count": 8, "delay": 0.6},
-	])
-
+func _load_waves() -> void:
+	for wave_data in Config.waves:
+		wave_defs.append(wave_data.get("groups", []))
 	total_waves = wave_defs.size()
 
 
@@ -100,18 +42,10 @@ func start_next_wave() -> void:
 		return
 
 	current_wave += 1
-	
-	# Update epoch based on wave
-	if current_wave <= 3:
-		GameManager.current_epoch = 1
-	elif current_wave <= 6:
-		GameManager.current_epoch = 2
-	elif current_wave <= 9:
-		GameManager.current_epoch = 3
-	elif current_wave <= 12:
-		GameManager.current_epoch = 4
-	else:
-		GameManager.current_epoch = 5
+
+	# Эпоха берётся из waves.json
+	if current_wave - 1 < Config.waves.size():
+		GameManager.current_epoch = Config.waves[current_wave - 1].get("epoch", 1)
 	
 
 	# AI selects spawn direction
@@ -219,9 +153,6 @@ func spawn_test_enemy(enemy_type: String) -> void:
 		return
 
 	
-	# Add a visual debug marker
-	_add_debug_marker(enemy.global_position, "SPAWN")
-
 	enemy.repath()
 	enemy_spawned.emit(enemy)
 

@@ -1,0 +1,65 @@
+{
+  "hero_barbarian": {
+    "name": "Крестьянин",
+    "epoch": 1,
+    "hp": 80,
+    "speed": 35.0,
+    "reward": 10,
+    "damage_to_base": 1,
+    "wall_dps": 15.0,
+    "brain": "peasant",
+    "color": "#8b5e3c",
+    "accent": "#f0d060",
+    "sprite_path": "res://assets/sprites/enemies/peasant/",
+    "walk_anim": "walking-8-frames",
+    "attack_anim": "pitchfork-attack"
+  },
+  "hero_knight": {
+    "name": "Рыцарь",
+    "epoch": 2,
+    "hp": 200,
+    "speed": 40.0,
+    "reward": 20,
+    "damage_to_base": 2,
+    "wall_dps": 25.0,
+    "brain": "knight",
+    "color": "#2d5080",
+    "accent": "#c47a45"
+  },
+  "hero_mage": {
+    "name": "Маг",
+    "epoch": 3,
+    "hp": 100,
+    "speed": 50.0,
+    "reward": 25,
+    "damage_to_base": 3,
+    "wall_dps": 5.0,
+    "brain": "mage",
+    "color": "#1a1030",
+    "accent": "#f0d060"
+  },
+  "hero_alchemist": {
+    "name": "Алхимик",
+    "epoch": 4,
+    "hp": 120,
+    "speed": 55.0,
+    "reward": 20,
+    "damage_to_base": 2,
+    "wall_dps": 20.0,
+    "brain": "alchemist",
+    "color": "#2d5a27",
+    "accent": "#4a8c3f"
+  },
+  "hero_heir": {
+    "name": "Наследник",
+    "epoch": 5,
+    "hp": 300,
+    "speed": 45.0,
+    "reward": 50,
+    "damage_to_base": 5,
+    "wall_dps": 30.0,
+    "brain": "heir",
+    "color": "#b8860b",
+    "accent": "#e8e0ff"
+  }
+}

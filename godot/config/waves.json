@@ -1,0 +1,135 @@
+[
+  {
+    "wave": 1,
+    "epoch": 1,
+    "comment": "Первая волна — горстка крестьян",
+    "groups": [
+      { "type": "hero_barbarian", "count": 5, "delay": 1.2 }
+    ]
+  },
+  {
+    "wave": 2,
+    "epoch": 1,
+    "comment": "Крестьяне прибывают",
+    "groups": [
+      { "type": "hero_barbarian", "count": 8, "delay": 1.0 }
+    ]
+  },
+  {
+    "wave": 3,
+    "epoch": 1,
+    "comment": "Набег крестьян",
+    "groups": [
+      { "type": "hero_barbarian", "count": 12, "delay": 0.8 }
+    ]
+  },
+  {
+    "wave": 4,
+    "epoch": 2,
+    "comment": "Рыцари присоединяются",
+    "groups": [
+      { "type": "hero_barbarian", "count": 6, "delay": 1.0 },
+      { "type": "hero_knight",   "count": 3, "delay": 1.5 }
+    ]
+  },
+  {
+    "wave": 5,
+    "epoch": 2,
+    "comment": "Рыцари усиливаются",
+    "groups": [
+      { "type": "hero_knight",   "count": 6, "delay": 1.2 },
+      { "type": "hero_barbarian", "count": 4, "delay": 0.8 }
+    ]
+  },
+  {
+    "wave": 6,
+    "epoch": 2,
+    "comment": "Только рыцари",
+    "groups": [
+      { "type": "hero_knight", "count": 10, "delay": 1.0 }
+    ]
+  },
+  {
+    "wave": 7,
+    "epoch": 3,
+    "comment": "Маги появляются",
+    "groups": [
+      { "type": "hero_knight", "count": 5, "delay": 1.0 },
+      { "type": "hero_mage",   "count": 3, "delay": 1.5 }
+    ]
+  },
+  {
+    "wave": 8,
+    "epoch": 3,
+    "comment": "Маги + орда крестьян",
+    "groups": [
+      { "type": "hero_mage",      "count": 6, "delay": 1.2 },
+      { "type": "hero_barbarian", "count": 8, "delay": 0.6 }
+    ]
+  },
+  {
+    "wave": 9,
+    "epoch": 3,
+    "comment": "Маги + рыцари",
+    "groups": [
+      { "type": "hero_mage",   "count": 8, "delay": 1.0 },
+      { "type": "hero_knight", "count": 4, "delay": 1.2 }
+    ]
+  },
+  {
+    "wave": 10,
+    "epoch": 4,
+    "comment": "Алхимики появляются",
+    "groups": [
+      { "type": "hero_alchemist", "count": 5, "delay": 1.0 },
+      { "type": "hero_mage",      "count": 3, "delay": 1.5 }
+    ]
+  },
+  {
+    "wave": 11,
+    "epoch": 4,
+    "comment": "Алхимики + рыцари",
+    "groups": [
+      { "type": "hero_alchemist", "count": 8, "delay": 0.8 },
+      { "type": "hero_knight",    "count": 6, "delay": 1.0 }
+    ]
+  },
+  {
+    "wave": 12,
+    "epoch": 4,
+    "comment": "Алхимики + маги",
+    "groups": [
+      { "type": "hero_alchemist", "count": 10, "delay": 0.7 },
+      { "type": "hero_mage",      "count": 5,  "delay": 1.2 }
+    ]
+  },
+  {
+    "wave": 13,
+    "epoch": 5,
+    "comment": "Наследники появляются",
+    "groups": [
+      { "type": "hero_heir",   "count": 3, "delay": 2.0 },
+      { "type": "hero_knight", "count": 8, "delay": 0.8 }
+    ]
+  },
+  {
+    "wave": 14,
+    "epoch": 5,
+    "comment": "Наследники усиливаются",
+    "groups": [
+      { "type": "hero_heir",      "count": 5, "delay": 1.5 },
+      { "type": "hero_mage",      "count": 6, "delay": 1.0 },
+      { "type": "hero_alchemist", "count": 4, "delay": 0.8 }
+    ]
+  },
+  {
+    "wave": 15,
+    "epoch": 5,
+    "comment": "Финальный штурм",
+    "groups": [
+      { "type": "hero_heir",   "count": 8, "delay": 1.2 },
+      { "type": "hero_mage",   "count": 8, "delay": 0.8 },
+      { "type": "hero_knight", "count": 8, "delay": 0.6 }
+    ]
+  }
+]

@@ -54,6 +54,10 @@ const ATTACK_INTERVAL: float = 0.5
 
 var _repath_queued: bool = false
 
+var wall_repath_timer: float = 0.0
+const WALL_REPATH_INTERVAL: float = 2.0
+var wall_attack_offset: Vector2 = Vector2.ZERO
+
 
 func setup(type: String) -> void:
 	enemy_type = type
@@ -78,6 +82,10 @@ func _init_brain() -> void:
 			brain = KnightBrain.new()
 		"mage":
 			brain = MageBrain.new()
+		"alchemist":
+			brain = AlchemistBrain.new()
+		"heir":
+			brain = HeirBrain.new()
 		_:
 			brain = PeasantBrain.new()
 	brain.setup(self)
@@ -88,14 +96,9 @@ func start_wall_attack(wall_key: String) -> void:
 	attacking_edge_key = wall_key
 	state = State.ATTACKING_WALL
 	attack_timer = 0.0
+	wall_repath_timer = 0.0
+	wall_attack_offset = _get_wall_spread_offset(wall_key)
 
-
-func find_alternative_path() -> Array[Vector2i]:
-	# Ищем путь в обход текущей стены
-	var ps = get_node_or_null("/root/PathfindingSystem")
-	if ps and ps.has_method("find_path"):
-		return ps.find_path(current_tile, ps.throne_tile)
-	return []
 
 
 func _ready() -> void:
@@ -274,23 +277,21 @@ func _deferred_repath() -> void:
 
 
 func repath() -> void:
-	
 	var ps = get_node_or_null("/root/PathfindingSystem")
 	if not ps:
 		push_error("EnemyBase: PathfindingSystem not found!")
 		return
 
-	tile_path = ps.get_path_to_throne(current_tile)
-	
-	if tile_path.is_empty():
-		tile_path = ps.get_path_ignoring_walls(current_tile)
+	var detour_path = ps.get_path_to_throne(current_tile)
+	var straight_path = ps.get_path_ignoring_walls(current_tile)
+
+	# Brain определяет стратегию выбора пути
+	tile_path = brain.choose_path(detour_path, straight_path, self)
 
 	path_index = 0
 	move_progress = 0.0
 
-
 	if tile_path.is_empty():
-		# If game is over, enter victory state
 		if not GameManager.is_game_active:
 			set_victory_state()
 		return
@@ -301,8 +302,7 @@ func repath() -> void:
 
 	if path_index < tile_path.size():
 		target_tile = tile_path[path_index]
-		_check_wall_ahead()
-	
+
 	state = State.MOVING
 
 
@@ -331,6 +331,8 @@ func _process(delta: float) -> void:
 		sprite.modulate = Color.WHITE
 
 	# Debug state info (every 1 second)
+	brain.process(delta)
+
 	match state:
 		State.MOVING:
 			_process_movement(delta)
@@ -339,7 +341,6 @@ func _process(delta: float) -> void:
 		State.ATTACKING_BUILDING:
 			_process_building_attack(delta)
 		State.VICTORY:
-			# Do nothing - enemy celebrates victory
 			pass
 
 
@@ -367,16 +368,25 @@ func _process_movement(delta: float) -> void:
 
 	# Проверяем столкновение с постройкой/стеной на следующем тайле
 	# Игнорируем border тайлы (спавн-зоны) — враги могут по ним ходить
-	if move_progress < 0.3 and building_grid and not building_grid.is_border(target_tile) and (building_grid.buildings.has(target_tile) or (building_grid.wall_system and building_grid.wall_system.nodes.has(target_tile))):
-		var closest_wall = _find_nearest_wall_edge()
-		if closest_wall != "":
-			attacking_edge_key = closest_wall
-			state = State.ATTACKING_WALL
-			attack_timer = 0.0
-			_update_enemy_anim(to_world - from_world)
-		else:
+	if move_progress < 0.3 and building_grid and not building_grid.is_border(target_tile):
+		var wall_edge_key = _make_edge_key(current_tile, target_tile)
+		var wall_blocks = wall_system != null and wall_system.edges.has(wall_edge_key)
+		var building_blocks = building_grid.buildings.has(target_tile)
+
+		if wall_blocks or building_blocks:
+			# Стена на пути — brain решает как реагировать
+			if wall_blocks:
+				brain.on_wall_encountered(wall_edge_key)
+				return
+
+			# Здание прямо на следующем тайле пути — атакуем
+			if building_blocks:
+				var blocking_building = building_grid.get_building(target_tile)
+				if blocking_building and blocking_building is Building:
+					_start_building_attack(blocking_building)
+					return
 			repath()
-		return
+			return
 
 	# Двигаемся + jitter
 	global_position = target_pos + visual_jitter
@@ -390,38 +400,64 @@ func _process_movement(delta: float) -> void:
 		if tile_path.size() > 0:
 			path_progress = float(path_index) / float(tile_path.size())
 
-		# Check if adjacent to any building (including throne)
-		var adjacent_building = _check_adjacent_building()
-		if adjacent_building:
-			_start_building_attack(adjacent_building)
-			return
+		# Трон рядом — атакуем сразу
+		var throne_access = _evaluate_throne_accessibility()
+		if throne_access == ThroneAccess.ADJACENT:
+			var throne = _get_throne_building()
+			if throne:
+				_start_building_attack(throne)
+				return
+
+		# Башня в соседней клетке — атакуем только если brain разрешает
+		if brain.should_attack_adjacent_towers():
+			var adjacent_tower = _find_adjacent_tower()
+			if adjacent_tower:
+				_start_building_attack(adjacent_tower)
+				return
 
 		if path_index < tile_path.size():
 			target_tile = tile_path[path_index]
-			_check_wall_ahead()
 		else:
-			# Path exhausted - now check throne accessibility with priority system
-			
-			var throne_priority = _evaluate_throne_accessibility()
-			if throne_priority == ThroneAccess.ADJACENT:
-				# Throne is adjacent - highest priority
-				var throne = _get_throne_building()
-				if throne:
-					_start_building_attack(throne)
-					return
-			elif throne_priority == ThroneAccess.CLEAR_PATH:
-				# Clear path to throne - repath directly
-				repath()
-				return
-			
-			# No throne access - check for other adjacent buildings to attack
-			var building_at_path_end = _check_adjacent_building()
-			if building_at_path_end:
-				_start_building_attack(building_at_path_end)
-				return
-			
-			# No adjacent buildings - repath and try again
+			# Путь исчерпан — пересчитываем
 			repath()
+
+
+## Считает стоимость пути в секундах: время ходьбы + время пролома стен + время пролома зданий
+func _calculate_path_cost(path: Array[Vector2i]) -> float:
+	if path.is_empty():
+		return INF
+	var cell_size = 64.0
+	var move_time = (path.size() - 1) * (cell_size / maxf(current_speed, 1.0))
+	var break_time = 0.0
+	for i in range(path.size() - 1):
+		# Время пролома стены (ребра)
+		if wall_system:
+			var edge_key = _make_edge_key(path[i], path[i + 1])
+			if wall_system.edges.has(edge_key):
+				var wall_hp = wall_system.edge_hp.get(edge_key, 100.0)
+				break_time += wall_hp / maxf(wall_dps, 0.1)
+		# Время пролома здания на следующем тайле
+		if building_grid and not building_grid.is_border(path[i + 1]):
+			var bld = building_grid.get_building(path[i + 1])
+			if bld and bld is Building:
+				break_time += bld.hp / maxf(wall_dps, 0.1)
+	return move_time + break_time
+
+
+## Ищет атакующую башню (не wall_block, не трон) в 8 соседних клетках
+func _find_adjacent_tower() -> Building:
+	if not building_grid:
+		return null
+	var adjacent_tiles = [
+		current_tile + Vector2i(-1, -1), current_tile + Vector2i(0, -1), current_tile + Vector2i(1, -1),
+		current_tile + Vector2i(-1,  0),                                  current_tile + Vector2i(1,  0),
+		current_tile + Vector2i(-1,  1), current_tile + Vector2i(0,  1), current_tile + Vector2i(1,  1),
+	]
+	for tile in adjacent_tiles:
+		var building = building_grid.get_building(tile)
+		if building and building is Building and building.attack_speed > 0:
+			return building
+	return null
 
 
 func _find_nearest_wall_edge() -> String:
@@ -454,17 +490,27 @@ func _process_wall_attack(delta: float) -> void:
 		state = State.MOVING
 		return
 
-	# Check if wall still exists (might have been destroyed by another enemy)
+	# Стена уничтожена другим врагом — уходим
 	if not wall_system.edges.has(attacking_edge_key):
-		sprite.modulate = Color.WHITE  # Remove attack tint
+		sprite.modulate = Color.WHITE
 		state = State.MOVING
 		repath()
 		return
 
-	
-	# Visual effect while attacking
-	sprite.modulate = Color(1.5, 1.0, 1.0)  # Slight red tint while attacking
-	
+	# Держим позицию с разбросом (чтобы не стакаться)
+	if building_grid:
+		global_position = building_grid.tile_to_world(current_tile) + wall_attack_offset
+
+	# Периодически проверяем: а не выгоднее ли уйти?
+	wall_repath_timer += delta
+	if wall_repath_timer >= WALL_REPATH_INTERVAL:
+		wall_repath_timer = 0.0
+		_maybe_abandon_wall_attack()
+		if state != State.ATTACKING_WALL:
+			return
+
+	sprite.modulate = Color(1.5, 1.0, 1.0)
+
 	attack_timer += delta
 	if attack_timer >= ATTACK_INTERVAL:
 		attack_timer -= ATTACK_INTERVAL
@@ -472,17 +518,33 @@ func _process_wall_attack(delta: float) -> void:
 		var remaining_hp = wall_system.edge_hp.get(attacking_edge_key, 0)
 		
 		if destroyed:
-			sprite.modulate = Color.WHITE  # Remove attack tint
-			
-			# PHYSICS FIX: Stabilize position and velocity to prevent teleportation
+			sprite.modulate = Color.WHITE
 			_stabilize_physics_after_wall_destruction()
-			
 			state = State.MOVING
-			# Give PathfindingSystem a moment to update after wall destruction
 			await get_tree().process_frame
-			
-			# Simple transition: go back to movement and repath
-			repath()
+			brain.on_wall_destroyed()
+
+
+## Проверяет: стоит ли бросить атаку стены и пойти по открытому пути
+func _maybe_abandon_wall_attack() -> void:
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if not ps or not wall_system:
+		return
+	var detour_path = ps.get_path_to_throne(current_tile)
+	if detour_path.is_empty():
+		return
+	var detour_cost = _calculate_path_cost(detour_path)
+	var remaining_hp = wall_system.edge_hp.get(attacking_edge_key, 0.0)
+	var remaining_time = remaining_hp / maxf(wall_dps, 0.1) + 64.0 / maxf(current_speed, 1.0)
+	if brain.should_abandon_wall_attack(detour_cost, remaining_time):
+		sprite.modulate = Color.WHITE
+		tile_path = detour_path
+		path_index = 0
+		if tile_path.size() > 1 and tile_path[0] == current_tile:
+			path_index = 1
+		if path_index < tile_path.size():
+			target_tile = tile_path[path_index]
+		state = State.MOVING
 
 
 func _evaluate_throne_accessibility() -> ThroneAccess:
@@ -514,6 +576,20 @@ func _get_throne_building() -> Building:
 		return throne_building
 	
 	return null
+
+
+func _is_target_building_adjacent(target: Building) -> bool:
+	if not building_grid or not is_instance_valid(target):
+		return false
+	var adjacent_tiles = [
+		current_tile + Vector2i(-1, -1), current_tile + Vector2i(0, -1), current_tile + Vector2i(1, -1),
+		current_tile + Vector2i(-1,  0),                                  current_tile + Vector2i(1,  0),
+		current_tile + Vector2i(-1,  1), current_tile + Vector2i(0,  1), current_tile + Vector2i(1,  1),
+	]
+	for tile in adjacent_tiles:
+		if building_grid.get_building(tile) == target:
+			return true
+	return false
 
 
 func _check_adjacent_building() -> Building:
@@ -602,9 +678,8 @@ func _process_building_attack(delta: float) -> void:
 	pass  # Prevent bouncing from collisions
 	_maintain_attack_anchor()
 	
-	# Check if building is still adjacent
-	var current_adjacent = _check_adjacent_building()
-	if current_adjacent != attacking_building:
+	# Check if the specific target building is still adjacent
+	if not _is_target_building_adjacent(attacking_building):
 		sprite.modulate = Color.WHITE
 		attacking_building = null
 		state = State.MOVING
@@ -622,9 +697,11 @@ func _process_building_attack(delta: float) -> void:
 		if attacking_building.hp <= 0:
 			sprite.modulate = Color.WHITE
 			attacking_building = null
-			pass
 			state = State.MOVING
-			repath()
+			# Ждём фрейм чтобы PathfindingSystem успел обновиться после уничтожения здания
+			await get_tree().process_frame
+			if not is_dead:
+				repath()
 
 
 func _reached_throne() -> void:
@@ -702,6 +779,23 @@ func _update_hp_bar() -> void:
 
 	hp_bar_bg.visible = ratio < 1.0
 	hp_bar.visible = ratio < 1.0
+
+
+## Возвращает случайный оффсет перпендикулярно стене — враги не стакаются
+func _get_wall_spread_offset(edge_key: StringName) -> Vector2:
+	var parts = str(edge_key).split("-")
+	if parts.size() != 2:
+		return visual_jitter
+	var t1 = parts[0].split(",")
+	var t2 = parts[1].split(",")
+	if t1.size() != 2 or t2.size() != 2:
+		return visual_jitter
+	var tile1 = Vector2i(int(t1[0]), int(t1[1]))
+	var tile2 = Vector2i(int(t2[0]), int(t2[1]))
+	# Направление стены → перпендикуляр = направление разброса
+	var wall_dir = Vector2(tile2 - tile1).normalized()
+	var perp = Vector2(-wall_dir.y, wall_dir.x)
+	return perp * randf_range(-20.0, 20.0)
 
 
 func _make_edge_key(a: Vector2i, b: Vector2i) -> StringName:

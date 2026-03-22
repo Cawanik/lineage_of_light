@@ -285,11 +285,13 @@ func _update_hp_bar() -> void:
 
 
 func _on_destroyed() -> void:
-	# Убираем из building_grid
+	# Уведомляем BuildingGrid — это вызовет PathfindingSystem.set_tile_solid(tile, false)
+	# и эмитирует path_grid_changed, чтобы все враги пересчитали путь
 	var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid") as BuildingGrid
 	if bg:
-		var my_tile = bg.world_to_tile(global_position)
-		bg.remove_building(my_tile)
+		var tile = bg.world_to_tile(global_position)
+		if bg.buildings.get(tile) == self:
+			bg.remove_building(tile)
 	queue_free()
 
 

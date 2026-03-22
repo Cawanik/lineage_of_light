@@ -21,14 +21,14 @@ color = Color(0.941, 0.816, 0.376, 1)
 
 [node name="HPBarBG" type="ColorRect" parent="."]
 offset_left = -14
-offset_top = -20
+offset_top = -42
 offset_right = 14
-offset_bottom = -17
+offset_bottom = -39
 color = Color(0.039, 0.039, 0.071, 1)
 
 [node name="HPBar" type="ColorRect" parent="."]
 offset_left = -14
-offset_top = -20
+offset_top = -42
 offset_right = 14
-offset_bottom = -17
+offset_bottom = -39
 color = Color(0.176, 0.353, 0.153, 1)

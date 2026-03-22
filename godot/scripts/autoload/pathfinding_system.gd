@@ -8,7 +8,7 @@ extends Node
 signal path_grid_changed
 
 var astar: AStar2D
-var astar_no_walls: AStar2D
+var astar_full_open: AStar2D  # Полностью открытый граф — игнорирует и стены, и здания
 
 var grid_size: Vector2i = Vector2i(30, 30)
 var throne_tile: Vector2i = Vector2i(14, 15)
@@ -19,9 +19,9 @@ func _ready() -> void:
 	grid_size = Vector2i(iso.get("grid_width", 30), iso.get("grid_height", 30))
 
 	astar = AStar2D.new()
-	astar_no_walls = AStar2D.new()
+	astar_full_open = AStar2D.new()
 	_build_graph(astar)
-	_build_graph(astar_no_walls)
+	_build_graph(astar_full_open)
 
 
 func _build_graph(graph: AStar2D) -> void:
@@ -65,7 +65,7 @@ func enable_edge(a: Vector2i, b: Vector2i) -> void:
 
 func set_tile_solid(tile: Vector2i, solid: bool) -> void:
 	astar.set_point_disabled(_to_id(tile), solid)
-	astar_no_walls.set_point_disabled(_to_id(tile), solid)
+	# astar_full_open намеренно не меняем — он игнорирует здания
 	path_grid_changed.emit()
 
 
@@ -77,22 +77,11 @@ func get_path_to_throne(from: Vector2i) -> Array[Vector2i]:
 	
 	if from == throne_tile:
 		return [throne_tile] as Array[Vector2i]
-	
-	print("PathfindingSystem: Computing path from %s to %s" % [from, throne_tile])
+
 	var path_ids = astar.get_id_path(_to_id(from), _to_id(throne_tile))
 	var result: Array[Vector2i] = []
 	for id in path_ids:
 		result.append(_to_tile(id))
-	print("PathfindingSystem: Found path with %d steps: %s" % [result.size(), result])
-	
-	# Validate path doesn't go through walls
-	if result.size() > 1:
-		for i in range(result.size() - 1):
-			var a = result[i]
-			var b = result[i + 1]
-			if not astar.are_points_connected(_to_id(a), _to_id(b)):
-				print("PathfindingSystem: WARNING - Path includes disconnected edge %s-%s!" % [a, b])
-	
 	return result
 
 
@@ -115,9 +104,10 @@ func _throne_exists() -> bool:
 
 
 func get_path_ignoring_walls(from: Vector2i) -> Array[Vector2i]:
+	# Используем astar_full_open — истинно прямой путь, игнорирует и стены и здания
 	if from == throne_tile:
 		return [throne_tile] as Array[Vector2i]
-	var path_ids = astar_no_walls.get_id_path(_to_id(from), _to_id(throne_tile))
+	var path_ids = astar_full_open.get_id_path(_to_id(from), _to_id(throne_tile))
 	var result: Array[Vector2i] = []
 	for id in path_ids:
 		result.append(_to_tile(id))

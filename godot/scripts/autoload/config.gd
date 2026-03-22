@@ -16,6 +16,8 @@ var buildings: Dictionary = {}
 var game: Dictionary = {}
 var projectiles: Dictionary = {}
 var effects: Dictionary = {}
+var enemies: Dictionary = {}
+var waves: Array = []
 
 const CONFIG_DIR = "res://config/"
 
@@ -26,6 +28,15 @@ func _ready() -> void:
 	game = _load_json(CONFIG_DIR + "game.json")
 	projectiles = _load_json(CONFIG_DIR + "projectiles.json")
 	effects = _load_json(CONFIG_DIR + "effects.json")
+	enemies = _load_json(CONFIG_DIR + "enemies.json")
+	# Конвертируем цвета из hex-строк в Color
+	for key in enemies:
+		var e = enemies[key]
+		if e.has("color"):
+			e["color"] = Color(e["color"])
+		if e.has("accent"):
+			e["accent"] = Color(e["accent"])
+	waves = _load_json_array(CONFIG_DIR + "waves.json")
 
 
 func _load_json(path: String) -> Dictionary:
@@ -37,4 +48,16 @@ func _load_json(path: String) -> Dictionary:
 	if json.parse(file.get_as_text()) != OK:
 		push_error("Failed to parse " + path + ": " + json.get_error_message())
 		return {}
+	return json.data
+
+
+func _load_json_array(path: String) -> Array:
+	if not FileAccess.file_exists(path):
+		push_error("Config not found: " + path)
+		return []
+	var file = FileAccess.open(path, FileAccess.READ)
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		push_error("Failed to parse " + path + ": " + json.get_error_message())
+		return []
 	return json.data

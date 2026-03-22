@@ -17,7 +17,13 @@ static func select_spawn_side(ps: Node) -> SpawnZone.Side:
 		var valid_count: int = 0
 		# Sample every 3rd tile for performance
 		for i in range(0, tiles.size(), 3):
-			var cost = ps.get_path_cost(tiles[i])
+			# Берём минимальное из: обходного и прямого пути
+			# Прямой путь считаем через astar_full_open с длиной как приближение
+			var open_path = ps.get_path_ignoring_walls(tiles[i])
+			var detour_path = ps.get_path_to_throne(tiles[i])
+			var open_cost = open_path.size() if not open_path.is_empty() else INF
+			var detour_cost = detour_path.size() if not detour_path.is_empty() else INF
+			var cost = minf(open_cost, detour_cost)
 			if cost < INF:
 				total_cost += cost
 				valid_count += 1
