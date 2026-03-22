@@ -114,6 +114,26 @@ func get_path_ignoring_walls(from: Vector2i) -> Array[Vector2i]:
 	return result
 
 
+func get_path_to_tile(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
+	if from == to:
+		return [to] as Array[Vector2i]
+	var path_ids = astar.get_id_path(_to_id(from), _to_id(to))
+	var result: Array[Vector2i] = []
+	for id in path_ids:
+		result.append(_to_tile(id))
+	return result
+
+
+func get_path_to_tile_ignoring_walls(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
+	if from == to:
+		return [to] as Array[Vector2i]
+	var path_ids = astar_full_open.get_id_path(_to_id(from), _to_id(to))
+	var result: Array[Vector2i] = []
+	for id in path_ids:
+		result.append(_to_tile(id))
+	return result
+
+
 func get_path_cost(from: Vector2i) -> float:
 	var path = get_path_to_throne(from)
 	if path.is_empty():

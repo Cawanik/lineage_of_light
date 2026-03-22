@@ -50,7 +50,22 @@ func should_attack_adjacent_towers() -> bool:
 	return false
 
 
+## Дальность атаки в тайлах (1 = вплотную, 2 = через клетку)
+func get_attack_range() -> int:
+	return 1
+
+
+## Возвращает тайл к которому нужно идти (обычно сам трон)
+func get_path_target(ps: Node, _from: Vector2i, _building_grid: Node) -> Vector2i:
+	return ps.throne_tile
+
+
 ## Стоит ли бросить атаку стены если открылся более быстрый путь
 ## detour_cost — время обходного пути, remaining_time — оставшееся время пролома
 func should_abandon_wall_attack(_detour_cost: float, _remaining_time: float) -> bool:
 	return false
+
+
+## Тип проджектайла при атаке здания. "" = нет проджектайла (ближняя атака)
+func get_projectile_type() -> String:
+	return ""

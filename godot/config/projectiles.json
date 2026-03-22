@@ -1,15 +1,19 @@
 {
 	"magic_bolt": {
-		"name": "Магическая стрела",
-		"speed": 250.0,
+		"name": "Магический шар",
+		"draw_mode": "orb",
+		"orb_radius": 5.0,
+		"orb_color": "#cc44ff",
+		"orb_glow_color": "#ff8800",
+		"speed": 280.0,
 		"damage": 15.0,
 		"homing": true,
+		"arc_height": 10.0,
 		"hit_radius": 10.0,
 		"lifetime": 4.0,
 		"trail": true,
-		"trail_length": 12,
-		"trail_color": "#9933cccc",
-		"scale": 0.5
+		"trail_length": 16,
+		"trail_color": "#aa33ffcc"
 	},
 	"arrow": {
 		"name": "Стрела",

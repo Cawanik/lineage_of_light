@@ -30,6 +30,10 @@ var trail_enabled: bool = false
 var trail_color: Color = Color(0.6, 0.3, 1.0, 0.8)
 var _trail_points: PackedVector2Array = PackedVector2Array()
 var _trail_max: int = 10
+var draw_mode: String = ""  # "" = sprite, "orb" = процедурный шар
+var orb_radius: float = 5.0
+var orb_color: Color = Color(0.7, 0.2, 1.0, 1.0)
+var orb_glow_color: Color = Color(1.0, 0.5, 0.0, 0.4)
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -56,17 +60,28 @@ func setup(type: String, from: Vector2, to_pos: Vector2, to_node: Node2D = null)
 	var trail_col = data.get("trail_color", "#9933cccc")
 	trail_color = Color(trail_col)
 
-	# Спрайт
-	var sprite_path = data.get("sprite", "")
-	if sprite_path != "" and ResourceLoader.exists(sprite_path):
-		sprite.texture = load(sprite_path)
+	draw_mode = data.get("draw_mode", "")
+	orb_radius = data.get("orb_radius", 5.0)
+	if data.has("orb_color"):
+		orb_color = Color(data["orb_color"])
+	if data.has("orb_glow_color"):
+		orb_glow_color = Color(data["orb_glow_color"])
 
-	var sc = data.get("scale", 1.0)
-	sprite.scale = Vector2(sc, sc)
+	if draw_mode == "orb":
+		# Прячем спрайт — рисуем сами через _draw()
+		sprite.visible = false
+	else:
+		# Спрайт
+		var sprite_path = data.get("sprite", "")
+		if sprite_path != "" and ResourceLoader.exists(sprite_path):
+			sprite.texture = load(sprite_path)
 
-	# Поворачиваем в сторону цели
-	var dir = (target_pos - position).normalized()
-	sprite.rotation = dir.angle()
+		var sc = data.get("scale", 1.0)
+		sprite.scale = Vector2(sc, sc)
+
+		# Поворачиваем в сторону цели
+		var dir = (target_pos - position).normalized()
+		sprite.rotation = dir.angle()
 
 
 func _get_config() -> Dictionary:
@@ -84,7 +99,6 @@ func _process(delta: float) -> void:
 		target_pos = target_node.global_position
 
 	# Движение по дуге
-	var flat_dir = (target_pos - _start_pos)
 	var traveled = _age * speed
 	var progress = clampf(traveled / _total_dist, 0.0, 1.0) if _total_dist > 0 else 1.0
 
@@ -99,18 +113,25 @@ func _process(delta: float) -> void:
 	var arc_y = -arc_height * 4.0 * progress * (1.0 - progress)
 	position = flat_pos + Vector2(0, arc_y)
 
-	# Поворот спрайта по направлению движения
-	var next_progress = clampf(progress + 0.05, 0.0, 1.0)
-	var next_flat = _start_pos.lerp(target_pos, next_progress)
-	var next_arc_y = -arc_height * 4.0 * next_progress * (1.0 - next_progress)
-	var next_pos = next_flat + Vector2(0, next_arc_y)
-	sprite.rotation = (next_pos - position).angle()
+	# Поворот спрайта по направлению движения (только если спрайт используется)
+	if draw_mode != "orb":
+		var next_progress = clampf(progress + 0.05, 0.0, 1.0)
+		var next_flat = _start_pos.lerp(target_pos, next_progress)
+		var next_arc_y = -arc_height * 4.0 * next_progress * (1.0 - next_progress)
+		var next_pos = next_flat + Vector2(0, next_arc_y)
+		sprite.rotation = (next_pos - position).angle()
 
 	# Трейл
 	if trail_enabled:
 		_trail_points.append(position)
 		if _trail_points.size() > _trail_max:
 			_trail_points = _trail_points.slice(_trail_points.size() - _trail_max)
+		queue_redraw()
+
+	# Орб всегда требует redraw (пульсация цвета)
+	if draw_mode == "orb":
+		var pulse = sin(_age * 8.0) * 0.1
+		orb_color.a = clampf(1.0 + pulse, 0.8, 1.0)
 		queue_redraw()
 
 
@@ -132,15 +153,28 @@ func _spawn_hit_effect() -> void:
 
 
 func _draw() -> void:
-	if not trail_enabled or _trail_points.size() < 2:
-		return
-	for i in range(_trail_points.size() - 1):
-		var alpha = float(i) / _trail_points.size()
-		var col = Color(trail_color, trail_color.a * alpha)
-		var width = 1.0 + alpha * 2.0
-		var from_local = _trail_points[i] - position
-		var to_local = _trail_points[i + 1] - position
-		draw_line(from_local, to_local, col, width)
+	# Трейл
+	if trail_enabled and _trail_points.size() >= 2:
+		for i in range(_trail_points.size() - 1):
+			var alpha = float(i) / _trail_points.size()
+			var col = Color(trail_color, trail_color.a * alpha)
+			var width = 1.0 + alpha * 2.0
+			var from_local = _trail_points[i] - position
+			var to_local = _trail_points[i + 1] - position
+			draw_line(from_local, to_local, col, width)
+
+	# Процедурный орб (файербол)
+	if draw_mode == "orb":
+		# Внешнее свечение (несколько полупрозрачных кругов)
+		for i in range(3):
+			var t = float(i) / 3.0
+			var glow_r = orb_radius * (2.5 - t * 1.2)
+			var glow_a = orb_glow_color.a * (0.3 - t * 0.08)
+			draw_circle(Vector2.ZERO, glow_r, Color(orb_glow_color, glow_a))
+		# Основной шар
+		draw_circle(Vector2.ZERO, orb_radius, orb_color)
+		# Яркий центр
+		draw_circle(Vector2.ZERO, orb_radius * 0.45, Color(1.0, 1.0, 1.0, 0.85))
 
 
 # === Статический спавнер ===

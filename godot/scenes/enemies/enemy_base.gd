@@ -282,8 +282,16 @@ func repath() -> void:
 		push_error("EnemyBase: PathfindingSystem not found!")
 		return
 
-	var detour_path = ps.get_path_to_throne(current_tile)
-	var straight_path = ps.get_path_ignoring_walls(current_tile)
+	var target = brain.get_path_target(ps, current_tile, building_grid)
+
+	var detour_path: Array[Vector2i]
+	var straight_path: Array[Vector2i]
+	if target == ps.throne_tile:
+		detour_path = ps.get_path_to_throne(current_tile)
+		straight_path = ps.get_path_ignoring_walls(current_tile)
+	else:
+		detour_path = ps.get_path_to_tile(current_tile, target)
+		straight_path = ps.get_path_to_tile_ignoring_walls(current_tile, target)
 
 	# Brain определяет стратегию выбора пути
 	tile_path = brain.choose_path(detour_path, straight_path, self)
@@ -530,7 +538,8 @@ func _maybe_abandon_wall_attack() -> void:
 	var ps = get_node_or_null("/root/PathfindingSystem")
 	if not ps or not wall_system:
 		return
-	var detour_path = ps.get_path_to_throne(current_tile)
+	var target = brain.get_path_target(ps, current_tile, building_grid)
+	var detour_path = ps.get_path_to_tile(current_tile, target) if target != ps.throne_tile else ps.get_path_to_throne(current_tile)
 	if detour_path.is_empty():
 		return
 	var detour_cost = _calculate_path_cost(detour_path)
@@ -552,10 +561,11 @@ func _evaluate_throne_accessibility() -> ThroneAccess:
 	if not ps:
 		return ThroneAccess.BLOCKED
 	
-	# Check if throne is adjacent (highest priority) 
+	# Check if throne is within attack range (Chebyshev distance, consistent with get_path_target)
 	var throne_tile = ps.throne_tile
-	var distance = current_tile.distance_to(throne_tile)
-	if distance <= 1.5:  # Adjacent (including diagonal)
+	var dx = absi(current_tile.x - throne_tile.x)
+	var dy = absi(current_tile.y - throne_tile.y)
+	if maxi(dx, dy) <= brain.get_attack_range():
 		return ThroneAccess.ADJACENT
 	
 	# Check if there's a clear path to throne (no walls blocking)
@@ -581,14 +591,12 @@ func _get_throne_building() -> Building:
 func _is_target_building_adjacent(target: Building) -> bool:
 	if not building_grid or not is_instance_valid(target):
 		return false
-	var adjacent_tiles = [
-		current_tile + Vector2i(-1, -1), current_tile + Vector2i(0, -1), current_tile + Vector2i(1, -1),
-		current_tile + Vector2i(-1,  0),                                  current_tile + Vector2i(1,  0),
-		current_tile + Vector2i(-1,  1), current_tile + Vector2i(0,  1), current_tile + Vector2i(1,  1),
-	]
-	for tile in adjacent_tiles:
-		if building_grid.get_building(tile) == target:
-			return true
+	var range = brain.get_attack_range()
+	for tile in building_grid.buildings:
+		if building_grid.buildings[tile] == target:
+			var dx = absi(tile.x - current_tile.x)
+			var dy = absi(tile.y - current_tile.y)
+			return maxi(dx, dy) <= range
 	return false
 
 
@@ -613,11 +621,12 @@ func _check_adjacent_building() -> Building:
 
 var attack_anchor_position: Vector2
 
-func _anchor_for_building_attack(building: Building) -> void:
-	# Set stable attack position near the building, with collision padding
-	var building_pos = building.global_position
-	var offset = (global_position - building_pos).normalized() * 32.0
-	attack_anchor_position = building_pos + offset + visual_jitter
+func _anchor_for_building_attack(_building: Building) -> void:
+	# Враг остаётся на своём текущем тайле — не прыгает к зданию
+	if building_grid:
+		attack_anchor_position = building_grid.tile_to_world(current_tile) + visual_jitter
+	else:
+		attack_anchor_position = global_position
 
 
 func _maintain_attack_anchor() -> void:
@@ -669,13 +678,10 @@ func _process_building_attack(delta: float) -> void:
 	if not attacking_building or not is_instance_valid(attacking_building):
 		sprite.modulate = Color.WHITE
 		attacking_building = null
-		pass  # Stop movement to prevent physics issues
 		state = State.MOVING
 		repath()
 		return
-	
-	# PHYSICS FIX: Maintain stable attack position, disable collision physics during attack
-	pass  # Prevent bouncing from collisions
+
 	_maintain_attack_anchor()
 	
 	# Check if the specific target building is still adjacent
@@ -691,17 +697,22 @@ func _process_building_attack(delta: float) -> void:
 	if attack_timer >= ATTACK_INTERVAL:
 		attack_timer -= ATTACK_INTERVAL
 		var damage = wall_dps * ATTACK_INTERVAL
-		attacking_building.take_damage(damage)
-		
-		# Check if building was destroyed
-		if attacking_building.hp <= 0:
-			sprite.modulate = Color.WHITE
-			attacking_building = null
-			state = State.MOVING
-			# Ждём фрейм чтобы PathfindingSystem успел обновиться после уничтожения здания
-			await get_tree().process_frame
-			if not is_dead:
-				repath()
+		var proj_type = brain.get_projectile_type()
+		if proj_type != "":
+			# Дальняя атака: снаряд сам нанесёт урон при попадании
+			# Когда здание умрёт — is_instance_valid вернёт false и враг сам перепроложит путь
+			Projectile.spawn(get_tree(), proj_type, global_position, attacking_building.global_position, attacking_building).damage = damage
+		else:
+			attacking_building.take_damage(damage)
+			# Проверяем уничтожение только для ближней атаки (снаряд сам обработает попадание)
+			if attacking_building.hp <= 0:
+				sprite.modulate = Color.WHITE
+				attacking_building = null
+				state = State.MOVING
+				# Ждём фрейм чтобы PathfindingSystem успел обновиться после уничтожения здания
+				await get_tree().process_frame
+				if not is_dead:
+					repath()
 
 
 func _reached_throne() -> void:

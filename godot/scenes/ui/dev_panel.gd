@@ -19,13 +19,16 @@ var debug_enabled: bool = true
 var collapsed_size: Vector2
 var full_size: Vector2
 
+var spawn_popup: PopupPanel = null
+
 
 func _ready() -> void:
-	# Store panel sizes
 	full_size = size
 	collapsed_size = Vector2(full_size.x, 50)
-	
-	# Connect button signals
+
+	spawn_test_button.text = "Spawn Enemy..."
+	_build_spawn_popup()
+
 	spawn_test_button.pressed.connect(_on_spawn_test_pressed)
 	start_wave_button.pressed.connect(_on_start_wave_pressed)
 	test_path_button.pressed.connect(_on_test_path_pressed)
@@ -60,9 +63,39 @@ func _update_info() -> void:
 	lives_label.text = "Lives: %d" % GameManager.lives
 
 
+func _build_spawn_popup() -> void:
+	spawn_popup = PopupPanel.new()
+	spawn_popup.title = "Spawn Enemy"
+	add_child(spawn_popup)
+
+	var vbox = VBoxContainer.new()
+	vbox.custom_minimum_size = Vector2(200, 0)
+	spawn_popup.add_child(vbox)
+
+	var label = Label.new()
+	label.text = "Выбери врага:"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(label)
+
+	vbox.add_child(HSeparator.new())
+
+	for enemy_key in Config.enemies:
+		var data = Config.enemies[enemy_key]
+		var btn = Button.new()
+		btn.text = "%s  (epoch %d)" % [data.get("name", enemy_key), data.get("epoch", 1)]
+		btn.pressed.connect(_spawn_enemy.bind(enemy_key))
+		vbox.add_child(btn)
+
+
+func _spawn_enemy(enemy_type: String) -> void:
+	spawn_popup.hide()
+	WaveManager.spawn_test_enemy(enemy_type)
+	print("DevPanel: Spawned %s" % enemy_type)
+
+
 func _on_spawn_test_pressed() -> void:
-	print("DevPanel: Spawning test barbarian")
-	WaveManager.spawn_test_enemy("hero_barbarian")
+	var btn_pos = spawn_test_button.global_position
+	spawn_popup.popup(Rect2(btn_pos + Vector2(0, spawn_test_button.size.y + 4), Vector2.ZERO))
 
 
 func _on_start_wave_pressed() -> void:

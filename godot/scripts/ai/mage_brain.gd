@@ -50,6 +50,38 @@ func should_attack_adjacent_towers() -> bool:
 	return false  # Маг не связывается с башнями
 
 
+func get_attack_range() -> int:
+	return 2  # Атакует через 1 клетку
+
+
+func get_path_target(ps: Node, from: Vector2i, building_grid: Node) -> Vector2i:
+	var throne = ps.throne_tile
+	var atk_range = get_attack_range()
+	var best_tile = throne
+	var best_dist = INF
+
+	for dx in range(-atk_range, atk_range + 1):
+		for dy in range(-atk_range, atk_range + 1):
+			# Только тайлы ровно на краю радиуса (Чебышёв == atk_range)
+			if maxi(absi(dx), absi(dy)) != atk_range:
+				continue
+			var tile = throne + Vector2i(dx, dy)
+			if not ps.is_in_bounds(tile):
+				continue
+			if building_grid and building_grid.is_occupied(tile):
+				continue
+			var dist = float(from.distance_to(tile))
+			if dist < best_dist:
+				best_dist = dist
+				best_tile = tile
+
+	return best_tile
+
+
 func should_abandon_wall_attack(detour_cost: float, remaining_time: float) -> bool:
 	# Маг уходит при первой возможности — даже если обход чуть длиннее
 	return detour_cost < remaining_time * 1.5
+
+
+func get_projectile_type() -> String:
+	return "magic_bolt"
