@@ -1,15 +1,14 @@
 class_name AlchemistBrain
 extends EnemyBrain
 
-## Алхимик: быстрый оппортунист. Выбирает путь по стоимости как рыцарь,
-## но с уклоном к обходу (не любит тратить время на пролом).
-## Не атакует башни — слишком занят бегом к трону.
+## Алхимик: оппортунист с дальней атакой (бросает зелья).
+## Предпочитает обход, но ломает если прямой путь значительно короче.
+## При первом ударе получает 3 секунды неуязвимости.
 
 
 func choose_path(detour_path: Array[Vector2i], straight_path: Array[Vector2i], e: Node) -> Array[Vector2i]:
 	var detour_cost = e._calculate_path_cost(detour_path)
 	var straight_cost = e._calculate_path_cost(straight_path)
-	# Алхимик обходит если это не сильно длиннее (коэффициент 0.8 — скорее обойдёт)
 	if detour_path.is_empty():
 		return straight_path
 	if straight_cost <= detour_cost * 0.8:
@@ -20,7 +19,6 @@ func choose_path(detour_path: Array[Vector2i], straight_path: Array[Vector2i], e
 func on_wall_encountered(wall_key: String) -> void:
 	if not enemy:
 		return
-	# Пробует обойти первым делом
 	var ps = enemy.get_node_or_null("/root/PathfindingSystem")
 	if ps:
 		var alt = ps.get_path_to_throne(enemy.current_tile)
@@ -33,7 +31,6 @@ func on_wall_encountered(wall_key: String) -> void:
 				enemy.target_tile = enemy.tile_path[enemy.path_index]
 			enemy.state = enemy.State.MOVING
 			return
-	# Нет обхода — ломает
 	enemy.start_wall_attack(wall_key)
 
 
@@ -43,9 +40,44 @@ func on_wall_destroyed() -> void:
 
 
 func should_attack_adjacent_towers() -> bool:
-	return false  # Алхимик не отвлекается
+	return false
 
 
 func should_abandon_wall_attack(detour_cost: float, remaining_time: float) -> bool:
-	# Уходит если обход хоть немного быстрее
 	return detour_cost < remaining_time
+
+
+func get_attack_range() -> int:
+	return 2
+
+
+func get_path_target(ps: Node, from: Vector2i, building_grid: Node) -> Vector2i:
+	var throne = ps.throne_tile
+	var atk_range = get_attack_range()
+	var best_tile = throne
+	var best_dist = INF
+
+	for dx in range(-atk_range, atk_range + 1):
+		for dy in range(-atk_range, atk_range + 1):
+			if maxi(absi(dx), absi(dy)) != atk_range:
+				continue
+			var tile = throne + Vector2i(dx, dy)
+			if not ps.is_in_bounds(tile):
+				continue
+			if building_grid and building_grid.is_occupied(tile):
+				continue
+			var dist = float(from.distance_to(tile))
+			if dist < best_dist:
+				best_dist = dist
+				best_tile = tile
+
+	return best_tile
+
+
+func get_projectile_type() -> String:
+	return "poison_flask"
+
+
+func on_first_hit() -> void:
+	if enemy:
+		enemy.activate_invincibility(3.0)

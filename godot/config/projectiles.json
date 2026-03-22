@@ -15,6 +15,22 @@
 		"trail_length": 16,
 		"trail_color": "#aa33ffcc"
 	},
+	"poison_flask": {
+		"name": "Колба с ядом",
+		"draw_mode": "orb",
+		"orb_radius": 5.0,
+		"orb_color": "#44cc44",
+		"orb_glow_color": "#88ff22",
+		"speed": 200.0,
+		"damage": 12.0,
+		"homing": true,
+		"arc_height": 30.0,
+		"hit_radius": 10.0,
+		"lifetime": 4.0,
+		"trail": true,
+		"trail_length": 12,
+		"trail_color": "#44cc4499"
+	},
 	"arrow": {
 		"name": "Стрела",
 		"speed": 200.0,

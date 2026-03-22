@@ -69,3 +69,8 @@ func should_abandon_wall_attack(_detour_cost: float, _remaining_time: float) -> 
 ## Тип проджектайла при атаке здания. "" = нет проджектайла (ближняя атака)
 func get_projectile_type() -> String:
 	return ""
+
+
+## Вызывается при первом уроне (HP было полным). Brain может активировать баффы.
+func on_first_hit() -> void:
+	pass

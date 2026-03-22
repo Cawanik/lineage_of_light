@@ -34,6 +34,10 @@ var path_progress: float = 0.0
 var slow_timer: float = 0.0
 var slow_factor: float = 1.0
 
+# Invincibility (выдаётся brain'ом)
+var invincible_timer: float = 0.0
+var _inv_pulse: float = 0.0
+
 # Grid movement
 var building_grid: Node = null
 var wall_system: Node = null
@@ -329,6 +333,14 @@ func _process(delta: float) -> void:
 			set_victory_state()
 		return
 
+	# Invincibility — золотой пульс
+	if invincible_timer > 0:
+		invincible_timer -= delta
+		_inv_pulse += delta
+		var pulse = 0.5 + 0.5 * sin(_inv_pulse * 12.0)
+		modulate = Color(1.0 + pulse * 0.6, 1.0 + pulse * 0.4, 0.2 + pulse * 0.2)
+		if invincible_timer <= 0:
+			modulate = Color.WHITE
 	# Slow effect
 	if slow_timer > 0:
 		slow_timer -= delta
@@ -336,7 +348,8 @@ func _process(delta: float) -> void:
 		sprite.modulate = Color(0.6, 0.6, 1.0)
 	else:
 		current_speed = base_speed
-		sprite.modulate = Color.WHITE
+		if invincible_timer <= 0:
+			sprite.modulate = Color.WHITE
 
 	# Debug state info (every 1 second)
 	brain.process(delta)
@@ -747,9 +760,16 @@ func _show_base_attack_effect() -> void:
 func take_damage(amount: float) -> void:
 	if is_dead:
 		return
+	if invincible_timer > 0:
+		return
 
+	var was_full_hp = hp >= max_hp
 	hp -= amount
 	_update_hp_bar()
+
+	# Триггер первого удара — brain может активировать эффекты
+	if was_full_hp:
+		brain.on_first_hit()
 
 	var tween = create_tween()
 	sprite.modulate = Color(2, 2, 2)
@@ -757,6 +777,11 @@ func take_damage(amount: float) -> void:
 
 	if hp <= 0:
 		die()
+
+
+func activate_invincibility(duration: float) -> void:
+	invincible_timer = duration
+	_inv_pulse = 0.0
 
 
 func apply_slow(factor: float, duration: float) -> void:
