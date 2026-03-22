@@ -28,6 +28,15 @@
 [ext_resource type="PackedScene" uid="uid://crhdxovukmpdt" path="res://scenes/ui/currency_bar.tscn" id="19_currency_bar"]
 [ext_resource type="PackedScene" path="res://scenes/ui/start_wave_button.tscn" id="20_start_wave"]
 [ext_resource type="PackedScene" path="res://scenes/ui/skill_tree_button.tscn" id="21_skill_tree"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0001.png" id="22_ocean1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0002.png" id="22_ocean2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0003.png" id="22_ocean3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0004.png" id="22_ocean4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0005.png" id="22_ocean5"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0006.png" id="22_ocean6"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0007.png" id="22_ocean7"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0008.png" id="22_ocean8"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0009.png" id="22_ocean9"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0bhws"]
 texture = ExtResource("3_pg34l")
@@ -108,6 +117,7 @@ script = ExtResource("1_main")
 z_index = -100
 position = Vector2(0, 508)
 script = ExtResource("16_ocean_bg")
+ocean_frames = Array[Texture2D]([ExtResource("22_ocean1"), ExtResource("22_ocean2"), ExtResource("22_ocean3"), ExtResource("22_ocean4"), ExtResource("22_ocean5"), ExtResource("22_ocean6"), ExtResource("22_ocean7"), ExtResource("22_ocean8"), ExtResource("22_ocean9")])
 fill_radius = 30
 fps = 2.0
 camera_limit_padding = 20

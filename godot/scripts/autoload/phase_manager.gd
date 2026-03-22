@@ -87,7 +87,22 @@ func start_combat_phase() -> void:
 func end_combat_phase() -> void:
 	if current_phase == Phase.BUILD:
 		return
+	# Награда за волну — 1 кристалл
+	GameManager.souls += 1
+	# Отхиливаем все здания
+	_heal_all_buildings()
 	_start_build_phase()
+
+
+func _heal_all_buildings() -> void:
+	var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid") as BuildingGrid
+	if not bg:
+		return
+	for tile in bg.buildings:
+		var b = bg.get_building(tile)
+		if b and is_instance_valid(b):
+			b.hp = b.max_hp
+			b._update_hp_bar()
 
 
 func skip_build_phase() -> void:

@@ -64,6 +64,12 @@ func _ready() -> void:
 	var throne = throne_scene.instantiate()
 	building_grid.place_building(throne_start_tile, throne)
 
+	# Спавним игрока рядом с троном
+	var player_node = get_node_or_null("YSort/Player")
+	if player_node:
+		var free_tile = _find_free_tile_near(throne_start_tile)
+		player_node.position = building_grid.tile_to_world(free_tile)
+
 	# Connect throne destruction to game over
 	throne.throne_destroyed.connect(GameManager.on_throne_destroyed)
 
@@ -187,11 +193,16 @@ func _input(event: InputEvent) -> void:
 		return
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		if active_tool:
-			active_tool.click()
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			if active_tool:
+				active_tool.click()
+			else:
+				_try_focus_building()
 		else:
-			_try_focus_building()
+			# Отпускание ЛКМ — завершаем драг
+			if active_tool and active_tool.has_method("on_release"):
+				active_tool.on_release()
 
 	# N key — start next wave (quick hotkey)
 	if event is InputEventKey and event.pressed and event.keycode == KEY_N:
@@ -375,6 +386,26 @@ func _on_wave_completed(wave_number: int) -> void:
 
 func _on_all_waves_completed() -> void:
 	print("All waves completed! Victory!")
+
+
+func _find_free_tile_near(center: Vector2i) -> Vector2i:
+	# BFS от центра — находим ближайший свободный тайл
+	var visited: Dictionary = {}
+	var queue: Array[Vector2i] = [center]
+	visited[center] = true
+	var dirs = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+
+	while not queue.is_empty():
+		var current = queue.pop_front()
+		if not building_grid.is_occupied(current) and current != center:
+			return current
+		for d in dirs:
+			var n = current + d
+			if not visited.has(n) and building_grid.is_on_ground(n):
+				visited[n] = true
+				queue.append(n)
+
+	return center
 
 
 func _print_matrix() -> void:

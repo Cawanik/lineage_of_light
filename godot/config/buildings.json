@@ -32,9 +32,8 @@
 		"attack_speed": 0.8,
 		"attack_projectile": "arrow",
 		"upgrades": [
-			{"name": "Укреплённые лучники", "cost": 75, "hp_bonus": 100, "desc": "+100 HP"},
-			{"name": "Огненные стрелы", "cost": 120, "damage_bonus": 5, "desc": "+5 урон", "attack_projectile": "fireball"},
-			{"name": "Двойная башня", "cost": 200, "hp_bonus": 150, "extra_units": 1, "desc": "+150 HP, +1 лучник"}
+			{"name": "Двойной отряд", "cost": 50, "extra_units": 1, "desc": "+1 лучник, +1 стрела"},
+			{"name": "Тройной отряд", "cost": 75, "extra_units": 1, "desc": "+1 лучник, +1 стрела"}
 		]
 	},
 	"wall_block": {

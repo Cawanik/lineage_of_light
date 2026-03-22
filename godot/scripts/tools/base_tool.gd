@@ -33,6 +33,7 @@ func deactivate() -> void:
 	is_active = false
 	_clear_path_highlights()
 	_clear_range_highlights()
+	_clear_tile_highlight()
 
 
 func update() -> void:
@@ -132,6 +133,8 @@ func _clear_path_highlights() -> void:
 
 
 var _range_highlights: Array[Node2D] = []
+var _tile_highlight: Node2D = null
+var _last_highlight_tile: Vector2i = Vector2i(-9999, -9999)
 
 
 func show_attack_range(tile: Vector2i, building_type: String) -> void:
@@ -187,6 +190,43 @@ func show_attack_range(tile: Vector2i, building_type: String) -> void:
 		ysort.add_child(marker)
 		marker.queue_redraw()
 		_range_highlights.append(marker)
+
+
+func show_tile_highlight(tile: Vector2i, can_place: bool) -> void:
+	if tile == _last_highlight_tile:
+		return
+	_last_highlight_tile = tile
+	_clear_tile_highlight()
+
+	var ground = wall_system.get_tree().current_scene.get_node_or_null("Ground") as TileMapLayer
+	if not ground:
+		return
+	var ysort = wall_system.get_tree().current_scene.get_node_or_null("YSort")
+	if not ysort:
+		return
+
+	_tile_highlight = Node2D.new()
+	_tile_highlight.position = ground.map_to_local(tile) + ground.position
+	_tile_highlight.z_index = 80
+	var color = Color(0.3, 1.0, 0.3, 0.35) if can_place else Color(1.0, 0.2, 0.2, 0.35)
+	var draw_node = _tile_highlight
+	draw_node.draw.connect(func():
+		var hw = 32.0
+		var hh = 16.0
+		var diamond = PackedVector2Array([
+			Vector2(0, -hh), Vector2(hw, 0), Vector2(0, hh), Vector2(-hw, 0)
+		])
+		draw_node.draw_colored_polygon(diamond, color)
+	)
+	ysort.add_child(_tile_highlight)
+	_tile_highlight.queue_redraw()
+
+
+func _clear_tile_highlight() -> void:
+	if _tile_highlight and is_instance_valid(_tile_highlight):
+		_tile_highlight.queue_free()
+		_tile_highlight = null
+	_last_highlight_tile = Vector2i(-9999, -9999)
 
 
 func _clear_range_highlights() -> void:

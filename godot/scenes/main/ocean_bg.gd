@@ -10,9 +10,9 @@
 class_name OceanBG
 extends Node2D
 
-@export var frames_path: String = "res://assets/sprites/tiles/animations/ocean/":
+@export var ocean_frames: Array[Texture2D] = []:
 	set(v):
-		frames_path = v
+		ocean_frames = v
 		_reload()
 @export var fill_radius: int = 40:
 	set(v):
@@ -145,22 +145,7 @@ func _generate_offsets() -> void:
 
 func _reload() -> void:
 	_frames.clear()
-	if not DirAccess.dir_exists_absolute(frames_path):
-		return
-	var dir = DirAccess.open(frames_path)
-	if not dir:
-		return
-	var files: Array[String] = []
-	dir.list_dir_begin()
-	var file = dir.get_next()
-	while file != "":
-		if file.ends_with(".png") and not file.ends_with(".import"):
-			files.append(file)
-		file = dir.get_next()
-	dir.list_dir_end()
-	files.sort()
-	for f in files:
-		var tex = load(frames_path + f)
+	for tex in ocean_frames:
 		if tex:
 			_frames.append(tex)
 	queue_redraw()

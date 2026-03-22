@@ -33,6 +33,10 @@ var lives: int = 20:
 		if lives <= 0:
 			game_over.emit()
 
+var souls: int = 0:
+	set(value):
+		souls = value
+
 var current_epoch: int = 1
 var is_game_active: bool = true
 

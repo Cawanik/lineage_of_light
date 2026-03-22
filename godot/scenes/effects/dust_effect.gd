@@ -16,25 +16,24 @@ static func spawn(tree: SceneTree, world_pos: Vector2, effect_type: String = "bu
 	var fps_val = data.get("fps", 10.0)
 	var fade_out = data.get("fade_out", true)
 
-	# Загружаем фреймы
+	# Загружаем фреймы по индексу (работает в билде)
 	var frames_path = data.get("frames_path", "")
 	var textures: Array[Texture2D] = []
 	if frames_path != "":
-		var dir = DirAccess.open(frames_path)
-		if dir:
-			var files: Array[String] = []
-			dir.list_dir_begin()
-			var file = dir.get_next()
-			while file != "":
-				if file.ends_with(".png") and not file.ends_with(".import"):
-					files.append(file)
-				file = dir.get_next()
-			dir.list_dir_end()
-			files.sort()
-			for f in files:
-				var tex = load(frames_path + f)
-				if tex:
-					textures.append(tex)
+		for i in range(100):
+			# Пробуем разные форматы имён
+			var paths = [
+				frames_path + "frame_%03d.png" % i,
+				frames_path + "dust_puff_%04d.png" % (i + 1),
+			]
+			var found = false
+			for p in paths:
+				if ResourceLoader.exists(p):
+					textures.append(load(p))
+					found = true
+					break
+			if not found and i > 0:
+				break
 
 	# Фоллбэк на статичный спрайт
 	if textures.is_empty():

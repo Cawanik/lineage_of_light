@@ -159,10 +159,9 @@ func _update_building_preview() -> void:
 	if tile != _last_preview_tile:
 		_last_preview_tile = tile
 		_preview_node.position = get_building_grid().tile_to_world(tile)
-		var color = get_preview_color(tile, _moving_building_tile)
-		if color.g > 0.5:
-			color = Color(0.4, 0.8, 1.0, 0.5)
-		_preview_sprite.modulate = color
+		var placeable = can_place_at(tile, _moving_building_tile)
+		_preview_sprite.modulate = Color(0.4, 0.8, 1.0, 0.5) if placeable else Color(1.0, 0.3, 0.3, 0.5)
+		show_tile_highlight(tile, placeable)
 		show_attack_range(tile, _moving_building_type)
 
 

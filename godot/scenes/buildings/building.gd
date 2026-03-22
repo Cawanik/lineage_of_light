@@ -154,10 +154,40 @@ func _setup_unit(data: Dictionary) -> void:
 
 	unit_sprite.sprite_frames = frames
 	var unit_offset = data.get("unit_offset", [0.0, 0.0])
-	var jitter = data.get("unit_offset_jitter", 0)
-	var jx = randf_range(-jitter, jitter)
-	var jy = randf_range(-jitter, jitter)
-	unit_sprite.position = Vector2(unit_offset[0] + jx, unit_offset[1] + jy)
+	var base_pos = Vector2(unit_offset[0], unit_offset[1])
+
+	# Углы верхушки башни (изометрический ромб)
+	var corners = [
+		Vector2(-8, -4),
+		Vector2(8, -4),
+		Vector2(-8, 1),
+		Vector2(8, 1),
+	]
+
+	# Собираем занятые углы
+	var taken: Array[int] = []
+	for child in get_children():
+		if child is AnimatedSprite2D and child.has_meta("corner_idx"):
+			taken.append(child.get_meta("corner_idx"))
+
+	# Выбираем рандомный свободный угол
+	var free_corners: Array[int] = []
+	for i in range(corners.size()):
+		if i not in taken:
+			free_corners.append(i)
+
+	var corner_idx: int
+	if free_corners.is_empty():
+		corner_idx = randi() % corners.size()
+	else:
+		corner_idx = free_corners[randi() % free_corners.size()]
+
+	var corner_offset = corners[corner_idx]
+
+	unit_sprite.position = base_pos + corner_offset
+	unit_sprite.z_index = int(corner_offset.y + 5)
+	unit_sprite.z_as_relative = true
+	unit_sprite.set_meta("corner_idx", corner_idx)
 	add_child(unit_sprite)
 	unit_sprite.play(idle_name)
 
@@ -189,22 +219,40 @@ func _find_enemy_in_range() -> Node2D:
 	return closest
 
 
+func _get_unit_sprites() -> Array:
+	var units: Array = []
+	for child in get_children():
+		if child is AnimatedSprite2D and child.has_meta("corner_idx"):
+			units.append(child)
+	return units
+
+
 func _shoot(target: Node2D) -> void:
 	if attack_projectile == "":
 		return
-	Projectile.spawn(get_tree(), attack_projectile, global_position + Vector2(0, -40), target.global_position, target)
-	# Переключаем юнитов на анимацию стрельбы
-	for child in get_children():
-		if child is AnimatedSprite2D and child.name == "UnitSprite":
-			if child.sprite_frames.has_animation("attack"):
-				child.play("attack")
-				if not child.animation_finished.is_connected(_on_unit_attack_finished.bind(child)):
-					child.animation_finished.connect(_on_unit_attack_finished.bind(child), CONNECT_ONE_SHOT)
+	var units = _get_unit_sprites()
+	if units.is_empty():
+		Projectile.spawn(get_tree(), attack_projectile, global_position + Vector2(0, -40), target.global_position, target)
+		return
+
+	for unit in units:
+		# Проджектайл из позиции юнита
+		var shoot_from = global_position + unit.position + Vector2(0, 5)
+		var target_jitter = Vector2(randf_range(-6, 6), randf_range(-3, 3))
+		Projectile.spawn(get_tree(), attack_projectile, shoot_from, target.global_position + target_jitter, target)
+		# Анимация стрельбы
+		if unit.sprite_frames.has_animation("attack"):
+			unit.play("attack")
+			# Вернуть idle после окончания
+			if not unit.animation_finished.is_connected(_on_unit_attack_finished):
+				unit.animation_finished.connect(_on_unit_attack_finished.bind(unit))
 
 
 func _on_unit_attack_finished(unit: AnimatedSprite2D) -> void:
 	if is_instance_valid(unit) and unit.sprite_frames.has_animation("idle"):
 		unit.play("idle")
+		if unit.animation_finished.is_connected(_on_unit_attack_finished):
+			unit.animation_finished.disconnect(_on_unit_attack_finished)
 
 
 func _get_my_tile() -> Vector2i:
@@ -226,18 +274,22 @@ func _update_hp_bar() -> void:
 	hp_bar.scale.x = ratio
 
 	if ratio > 0.5:
-		hp_bar.color = Color(0.17, 0.35, 0.15)
+		hp_bar.color = Color(0.2, 0.8, 0.2)
 	elif ratio > 0.25:
-		hp_bar.color = Color(0.77, 0.48, 0.27)
+		hp_bar.color = Color(1.0, 0.7, 0.1)
 	else:
-		hp_bar.color = Color(0.55, 0, 0)
+		hp_bar.color = Color(1.0, 0.15, 0.15)
 
 	hp_bar_bg.visible = ratio < 1.0
 	hp_bar.visible = ratio < 1.0
 
 
 func _on_destroyed() -> void:
-	# Override in subclasses
+	# Убираем из building_grid
+	var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid") as BuildingGrid
+	if bg:
+		var my_tile = bg.world_to_tile(global_position)
+		bg.remove_building(my_tile)
 	queue_free()
 
 

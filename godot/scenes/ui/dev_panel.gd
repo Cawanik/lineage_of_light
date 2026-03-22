@@ -125,10 +125,7 @@ func _on_add_gold_pressed() -> void:
 
 
 func _on_add_souls_pressed() -> void:
-	if "souls" in GameManager:
-		GameManager.souls += 111
-	else:
-		GameManager.set("souls", 111)
+	GameManager.souls += 111
 
 
 func _on_toggle_pressed() -> void:

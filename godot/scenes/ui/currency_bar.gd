@@ -78,7 +78,7 @@ func _process(_delta: float) -> void:
 		return
 
 	var gold = GameManager.gold
-	var souls = GameManager.get("souls") if GameManager.get("souls") != null else 0
+	var souls = GameManager.souls
 
 	if gold != _last_gold:
 		_last_gold = gold

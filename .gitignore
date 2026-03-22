@@ -25,6 +25,12 @@ desktop.ini
 # Claude
 .claude/
 
+# Builds
+builds/
+build/
+*.exe
+*.pck
+
 # Backups
 *.bak
 *.tmp
