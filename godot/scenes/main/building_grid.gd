@@ -143,6 +143,16 @@ func move_building(from_tile: Vector2i, to_tile: Vector2i) -> bool:
 	buildings.erase(from_tile)
 	buildings[to_tile] = building
 	building.position = tile_to_world(to_tile)
+
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if ps:
+		ps.set_tile_solid(from_tile, false)
+		ps.set_tile_solid(to_tile, true)
+		if building is Building and building.building_type == "throne":
+			ps.throne_tile = to_tile
+			# Трон должен оставаться проходимым для AStar чтобы путь к нему находился
+			ps.set_tile_solid(to_tile, false)
+
 	building_moved.emit(building.building_type, from_tile, to_tile)
 	return true
 

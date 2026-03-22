@@ -11,7 +11,7 @@ var astar: AStar2D
 var astar_full_open: AStar2D  # Полностью открытый граф — игнорирует и стены, и здания
 
 var grid_size: Vector2i = Vector2i(30, 30)
-var throne_tile: Vector2i = Vector2i(14, 15)
+var throne_tile: Vector2i = Vector2i(-1, -1)  # Обновляется когда трон ставится через place_building
 
 
 func _ready() -> void:

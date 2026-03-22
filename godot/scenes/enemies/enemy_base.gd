@@ -717,6 +717,11 @@ func _process_building_attack(delta: float) -> void:
 			Projectile.spawn(get_tree(), proj_type, global_position, attacking_building.global_position, attacking_building).damage = damage
 		else:
 			attacking_building.take_damage(damage)
+			# Клив: дополнительный урон соседним зданиям вдоль линии
+			var cleave_targets = brain.get_cleave_targets(attacking_building, current_tile, building_grid)
+			for cleave_target in cleave_targets:
+				if is_instance_valid(cleave_target):
+					cleave_target.take_damage(damage * 0.6)
 			# Проверяем уничтожение только для ближней атаки (снаряд сам обработает попадание)
 			if attacking_building.hp <= 0:
 				sprite.modulate = Color.WHITE

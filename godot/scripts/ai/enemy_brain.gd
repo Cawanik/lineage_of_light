@@ -74,3 +74,9 @@ func get_projectile_type() -> String:
 ## Вызывается при первом уроне (HP было полным). Brain может активировать баффы.
 func on_first_hit() -> void:
 	pass
+
+
+## Возвращает здания рядом с целью которые тоже получают урон (клив).
+## Пустой массив = нет клива (по умолчанию).
+func get_cleave_targets(_attacking_building: Building, _attacker_tile: Vector2i, _building_grid: Node) -> Array[Building]:
+	return [] as Array[Building]
