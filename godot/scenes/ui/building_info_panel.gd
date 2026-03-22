@@ -66,17 +66,23 @@ func _create_ui(data: Dictionary) -> void:
 
 	# Контейнер
 	var margin = MarginContainer.new()
-	margin.position = Vector2(30, 55)
-	margin.size = Vector2(_panel_width - 60, _panel_height - 60)
+	margin.position = Vector2(30, 40)
+	margin.size = Vector2(_panel_width - 60, _panel_height - 45)
 	margin.add_theme_constant_override("margin_left", 10)
 	margin.add_theme_constant_override("margin_top", 6)
 	margin.add_theme_constant_override("margin_right", 10)
 	margin.add_theme_constant_override("margin_bottom", 6)
 	add_child(margin)
 
+	var scroll = ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.custom_minimum_size = Vector2(0, _panel_height - 50)
+	margin.add_child(scroll)
+
 	var vbox = VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 3)
-	margin.add_child(vbox)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(vbox)
 
 	# === Верхняя строка: иконка + название + кнопка upgrade ===
 	var top_row = HBoxContainer.new()
@@ -136,20 +142,39 @@ func _create_ui(data: Dictionary) -> void:
 		vbox.add_child(desc_label)
 
 	# === Характеристики ===
-	var stats = HBoxContainer.new()
-	stats.add_theme_constant_override("separation", 10)
+	var stats = VBoxContainer.new()
+	stats.add_theme_constant_override("separation", 2)
 	vbox.add_child(stats)
 
-	if data.get("can_move", false):
-		_add_stat(stats, "Перемещение: %d" % data.get("move_cost", 0), "#60a0f0")
+	var stats_row = HBoxContainer.new()
+	stats_row.add_theme_constant_override("separation", 10)
+	stats.add_child(stats_row)
 
-	# Список апгрейдов
+	if _building.attack_speed > 0:
+		_add_stat(stats_row, "Атака: %.1f/с" % _building.attack_speed, "#ff8866")
+	if _building.attack_range_cardinal > 0:
+		_add_stat(stats_row, "Радиус: %d" % _building.attack_range_cardinal, "#6699ff")
+	if _building.contact_damage > 0:
+		_add_stat(stats_row, "Шипы: %.0f" % _building.contact_damage, "#ff6666")
+
+	# Список применённых апгрейдов
+	if upgrade_level > 0:
+		for i in range(upgrade_level):
+			if i < upgrades.size():
+				var u = upgrades[i]
+				var u_label = Label.new()
+				u_label.text = "✓ %s" % u.get("desc", u.get("name", ""))
+				u_label.add_theme_color_override("font_color", Color("#88cc88"))
+				u_label.add_theme_font_size_override("font_size", 10)
+				stats.add_child(u_label)
+
+	# Счётчик апгрейдов
 	if upgrades.size() > 0:
 		var upgrades_label = Label.new()
 		var applied = mini(upgrade_level, upgrades.size())
 		upgrades_label.text = "Улучшения: %d/%d" % [applied, upgrades.size()]
 		upgrades_label.add_theme_color_override("font_color", Color("#f0d060"))
-		upgrades_label.add_theme_font_size_override("font_size", 12)
+		upgrades_label.add_theme_font_size_override("font_size", 10)
 		stats.add_child(upgrades_label)
 
 
@@ -209,6 +234,11 @@ func _apply_upgrade(upgrade: Dictionary, level: int) -> void:
 	var new_sprite = upgrade.get("sprite", "")
 	if new_sprite != "" and ResourceLoader.exists(new_sprite):
 		_building.sprite.texture = load(new_sprite)
+
+	# Урон при контакте (шипы)
+	var dmg_bonus = upgrade.get("damage_bonus", 0)
+	if dmg_bonus > 0:
+		_building.contact_damage += dmg_bonus
 
 	# Доп. юниты на башне (опционально)
 	var extra_units = int(upgrade.get("extra_units", 0))

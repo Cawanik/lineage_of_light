@@ -1,6 +1,7 @@
 {
 	"throne": {
 		"name": "Трон Лича",
+		"short_name": "ТРН",
 		"cost": 0,
 		"desc": "Трон Короля Лича. Если будет разрушен — игра проиграна.",
 		"hp": 150,
@@ -13,6 +14,7 @@
 	},
 	"archer_tower": {
 		"name": "Лучники",
+		"short_name": "ЛУЧ",
 		"cost": 50,
 		"desc": "Тёмная башня со скелетами-лучниками. Стреляет по врагам.",
 		"hp": 200,
@@ -38,10 +40,11 @@
 	},
 	"wall_block": {
 		"name": "Стена",
+		"short_name": "СТН",
 		"cost": 10,
 		"hp": 100,
 		"desc": "Каменная стена. Блокирует путь врагам.",
-		"sprite": "res://assets/sprites/buildings/wall_segment.png",
+		"sprite": "res://assets/sprites/buildings/wall/wall_segment_0001.png",
 		"sprite_offset": [0.0, -18.0],
 		"sprite_scale": [1.2, 1.2],
 		"hotkey": "1",
@@ -50,8 +53,8 @@
 		"can_move": true,
 		"move_cost": 5,
 		"upgrades": [
-			{"name": "Укреплённая стена", "cost": 20, "hp_bonus": 50, "desc": "+50 HP"},
-			{"name": "Шипы", "cost": 40, "damage_bonus": 3, "desc": "+3 урон при контакте"}
+			{"name": "Укреплённая стена", "cost": 20, "hp_bonus": 50, "desc": "+50 HP", "sprite": "res://assets/sprites/buildings/wall/wall_segment_0002.png"},
+			{"name": "Шипы", "cost": 40, "damage_bonus": 3, "desc": "+3 урон при контакте", "sprite": "res://assets/sprites/buildings/wall/wall_segment_0003.png"}
 		]
 	},
 	"wall": {

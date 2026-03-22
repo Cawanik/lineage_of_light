@@ -34,6 +34,7 @@ var attack_range_diagonal: int = 0
 var attack_speed: float = 0.0
 var attack_projectile: String = ""
 var _attack_timer: float = 0.0
+var contact_damage: float = 0.0  # Урон при контакте (шипы)
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var hp_bar_bg: ColorRect = $HPBarBG

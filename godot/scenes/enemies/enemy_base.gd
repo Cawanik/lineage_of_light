@@ -709,6 +709,11 @@ func _process_building_attack(delta: float) -> void:
 	attack_timer += delta
 	if attack_timer >= ATTACK_INTERVAL:
 		attack_timer -= ATTACK_INTERVAL
+		# Урон от шипов — враг получает урон при контакте
+		if attacking_building.contact_damage > 0:
+			take_damage(attacking_building.contact_damage * ATTACK_INTERVAL)
+			if is_dead:
+				return
 		var damage = wall_dps * ATTACK_INTERVAL
 		var proj_type = brain.get_projectile_type()
 		if proj_type != "":

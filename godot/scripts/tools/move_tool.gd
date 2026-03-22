@@ -130,6 +130,10 @@ func _finish_building_move() -> void:
 	_moving_building_type = ""
 	wall_system.move_mode = true
 
+	var main = wall_system.get_tree().current_scene
+	if main.has_method("refresh_flat_view"):
+		main.refresh_flat_view()
+
 
 func _update_building_hover() -> void:
 	if not get_building_grid():
