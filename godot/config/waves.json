@@ -27,109 +27,150 @@
     "wave": 4,
     "epoch": 2,
     "comment": "Рыцари присоединяются",
-    "groups": [
-      { "type": "hero_barbarian", "count": 6, "delay": 1.0 },
-      { "type": "hero_knight",   "count": 3, "delay": 1.5 }
-    ]
+    "budget": 30,
+    "delay": 1.0,
+    "weights": {
+      "hero_barbarian": 30,
+      "hero_knight": 70
+    }
   },
   {
     "wave": 5,
     "epoch": 2,
     "comment": "Рыцари усиливаются",
-    "groups": [
-      { "type": "hero_knight",   "count": 6, "delay": 1.2 },
-      { "type": "hero_barbarian", "count": 4, "delay": 0.8 }
-    ]
+    "budget": 36,
+    "delay": 1.0,
+    "weights": {
+      "hero_barbarian": 25,
+      "hero_knight": 75
+    }
   },
   {
     "wave": 6,
     "epoch": 2,
-    "comment": "Только рыцари",
-    "groups": [
-      { "type": "hero_knight", "count": 10, "delay": 1.0 }
-    ]
+    "comment": "Армия рыцарей",
+    "budget": 43,
+    "delay": 0.9,
+    "weights": {
+      "hero_barbarian": 20,
+      "hero_knight": 80
+    }
   },
   {
     "wave": 7,
     "epoch": 3,
     "comment": "Маги появляются",
-    "groups": [
-      { "type": "hero_knight", "count": 5, "delay": 1.0 },
-      { "type": "hero_mage",   "count": 3, "delay": 1.5 }
-    ]
+    "budget": 52,
+    "delay": 1.0,
+    "weights": {
+      "hero_barbarian": 10,
+      "hero_knight": 30,
+      "hero_mage": 60
+    }
   },
   {
     "wave": 8,
     "epoch": 3,
-    "comment": "Маги + орда крестьян",
-    "groups": [
-      { "type": "hero_mage",      "count": 6, "delay": 1.2 },
-      { "type": "hero_barbarian", "count": 8, "delay": 0.6 }
-    ]
+    "comment": "Маги усиливаются",
+    "budget": 62,
+    "delay": 0.9,
+    "weights": {
+      "hero_barbarian": 10,
+      "hero_knight": 25,
+      "hero_mage": 65
+    }
   },
   {
     "wave": 9,
     "epoch": 3,
-    "comment": "Маги + рыцари",
-    "groups": [
-      { "type": "hero_mage",   "count": 8, "delay": 1.0 },
-      { "type": "hero_knight", "count": 4, "delay": 1.2 }
-    ]
+    "comment": "Натиск магов",
+    "budget": 74,
+    "delay": 0.8,
+    "weights": {
+      "hero_barbarian": 5,
+      "hero_knight": 20,
+      "hero_mage": 75
+    }
   },
   {
     "wave": 10,
     "epoch": 4,
     "comment": "Алхимики появляются",
-    "groups": [
-      { "type": "hero_alchemist", "count": 5, "delay": 1.0 },
-      { "type": "hero_mage",      "count": 3, "delay": 1.5 }
-    ]
+    "budget": 89,
+    "delay": 1.0,
+    "weights": {
+      "hero_barbarian": 5,
+      "hero_knight": 15,
+      "hero_mage": 30,
+      "hero_alchemist": 50
+    }
   },
   {
     "wave": 11,
     "epoch": 4,
-    "comment": "Алхимики + рыцари",
-    "groups": [
-      { "type": "hero_alchemist", "count": 8, "delay": 0.8 },
-      { "type": "hero_knight",    "count": 6, "delay": 1.0 }
-    ]
+    "comment": "Алхимики усиливаются",
+    "budget": 107,
+    "delay": 0.9,
+    "weights": {
+      "hero_barbarian": 5,
+      "hero_knight": 10,
+      "hero_mage": 25,
+      "hero_alchemist": 60
+    }
   },
   {
     "wave": 12,
     "epoch": 4,
-    "comment": "Алхимики + маги",
-    "groups": [
-      { "type": "hero_alchemist", "count": 10, "delay": 0.7 },
-      { "type": "hero_mage",      "count": 5,  "delay": 1.2 }
-    ]
+    "comment": "Армия алхимиков",
+    "budget": 128,
+    "delay": 0.8,
+    "weights": {
+      "hero_barbarian": 5,
+      "hero_knight": 10,
+      "hero_mage": 20,
+      "hero_alchemist": 65
+    }
   },
   {
     "wave": 13,
     "epoch": 5,
-    "comment": "Наследники появляются",
-    "groups": [
-      { "type": "hero_heir",   "count": 3, "delay": 2.0 },
-      { "type": "hero_knight", "count": 8, "delay": 0.8 }
-    ]
+    "comment": "Наследник появляется",
+    "budget": 154,
+    "delay": 1.0,
+    "weights": {
+      "hero_barbarian": 5,
+      "hero_knight": 10,
+      "hero_mage": 20,
+      "hero_alchemist": 25,
+      "hero_heir": 40
+    }
   },
   {
     "wave": 14,
     "epoch": 5,
     "comment": "Наследники усиливаются",
-    "groups": [
-      { "type": "hero_heir",      "count": 5, "delay": 1.5 },
-      { "type": "hero_mage",      "count": 6, "delay": 1.0 },
-      { "type": "hero_alchemist", "count": 4, "delay": 0.8 }
-    ]
+    "budget": 185,
+    "delay": 0.9,
+    "weights": {
+      "hero_barbarian": 5,
+      "hero_knight": 10,
+      "hero_mage": 20,
+      "hero_alchemist": 25,
+      "hero_heir": 40
+    }
   },
   {
     "wave": 15,
     "epoch": 5,
     "comment": "Финальный штурм",
-    "groups": [
-      { "type": "hero_heir",   "count": 8, "delay": 1.2 },
-      { "type": "hero_mage",   "count": 8, "delay": 0.8 },
-      { "type": "hero_knight", "count": 8, "delay": 0.6 }
-    ]
+    "budget": 222,
+    "delay": 0.7,
+    "weights": {
+      "hero_barbarian": 5,
+      "hero_knight": 10,
+      "hero_mage": 15,
+      "hero_alchemist": 25,
+      "hero_heir": 45
+    }
   }
 ]
