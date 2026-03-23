@@ -1,9 +1,9 @@
 {
 	"throne": {
-		"name": "Трон Лича",
+		"name": "Любимый Трон",
 		"short_name": "ТРН",
 		"cost": 0,
-		"desc": "Трон Короля Лича. Если будет разрушен — игра проиграна.",
+		"desc": "Трон Владыки. Если будет разрушен — мне *\/!*!.",
 		"hp": 150,
 		"sprite": "res://assets/sprites/lich_king/throne.png",
 		"sprite_offset": [0.0, -32.0],
@@ -34,15 +34,15 @@
 		"attack_speed": 0.8,
 		"attack_projectile": "arrow",
 		"upgrades": [
-			{"name": "Двойной отряд", "cost": 50, "extra_units": 1, "desc": "+1 лучник, +1 стрела"},
-			{"name": "Тройной отряд", "cost": 75, "extra_units": 1, "desc": "+1 лучник, +1 стрела"}
+			{"name": "Двойной отряд", "cost": 50, "extra_units": 1, "desc": "+1 лучник"},
+			{"name": "Тройной отряд", "cost": 75, "extra_units": 1, "desc": "+1 лучник"}
 		]
 	},
 	"wall_block": {
 		"name": "Стена",
 		"short_name": "СТН",
 		"cost": 10,
-		"hp": 100,
+		"hp": 200,
 		"desc": "Каменная стена. Блокирует путь врагам.",
 		"sprite": "res://assets/sprites/buildings/wall/wall_segment_0001.png",
 		"sprite_offset": [0.0, -18.0],
@@ -53,8 +53,8 @@
 		"can_move": true,
 		"move_cost": 5,
 		"upgrades": [
-			{"name": "Укреплённая стена", "cost": 20, "hp_bonus": 50, "desc": "+50 HP", "sprite": "res://assets/sprites/buildings/wall/wall_segment_0002.png"},
-			{"name": "Шипы", "cost": 40, "damage_bonus": 3, "desc": "+3 урон при контакте", "sprite": "res://assets/sprites/buildings/wall/wall_segment_0003.png"}
+			{"name": "Укреплённая стена", "cost": 20, "hp_bonus": 100, "desc": "+50 HP", "sprite": "res://assets/sprites/buildings/wall/wall_segment_0002.png"},
+			{"name": "Шипы", "cost": 40, "hp_bonus": 100, "damage_bonus": 3, "desc": "+3 урон при контакте", "sprite": "res://assets/sprites/buildings/wall/wall_segment_0003.png"}
 		]
 	},
 	"wall": {
@@ -97,5 +97,95 @@
 			"highlight": "#7a7590",
 			"merlon": "#5a5470"
 		}
+	},
+	"altar_of_greed": {
+		"name": "Алтарь Жадности",
+		"short_name": "АЛТ",
+		"type": "production",
+		"cost": 100,
+		"desc": "Жертвенный алтарь. Множитель золота ×1.5 за каждый.",
+		"hp": 150,
+		"sprite": "res://assets/sprites/buildings/production/altar_of_greed.png",
+		"sprite_offset": [0.0, -24.0],
+		"hotkey": "3",
+		"can_build": true,
+		"can_demolish": true,
+		"can_move": true,
+		"move_cost": 50,
+		"gold_multiplier": 1.5,
+		"idle_anim": "res://assets/sprites/buildings/production/altar_of_greed",
+		"idle_anim_fps": 4.0
+	},
+	"crystal_spire": {
+		"name": "Кристальный Шпиль",
+		"short_name": "КРС",
+		"type": "production",
+		"cost": 150,
+		"desc": "Тёмный обелиск. +1 душа за каждую волну.",
+		"hp": 100,
+		"sprite": "res://assets/sprites/buildings/production/crystal_spire.png",
+		"sprite_offset": [0.0, -45.0],
+		"hotkey": "4",
+		"can_build": true,
+		"can_demolish": true,
+		"can_move": true,
+		"move_cost": 75,
+		"soul_bonus": 1,
+		"idle_anim": "res://assets/sprites/buildings/production/crystal_spire",
+		"idle_anim_fps": 4.0
+	},
+	"shadow_forge": {
+		"name": "Тёмная Кузня",
+		"short_name": "КУЗ",
+		"type": "production",
+		"cost": 120,
+		"desc": "Проклятая кузня. Открывает улучшения зданий.",
+		"hp": 200,
+		"sprite": "res://assets/sprites/buildings/production/shadow_forge.png",
+		"sprite_offset": [0.0, -30.0],
+		"hotkey": "5",
+		"can_build": true,
+		"can_demolish": true,
+		"can_move": true,
+		"move_cost": 60,
+		"unlock_upgrades": true,
+		"idle_anim": "res://assets/sprites/buildings/production/shadow_forge",
+		"idle_anim_fps": 4.0
+	},
+	"dark_workshop": {
+		"name": "Тёмная Мастерская",
+		"short_name": "МСТ",
+		"type": "production",
+		"cost": 130,
+		"desc": "Алхимическая лаборатория. Авторемонт зданий между волнами.",
+		"hp": 150,
+		"sprite": "res://assets/sprites/buildings/production/dark_workshop.png",
+		"sprite_offset": [0.0, -25.0],
+		"hotkey": "6",
+		"can_build": true,
+		"can_demolish": true,
+		"can_move": true,
+		"move_cost": 65,
+		"auto_repair_percent": 0.25,
+		"idle_anim": "res://assets/sprites/buildings/production/dark_workshop",
+		"idle_anim_fps": 4.0
+	},
+	"epoch_gate": {
+		"name": "Врата Эпох",
+		"short_name": "ВРТ",
+		"type": "production",
+		"cost": 200,
+		"desc": "Портал в бездну. Открывает новые эпохи и волны врагов.",
+		"hp": 250,
+		"sprite": "res://assets/sprites/buildings/production/epoch_gate.png",
+		"sprite_offset": [0.0, -37.5],
+		"hotkey": "7",
+		"can_build": true,
+		"can_demolish": true,
+		"can_move": true,
+		"move_cost": 100,
+		"unlock_epoch": true,
+		"idle_anim": "res://assets/sprites/buildings/production/epoch_gate",
+		"idle_anim_fps": 4.0
 	}
 }

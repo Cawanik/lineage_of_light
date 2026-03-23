@@ -61,7 +61,37 @@ func spend_gold(amount: int) -> bool:
 
 
 func earn_gold(amount: int) -> void:
-	gold += amount
+	var multiplier = get_gold_multiplier()
+	gold += int(amount * multiplier)
+
+
+# Считаем множитель золота от алтарей
+func get_gold_multiplier() -> float:
+	var altar_count = _count_buildings("altar_of_greed")
+	if altar_count <= 0:
+		return 1.0
+	var mult = 1.0
+	for i in range(altar_count):
+		mult *= 1.5
+	return mult
+
+
+# Считаем бонус душ от шпилей
+func get_soul_bonus() -> int:
+	return _count_buildings("crystal_spire")
+
+
+# Считаем сколько зданий определённого типа на карте
+func _count_buildings(type: String) -> int:
+	var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid") as BuildingGrid
+	if not bg:
+		return 0
+	var count = 0
+	for tile in bg.buildings:
+		var b = bg.get_building(tile)
+		if b and b is Building and b.building_type == type:
+			count += 1
+	return count
 
 
 func lose_life(amount: int = 1) -> void:

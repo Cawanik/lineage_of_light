@@ -1,0 +1,82 @@
+{
+	"dark_mastery": {
+		"name": "Тёмное Владычество",
+		"desc": "Основа тёмной магии Лича.",
+		"icon": "",
+		"cost": 0,
+		"requires": [],
+		"position": [400, 80]
+	},
+	"soul_harvest": {
+		"name": "Жатва Душ",
+		"desc": "Увеличивает сбор душ.",
+		"icon": "",
+		"cost": 1,
+		"requires": ["dark_mastery"],
+		"position": [250, 200]
+	},
+	"dark_fortification": {
+		"name": "Тёмное Укрепление",
+		"desc": "Усиливает оборонительные постройки.",
+		"icon": "",
+		"cost": 1,
+		"requires": ["dark_mastery"],
+		"position": [550, 200]
+	},
+	"greed_ritual": {
+		"name": "Ритуал Жадности",
+		"desc": "Усиливает добычу золота.",
+		"icon": "",
+		"cost": 2,
+		"requires": ["soul_harvest"],
+		"position": [150, 350]
+	},
+	"crystal_resonance": {
+		"name": "Резонанс Кристаллов",
+		"desc": "Усиливает кристальные постройки.",
+		"icon": "",
+		"cost": 2,
+		"requires": ["soul_harvest"],
+		"position": [350, 350]
+	},
+	"iron_walls": {
+		"name": "Железные Стены",
+		"desc": "Стены становятся прочнее.",
+		"icon": "",
+		"cost": 2,
+		"requires": ["dark_fortification"],
+		"position": [450, 350]
+	},
+	"deadly_arrows": {
+		"name": "Смертоносные Стрелы",
+		"desc": "Лучники наносят больше урона.",
+		"icon": "",
+		"cost": 2,
+		"requires": ["dark_fortification"],
+		"position": [650, 350]
+	},
+	"mass_sacrifice": {
+		"name": "Массовое Жертвоприношение",
+		"desc": "Мощный ритуал жертвоприношения.",
+		"icon": "",
+		"cost": 3,
+		"requires": ["greed_ritual", "crystal_resonance"],
+		"position": [250, 500]
+	},
+	"fortress_of_doom": {
+		"name": "Крепость Рока",
+		"desc": "Абсолютная защита.",
+		"icon": "",
+		"cost": 3,
+		"requires": ["iron_walls", "deadly_arrows"],
+		"position": [550, 500]
+	},
+	"epoch_rift": {
+		"name": "Разлом Эпох",
+		"desc": "Открывает путь между эпохами.",
+		"icon": "",
+		"cost": 5,
+		"requires": ["mass_sacrifice", "fortress_of_doom"],
+		"position": [400, 650]
+	}
+}
