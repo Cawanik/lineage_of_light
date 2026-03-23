@@ -71,6 +71,10 @@ func on_release() -> void:
 	_clear_line_highlights()
 	_hovered_building_tile = Vector2i(-9999, -9999)
 
+	var main = wall_system.get_tree().current_scene
+	if main.has_method("refresh_flat_view"):
+		main.refresh_flat_view()
+
 
 func _get_line_tiles(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []

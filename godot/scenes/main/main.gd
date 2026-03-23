@@ -21,6 +21,8 @@ extends Node2D
 @onready var build_button: TextureButton = $UILayer/Toolbar/Grid/Slot1/BuildButton
 @onready var demolish_button: TextureButton = $UILayer/Toolbar/Grid/Slot2/DemolishButton
 @onready var move_button: TextureButton = $UILayer/Toolbar/Grid/Slot3/MoveButton
+@onready var upgrade_button: TextureButton = $UILayer/Toolbar/Grid/Slot4/UpgradeButton
+@onready var flat_view_button: TextureButton = $UILayer/Toolbar/Grid/Slot5/FlatViewButton
 @onready var wall_system: WallSystem = $YSort/WallSystem
 @onready var building_grid: BuildingGrid = $YSort/BuildingGrid
 
@@ -35,6 +37,8 @@ var throne_scene: PackedScene = preload("res://scenes/buildings/throne.tscn")
 var _camera_focused: bool = false
 var _focus_building: Node2D = null
 var _focus_range_highlights: Array[Node2D] = []
+var _flat_view: bool = false
+var _flat_labels: Array[Node2D] = []
 
 
 func _ready() -> void:
@@ -43,6 +47,7 @@ func _ready() -> void:
 		"demolish": DemolishTool.new(),
 		"move": MoveTool.new(),
 		"place": place_tool,
+		"upgrade": UpgradeTool.new(),
 	}
 
 	build_menu.building_selected.connect(_on_building_selected)
@@ -50,9 +55,17 @@ func _ready() -> void:
 	build_button.pressed.connect(_on_build_button_pressed)
 	demolish_button.pressed.connect(_on_demolish_button_pressed)
 	move_button.pressed.connect(_on_move_button_pressed)
+	upgrade_button.pressed.connect(_on_upgrade_button_pressed)
+	flat_view_button.pressed.connect(_on_flat_view_button_pressed)
 
-	# Ховер-эффекты на кнопки тулбара
-	for btn in [build_button, demolish_button, move_button]:
+	# Тултипы и ховер-эффекты
+	build_button.tooltip_text = "Строительство\nРазмещай здания на поле\nЗажми ЛКМ для линии"
+	demolish_button.tooltip_text = "Снос\nУдаляй постройки\nЗажми ЛКМ для линии"
+	move_button.tooltip_text = "Перемещение\nПеретащи здание на новое место"
+	upgrade_button.tooltip_text = "Улучшение\nУлучшай здания за золото\nЗажми ЛКМ для линии"
+	flat_view_button.tooltip_text = "Плоский вид\nПоказывает подписи построек\nМожно совмещать с другими инструментами"
+
+	for btn in [build_button, demolish_button, move_button, upgrade_button, flat_view_button]:
 		btn.mouse_entered.connect(func(): btn.modulate = Color(1.3, 1.1, 1.4, 1.0))
 		btn.mouse_exited.connect(func(): btn.modulate = Color.WHITE)
 		btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -97,6 +110,8 @@ func _get_tool_slot(tool_name: String) -> Node:
 			return $UILayer/Toolbar/Grid/Slot2
 		"move":
 			return $UILayer/Toolbar/Grid/Slot3
+		"upgrade":
+			return $UILayer/Toolbar/Grid/Slot4
 	return null
 
 
@@ -140,6 +155,24 @@ func _on_demolish_button_pressed() -> void:
 
 func _on_move_button_pressed() -> void:
 	_set_tool("move")
+
+
+func _on_upgrade_button_pressed() -> void:
+	_set_tool("upgrade")
+
+
+var _flat_view_tex_closed = preload("res://assets/sprites/ui/icon_flat_view_0001.png")
+var _flat_view_tex_open = preload("res://assets/sprites/ui/icon_flat_view_0002.png")
+
+func _on_flat_view_button_pressed() -> void:
+	if _flat_view:
+		_disable_flat_view()
+		flat_view_button.texture_normal = _flat_view_tex_closed
+		flat_view_button.modulate = Color.WHITE
+	else:
+		_enable_flat_view()
+		flat_view_button.texture_normal = _flat_view_tex_open
+		flat_view_button.modulate = SLOT_ACTIVE_COLOR
 
 
 func _on_building_selected(building_type: String) -> void:
@@ -349,6 +382,9 @@ func _on_phase_changed(phase) -> void:
 			active_tool.deactivate()
 			active_tool = null
 			active_tool_name = ""
+		# Выключаем flat view
+		if _flat_view:
+			_disable_flat_view()
 		# Закрываем меню строительства
 		build_menu.visible = false
 		build_menu.is_open = false
@@ -406,6 +442,112 @@ func _find_free_tile_near(center: Vector2i) -> Vector2i:
 				queue.append(n)
 
 	return center
+
+
+func _enable_flat_view() -> void:
+	if _flat_view:
+		return
+	_flat_view = true
+
+	# Скрываем все здания и стены
+	for tile in building_grid.buildings:
+		var b = building_grid.get_building(tile)
+		if b:
+			b.visible = false
+	if wall_system:
+		wall_system.visible = false
+
+	# Лич Кинг
+	var lk = get_node_or_null("YSort/LichKing")
+	if lk:
+		lk.visible = false
+
+	_draw_flat_labels()
+
+
+func _draw_flat_labels() -> void:
+	_clear_flat_labels()
+	var ground = get_node_or_null("Ground") as TileMapLayer
+	var ysort = get_node_or_null("YSort")
+	if not ground or not ysort:
+		return
+
+	for tile in building_grid.buildings:
+		var b = building_grid.get_building(tile)
+		if not b:
+			continue
+		var world_pos = ground.map_to_local(tile) + ground.position
+		var label_node = Node2D.new()
+		label_node.position = world_pos
+		label_node.z_index = 200
+
+		var data = Config.buildings.get(b.building_type, {})
+		var short = data.get("short_name", b.building_type.left(3).to_upper())
+		var tier = b.upgrade_level
+		var tile_color = Color(0.6, 0.2, 0.8, 0.5)  # фиолетовый для зданий
+		if b.building_type == "throne":
+			tile_color = Color(0.8, 0.1, 0.1, 0.5)  # красный для трона
+		elif b.building_type == "wall_block":
+			tile_color = Color(0.3, 0.3, 0.5, 0.5)  # серый для стен
+
+		var draw_n = label_node
+		var display_text = short
+		if tier > 0:
+			display_text += "%d" % tier
+		draw_n.draw.connect(func():
+			var hw = 32.0
+			var hh = 16.0
+			# Окраска тайла
+			var diamond = PackedVector2Array([
+				Vector2(0, -hh), Vector2(hw, 0), Vector2(0, hh), Vector2(-hw, 0)
+			])
+			draw_n.draw_colored_polygon(diamond, tile_color)
+			# Текст на тайле (центрирован)
+			draw_n.draw_string(ThemeDB.fallback_font, Vector2(-12, 5), display_text, HORIZONTAL_ALIGNMENT_CENTER, 24, 10, Color.WHITE)
+		)
+		ysort.add_child(label_node)
+		label_node.queue_redraw()
+		_flat_labels.append(label_node)
+
+
+func refresh_flat_view() -> void:
+	if _flat_view:
+		# Скрываем все здания (включая новые)
+		for tile in building_grid.buildings:
+			var b = building_grid.get_building(tile)
+			if b:
+				b.visible = false
+		_clear_flat_labels()
+		_draw_flat_labels()
+
+
+func _clear_flat_labels() -> void:
+	for l in _flat_labels:
+		if is_instance_valid(l):
+			l.queue_free()
+	_flat_labels.clear()
+
+
+func _disable_flat_view() -> void:
+	if not _flat_view:
+		return
+	_flat_view = false
+
+	# Показываем здания обратно
+	for tile in building_grid.buildings:
+		var b = building_grid.get_building(tile)
+		if b:
+			b.visible = true
+	if wall_system:
+		wall_system.visible = true
+
+	var lk = get_node_or_null("YSort/LichKing")
+	if lk:
+		lk.visible = true
+
+	_clear_flat_labels()
+	flat_view_button.texture_normal = _flat_view_tex_closed
+	flat_view_button.modulate = Color.WHITE
 
 
 func _print_matrix() -> void:

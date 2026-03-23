@@ -126,6 +126,11 @@ func on_release() -> void:
 		building.setup(building_type)
 		DustEffect.spawn(wall_system.get_tree(), bg.tile_to_world(t))
 
+	# Обновляем flat view если включён
+	var main = wall_system.get_tree().current_scene
+	if main.has_method("refresh_flat_view"):
+		main.refresh_flat_view()
+
 	_clear_line_previews()
 
 

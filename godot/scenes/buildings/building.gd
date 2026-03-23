@@ -34,6 +34,7 @@ var attack_range_diagonal: int = 0
 var attack_speed: float = 0.0
 var attack_projectile: String = ""
 var _attack_timer: float = 0.0
+var contact_damage: float = 0.0  # Урон при контакте (шипы)
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var hp_bar_bg: ColorRect = $HPBarBG
@@ -87,6 +88,63 @@ func setup(type: String) -> void:
 
 	_create_tile_collision()
 	_setup_unit(data)
+	_setup_idle_anim(data)
+
+
+func _setup_idle_anim(data: Dictionary) -> void:
+	var anim_path = data.get("idle_anim", "")
+	if anim_path == "":
+		return
+
+	# Грузим фреймы из папки — поддерживаем оба паттерна:
+	# name_0001.png (с 1) и frame_000.png (с 0)
+	var frames_arr: Array[Texture2D] = []
+	var dir_name = anim_path.get_file()
+
+	# Паттерн: dir_name_0001.png
+	for i in range(1, 100):
+		var path = anim_path + "/%s_%04d.png" % [dir_name, i]
+		if ResourceLoader.exists(path):
+			frames_arr.append(load(path))
+		else:
+			break
+
+	# Фоллбэк: frame_000.png
+	if frames_arr.is_empty():
+		for i in range(100):
+			var path = anim_path + "/frame_%03d.png" % i
+			if ResourceLoader.exists(path):
+				frames_arr.append(load(path))
+			else:
+				break
+
+	if frames_arr.is_empty():
+		return
+
+	# Заменяем Sprite2D на AnimatedSprite2D
+	var anim_sprite = AnimatedSprite2D.new()
+	anim_sprite.name = "IdleAnim"
+	var sf = SpriteFrames.new()
+	sf.add_animation("idle")
+	sf.set_animation_speed("idle", data.get("idle_anim_fps", 6.0))
+	sf.set_animation_loop("idle", true)
+	# Реверс-цикл: 1 2 3 4 3 2 1
+	for tex in frames_arr:
+		sf.add_frame("idle", tex)
+	if frames_arr.size() > 2:
+		for i in range(frames_arr.size() - 2, 0, -1):
+			sf.add_frame("idle", frames_arr[i])
+	if sf.has_animation("default"):
+		sf.remove_animation("default")
+
+	anim_sprite.sprite_frames = sf
+	anim_sprite.position = sprite.position
+	anim_sprite.scale = sprite.scale
+	add_child(anim_sprite)
+	anim_sprite.play("idle")
+
+	# Прячем статичный спрайт
+	sprite.visible = false
 
 
 func _create_tile_collision() -> void:
