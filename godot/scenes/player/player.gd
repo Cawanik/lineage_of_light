@@ -44,6 +44,8 @@ var _storm_ghost: Node2D = null
 var _fireball_placing: bool = false
 var _fireball_ghost: Node2D = null
 
+const _FireballZone = preload("res://scenes/abilities/fireball_zone.gd")
+
 const _KEY_MAP: Dictionary = {
 	"space": KEY_SPACE,
 	"q": KEY_Q, "w": KEY_W, "e": KEY_E, "r": KEY_R,
@@ -370,7 +372,7 @@ func _cast_fireball() -> void:
 	_fireball_placing = true
 
 	var ability = _abilities.get("fireball", {})
-	var ghost = FireballZone.new()
+	var ghost = _FireballZone.new()
 	ghost.damage = ability.get("damage", 30.0)
 	ghost.fall_duration = ability.get("fall_duration", 0.5)
 	ghost.is_preview = true
