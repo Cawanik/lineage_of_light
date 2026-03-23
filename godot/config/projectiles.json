@@ -60,5 +60,20 @@
 		"trail": true,
 		"trail_length": 12,
 		"trail_color": "#ff6600aa"
+	},
+	"ball_lightning": {
+		"name": "Шаровая молния",
+		"draw_mode": "orb",
+		"orb_radius": 6.0,
+		"orb_color": "#8844ff",
+		"orb_glow_color": "#cc88ff",
+		"speed": 200.0,
+		"damage": 25.0,
+		"homing": true,
+		"hit_radius": 12.0,
+		"lifetime": 4.0,
+		"trail": true,
+		"trail_length": 20,
+		"trail_color": "#8844ffcc"
 	}
 }

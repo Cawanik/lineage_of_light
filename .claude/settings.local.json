@@ -92,7 +92,11 @@
       "Bash(cp temp_extract/animations/breathing-idle/south/*.png animations/breathing-idle/south/)",
       "Bash(ls \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/ui/icon_flat_view\"*)",
       "Bash(ls \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/ui/\"*eye*)",
-      "Bash(ls \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/ui/\"*flat*)"
+      "Bash(ls \"C:/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/ui/\"*flat*)",
+      "Bash(ls:*)",
+      "Bash(find /c/Users/user/WebstormProjects/lineage_of_light/godot/scripts -type f -name *.gd)",
+      "Bash(grep -r \"magic_shot\\\\|fireball\\\\|ball_lightning\\\\|cast\\\\|ability\\\\|spell\" /c/Users/user/WebstormProjects/lineage_of_light/godot --include=*.gd)",
+      "Bash(grep -r \"get_projectile_type\\\\|projectile\\\\|attack\" /c/Users/user/WebstormProjects/lineage_of_light/godot/scripts/ai --include=*.gd)"
     ]
   }
 }

@@ -21,7 +21,7 @@ signal lives_changed(new_amount: int)
 signal game_over
 signal game_won
 
-var gold: int = 150:
+var gold: int = 350:
 	set(value):
 		gold = value
 		gold_changed.emit(gold)
@@ -180,7 +180,7 @@ func toggle_pause() -> void:
 
 
 func reset_game() -> void:
-	gold = 150
+	gold = 350
 	lives = 20
 	current_epoch = 1
 	is_game_active = true

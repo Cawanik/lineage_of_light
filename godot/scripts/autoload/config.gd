@@ -18,6 +18,7 @@ var projectiles: Dictionary = {}
 var effects: Dictionary = {}
 var enemies: Dictionary = {}
 var waves: Array = []
+var skill_tree: Dictionary = {}
 
 const CONFIG_DIR = "res://config/"
 
@@ -37,6 +38,7 @@ func _ready() -> void:
 		if e.has("accent"):
 			e["accent"] = Color(e["accent"])
 	waves = _load_json_array(CONFIG_DIR + "waves.json")
+	skill_tree = _load_json(CONFIG_DIR + "skill_tree.json")
 
 
 func _load_json(path: String) -> Dictionary:

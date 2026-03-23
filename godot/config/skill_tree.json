@@ -1,82 +1,234 @@
 {
-	"dark_mastery": {
-		"name": "Тёмное Владычество",
-		"desc": "Основа тёмной магии Лича.",
-		"icon": "",
-		"cost": 0,
+	"build_plan": {
+		"name": "Строительный план",
+		"desc": "Инструмент строительства.",
+		"icon": "res://assets/sprites/ui/build_icon.png",
+		"cost": 1,
 		"requires": [],
-		"position": [400, 80]
+		"position": [80, 60]
 	},
-	"soul_harvest": {
-		"name": "Жатва Душ",
-		"desc": "Увеличивает сбор душ.",
-		"icon": "",
+	"archers": {
+		"name": "Лучники",
+		"desc": "Открывает башню лучников.",
+		"icon": "res://assets/sprites/buildings/skeleton_archer_tower.png",
 		"cost": 1,
-		"requires": ["dark_mastery"],
-		"position": [250, 200]
+		"requires": ["build_plan"],
+		"position": [370, 60]
 	},
-	"dark_fortification": {
-		"name": "Тёмное Укрепление",
-		"desc": "Усиливает оборонительные постройки.",
-		"icon": "",
+	"walls": {
+		"name": "Стены",
+		"desc": "Открывает строительство стен.",
+		"icon": "res://assets/sprites/buildings/wall/wall_segment_0001.png",
 		"cost": 1,
-		"requires": ["dark_mastery"],
-		"position": [550, 200]
+		"requires": ["archers"],
+		"position": [530, 60]
 	},
-	"greed_ritual": {
-		"name": "Ритуал Жадности",
-		"desc": "Усиливает добычу золота.",
-		"icon": "",
-		"cost": 2,
-		"requires": ["soul_harvest"],
-		"position": [150, 350]
+	"flat_view": {
+		"name": "Смена вида",
+		"desc": "Инструмент смены вида (глаз).",
+		"icon": "res://assets/sprites/ui/icon_flat_view_0001.png",
+		"cost": 1,
+		"requires": ["build_plan"],
+		"position": [-10, 240]
 	},
-	"crystal_resonance": {
-		"name": "Резонанс Кристаллов",
-		"desc": "Усиливает кристальные постройки.",
-		"icon": "",
-		"cost": 2,
-		"requires": ["soul_harvest"],
-		"position": [350, 350]
+	"demolish_tool": {
+		"name": "Инструмент демонтажа",
+		"desc": "Позволяет сносить постройки.",
+		"icon": "res://assets/sprites/ui/demolish_icon.png",
+		"cost": 1,
+		"requires": ["build_plan"],
+		"position": [80, 330]
 	},
-	"iron_walls": {
-		"name": "Железные Стены",
-		"desc": "Стены становятся прочнее.",
-		"icon": "",
-		"cost": 2,
-		"requires": ["dark_fortification"],
-		"position": [450, 350]
+	"upgrade_tool": {
+		"name": "Инструмент апгрейдов",
+		"desc": "Позволяет улучшать постройки.",
+		"icon": "res://assets/sprites/ui/upgrade_arrow.png",
+		"cost": 1,
+		"requires": ["build_plan"],
+		"position": [160, 240]
 	},
-	"deadly_arrows": {
-		"name": "Смертоносные Стрелы",
-		"desc": "Лучники наносят больше урона.",
-		"icon": "",
-		"cost": 2,
-		"requires": ["dark_fortification"],
-		"position": [650, 350]
+	"move_tool": {
+		"name": "Инструмент перемещения",
+		"desc": "Позволяет перемещать постройки.",
+		"icon": "res://assets/sprites/ui/move_icon.png",
+		"cost": 1,
+		"requires": ["demolish_tool"],
+		"position": [80, 460]
 	},
-	"mass_sacrifice": {
-		"name": "Массовое Жертвоприношение",
-		"desc": "Мощный ритуал жертвоприношения.",
-		"icon": "",
-		"cost": 3,
-		"requires": ["greed_ritual", "crystal_resonance"],
-		"position": [250, 500]
+	"magic_abilities": {
+		"name": "Магические способности",
+		"desc": "Промежуточный навык магии.",
+		"icon": "res://assets/sprites/ui/skills/icon_grimoire.png",
+		"cost": 1,
+		"requires": ["flat_view"],
+		"position": [-240, 60]
 	},
-	"fortress_of_doom": {
-		"name": "Крепость Рока",
-		"desc": "Абсолютная защита.",
-		"icon": "",
-		"cost": 3,
-		"requires": ["iron_walls", "deadly_arrows"],
-		"position": [550, 500]
+	"magic_shot": {
+		"name": "Магический выстрел",
+		"desc": "Базовый магический выстрел Лича.",
+		"icon": "res://assets/sprites/ui/skills/icon_magic_shot.png",
+		"cost": 1,
+		"requires": ["magic_abilities"],
+		"position": [-240, 170]
 	},
-	"epoch_rift": {
-		"name": "Разлом Эпох",
-		"desc": "Открывает путь между эпохами.",
-		"icon": "",
-		"cost": 5,
-		"requires": ["mass_sacrifice", "fortress_of_doom"],
-		"position": [400, 650]
+	"magic_shot_up1": {
+		"name": "Улучшение магического выстрела",
+		"desc": "Усиливает магический выстрел.",
+		"icon": "res://assets/sprites/ui/skills/icon_magic_shot.png",
+		"cost": 1,
+		"requires": ["magic_shot"],
+		"position": [-400, 170]
+	},
+	"magic_shot_up2": {
+		"name": "Улучшение магического выстрела",
+		"desc": "Ещё сильнее магический выстрел.",
+		"icon": "res://assets/sprites/ui/skills/icon_magic_shot.png",
+		"cost": 1,
+		"requires": ["magic_shot_up1"],
+		"position": [-570, 170]
+	},
+	"fireball": {
+		"name": "Огненный шар",
+		"desc": "Огненный шар по площади.",
+		"icon": "res://assets/sprites/ui/skills/icon_fireball.png",
+		"cost": 1,
+		"requires": ["magic_shot"],
+		"position": [-240, 280]
+	},
+	"fireball_up1": {
+		"name": "Улучшение огненного шара",
+		"desc": "Усиливает огненный шар.",
+		"icon": "res://assets/sprites/ui/skills/icon_fireball.png",
+		"cost": 1,
+		"requires": ["fireball"],
+		"position": [-400, 280]
+	},
+	"fireball_up2": {
+		"name": "Улучшение огненного шара",
+		"desc": "Ещё сильнее огненный шар.",
+		"icon": "res://assets/sprites/ui/skills/icon_fireball.png",
+		"cost": 1,
+		"requires": ["fireball_up1"],
+		"position": [-570, 280]
+	},
+	"ball_lightning": {
+		"name": "Шаровая молния",
+		"desc": "Шаровая молния по врагам.",
+		"icon": "res://assets/sprites/ui/skills/icon_ball_lightning.png",
+		"cost": 1,
+		"requires": ["fireball"],
+		"position": [-240, 390]
+	},
+	"ball_lightning_up1": {
+		"name": "Улучшение шаровой молнии",
+		"desc": "Усиливает шаровую молнию.",
+		"icon": "res://assets/sprites/ui/skills/icon_ball_lightning.png",
+		"cost": 1,
+		"requires": ["ball_lightning"],
+		"position": [-400, 390]
+	},
+	"ball_lightning_up2": {
+		"name": "Улучшение шаровой молнии",
+		"desc": "Ещё сильнее шаровая молния.",
+		"icon": "res://assets/sprites/ui/skills/icon_ball_lightning.png",
+		"cost": 1,
+		"requires": ["ball_lightning_up1"],
+		"position": [-570, 390]
+	},
+	"workshop_t1": {
+		"name": "Улучшение зданий 1-го уровня",
+		"desc": "Тёмная мастерская. Открывает улучшения зданий.",
+		"icon": "res://assets/sprites/buildings/production/dark_workshop.png",
+		"cost": 1,
+		"requires": ["upgrade_tool"],
+		"position": [230, 360]
+	},
+	"archer_up1": {
+		"name": "Улучшение лучников",
+		"desc": "Первое улучшение лучников.",
+		"icon": "res://assets/sprites/buildings/skeleton_archer_tower.png",
+		"cost": 1,
+		"requires": ["archers", "workshop_t1"],
+		"position": [370, 360]
+	},
+	"wall_up1": {
+		"name": "Улучшение стен",
+		"desc": "Первое улучшение стен.",
+		"icon": "res://assets/sprites/buildings/wall/wall_segment_0002.png",
+		"cost": 1,
+		"requires": ["walls", "workshop_t1"],
+		"position": [530, 360]
+	},
+	"workshop_t2": {
+		"name": "2-е улучшение зданий 1-го уровня",
+		"desc": "Тёмная мастерская, апгрейд.",
+		"icon": "res://assets/sprites/buildings/production/dark_workshop.png",
+		"cost": 1,
+		"requires": ["workshop_t1"],
+		"position": [230, 460]
+	},
+	"archer_up2": {
+		"name": "2-е улучшение лучников",
+		"desc": "Второе улучшение лучников.",
+		"icon": "res://assets/sprites/buildings/skeleton_archer_tower.png",
+		"cost": 1,
+		"requires": ["archer_up1", "workshop_t2"],
+		"position": [370, 460]
+	},
+	"wall_up2": {
+		"name": "2-е улучшение стен",
+		"desc": "Второе улучшение стен.",
+		"icon": "res://assets/sprites/buildings/wall/wall_segment_0003.png",
+		"cost": 1,
+		"requires": ["wall_up1", "workshop_t2"],
+		"position": [530, 460]
+	},
+	"shadow_forge": {
+		"name": "Тёмная кузня",
+		"desc": "Автопочинка построек 1-го тира.",
+		"icon": "res://assets/sprites/buildings/production/shadow_forge.png",
+		"cost": 1,
+		"requires": ["walls"],
+		"position": [680, 60]
+	},
+	"repair_up1": {
+		"name": "Улучшение ремонта",
+		"desc": "Ремонтирует до 10 построек.",
+		"icon": "res://assets/sprites/buildings/production/shadow_forge.png",
+		"cost": 1,
+		"requires": ["shadow_forge", "workshop_t1"],
+		"position": [680, 360]
+	},
+	"repair_up2": {
+		"name": "Ремонт всех построек",
+		"desc": "Ремонтирует все постройки.",
+		"icon": "res://assets/sprites/buildings/production/shadow_forge.png",
+		"cost": 1,
+		"requires": ["repair_up1", "workshop_t2"],
+		"position": [680, 460]
+	},
+	"epoch_gate": {
+		"name": "Врата Эпохи",
+		"desc": "Здания второго тира.",
+		"icon": "res://assets/sprites/buildings/production/epoch_gate.png",
+		"cost": 1,
+		"requires": ["shadow_forge"],
+		"position": [887, 60]
+	},
+	"altar_of_greed": {
+		"name": "Алтарь Жадности",
+		"desc": "+3 золото за убийство.",
+		"icon": "res://assets/sprites/buildings/production/altar_of_greed.png",
+		"cost": 1,
+		"requires": ["epoch_gate"],
+		"position": [887, 190]
+	},
+	"crystal_spire": {
+		"name": "Кристальный Шпиль",
+		"desc": "+1 кристалл в конце волны.",
+		"icon": "res://assets/sprites/buildings/production/crystal_spire.png",
+		"cost": 1,
+		"requires": ["epoch_gate"],
+		"position": [1040, 190]
 	}
 }

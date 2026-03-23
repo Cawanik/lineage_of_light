@@ -56,11 +56,11 @@ func _build_slots() -> void:
 		var data = BUILDINGS[key]
 		if not data.has("hotkey"):
 			continue
+		# Скрываем заблокированные здания
+		var sm = get_node_or_null("/root/SkillManager")
+		if sm and not sm.is_building_unlocked(key):
+			continue
 		_add_building_row(key, data)
-
-	# Тестовые пустые строки для проверки скролла
-	for i in range(6):
-		_add_empty_row()
 
 
 func _add_building_row(key: String, data: Dictionary) -> void:
@@ -212,6 +212,13 @@ func _create_wall_icon() -> TextureRect:
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	return icon
+
+
+func rebuild() -> void:
+	for child in item_list.get_children():
+		item_list.remove_child(child)
+		child.queue_free()
+	_build_slots()
 
 
 func _on_slot_pressed(building_type: String) -> void:

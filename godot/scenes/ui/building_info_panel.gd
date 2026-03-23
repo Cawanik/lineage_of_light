@@ -125,11 +125,16 @@ func _create_ui(data: Dictionary) -> void:
 	hp_label.add_theme_font_size_override("font_size", 12)
 	name_vbox.add_child(hp_label)
 
-	# Кнопка апгрейда (если есть)
+	# Кнопка апгрейда (если есть и навык открыт)
 	if upgrades.size() > upgrade_level:
-		var next_upgrade = upgrades[upgrade_level]
-		var upgrade_btn = _create_upgrade_button(next_upgrade, upgrade_level)
-		top_row.add_child(upgrade_btn)
+		var sm = get_node_or_null("/root/SkillManager")
+		var max_lvl = 999
+		if sm and sm.has_method("get_max_upgrade_level"):
+			max_lvl = sm.get_max_upgrade_level(_building.building_type)
+		if upgrade_level < max_lvl:
+			var next_upgrade = upgrades[upgrade_level]
+			var upgrade_btn = _create_upgrade_button(next_upgrade, upgrade_level)
+			top_row.add_child(upgrade_btn)
 
 	# === Описание ===
 	var desc = data.get("desc", "")

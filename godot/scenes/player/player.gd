@@ -361,6 +361,8 @@ func _cast_magic_missile() -> void:
 		return
 	for i in range(count):
 		var target = enemies[i % enemies.size()]
+		if not is_instance_valid(target):
+			continue
 		Projectile.spawn(get_tree(), proj_type, global_position, target.global_position, target)
 		if i < count - 1:
 			await get_tree().create_timer(delay).timeout

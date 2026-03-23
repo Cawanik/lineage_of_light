@@ -79,6 +79,10 @@ func _try_upgrade(building: Building) -> bool:
 	var upgrades = data.get("upgrades", [])
 	if building.upgrade_level >= upgrades.size():
 		return false
+	# Проверяем навык дерева
+	var sm = wall_system.get_node_or_null("/root/SkillManager")
+	if sm and building.upgrade_level >= sm.get_max_upgrade_level(building.building_type):
+		return false
 
 	var upgrade = upgrades[building.upgrade_level]
 	var cost = int(upgrade.get("cost", 0))
@@ -115,6 +119,9 @@ func _get_upgrade_cost(building: Building) -> int:
 	var data = Config.buildings.get(building.building_type, {})
 	var upgrades = data.get("upgrades", [])
 	if building.upgrade_level >= upgrades.size():
+		return -1
+	var sm = wall_system.get_node_or_null("/root/SkillManager")
+	if sm and building.upgrade_level >= sm.get_max_upgrade_level(building.building_type):
 		return -1
 	return int(upgrades[building.upgrade_level].get("cost", 0))
 

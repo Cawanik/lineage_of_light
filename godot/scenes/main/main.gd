@@ -33,6 +33,19 @@ var place_tool: PlaceBuildingTool = PlaceBuildingTool.new()
 const SLOT_ACTIVE_COLOR = Color(0.7, 0.4, 1.0, 1.0)
 const SLOT_DEFAULT_COLOR = Color(1.0, 1.0, 1.0, 1.0)
 
+# Хоткеи тулбара: слот -> действие. Клавиши 1-9
+const BUILD_HOTKEYS: Array[Dictionary] = [
+	{"key": KEY_1, "action": "build"},
+	{"key": KEY_2, "action": "demolish"},
+	{"key": KEY_3, "action": "move"},
+	{"key": KEY_4, "action": "upgrade"},
+	{"key": KEY_5, "action": "flat_view"},
+	{"key": KEY_6, "action": ""},
+	{"key": KEY_7, "action": ""},
+	{"key": KEY_8, "action": ""},
+	{"key": KEY_9, "action": ""},
+]
+
 var throne_scene: PackedScene = preload("res://scenes/buildings/throne.tscn")
 var _camera_focused: bool = false
 var _focus_building: Node2D = null
@@ -70,6 +83,12 @@ func _ready() -> void:
 		btn.mouse_exited.connect(func(): btn.modulate = Color.WHITE)
 		btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
+	# Загружаем абилки из player.json
+	_load_combat_abilities()
+
+	# Лейблы хоткеев на слотах
+	_add_hotkey_labels()
+
 	# Place throne on tile (берём позицию из Ground)
 	var ground = get_node_or_null("Ground") as IsoGround
 	if ground:
@@ -100,6 +119,102 @@ func _ready() -> void:
 
 	# Connect phase signals
 	PhaseManager.phase_changed.connect(_on_phase_changed)
+
+	# Применяем блокировку инструментов по навыкам
+	call_deferred("_set_toolbar_mode", "build")
+
+
+# Маппинг id абилки из player.json -> id навыка в skill_tree.json
+const ABILITY_TO_SKILL: Dictionary = {
+	"magic_bolt": "magic_shot",
+	"magic_missile": "magic_shot",
+	"fireball": "fireball",
+	"storm": "ball_lightning",
+}
+
+
+func _load_combat_abilities() -> void:
+	_combat_abilities.clear()
+	var abilities = Config.player.get("abilities", {})
+	for id in abilities:
+		var ab = abilities[id]
+		var key_str = ab.get("key", "").to_upper()
+		# Иконка из skill_tree через маппинг
+		var icon = ""
+		var skill_id = ABILITY_TO_SKILL.get(id, id)
+		var st = Config.skill_tree.get(skill_id, {})
+		if st.has("icon"):
+			icon = st["icon"]
+		_combat_abilities.append({
+			"id": id,
+			"name": ab.get("name", id),
+			"key": key_str,
+			"icon": icon,
+		})
+
+
+func _add_hotkey_labels() -> void:
+	var toolbar_grid = get_node_or_null("UILayer/Toolbar/Grid")
+	if not toolbar_grid:
+		return
+	var slots = toolbar_grid.get_children()
+	for i in range(mini(9, slots.size())):
+		var slot = slots[i]
+		var lbl = Label.new()
+		lbl.name = "HotkeyLabel"
+		lbl.text = str(i + 1)
+		lbl.add_theme_font_size_override("font_size", 9)
+		lbl.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 0.6))
+		lbl.anchors_preset = Control.PRESET_BOTTOM_RIGHT
+		lbl.anchor_left = 1.0
+		lbl.anchor_top = 1.0
+		lbl.anchor_right = 1.0
+		lbl.anchor_bottom = 1.0
+		lbl.offset_left = -12
+		lbl.offset_top = -14
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		slot.add_child(lbl)
+
+
+func _update_hotkey_labels(mode: String) -> void:
+	var toolbar_grid = get_node_or_null("UILayer/Toolbar/Grid")
+	if not toolbar_grid:
+		return
+	var slots = toolbar_grid.get_children()
+	for i in range(slots.size()):
+		var lbl = slots[i].get_node_or_null("HotkeyLabel")
+		if not lbl:
+			continue
+		if mode == "combat":
+			if i < _combat_abilities.size():
+				lbl.text = _combat_abilities[i].get("key", str(i + 1))
+				lbl.visible = true
+			else:
+				lbl.visible = false
+		else:
+			lbl.text = str(i + 1)
+			lbl.visible = true
+
+
+func _handle_toolbar_hotkey(key_index: int) -> void:
+	if PhaseManager.is_build_phase():
+		if key_index >= BUILD_HOTKEYS.size():
+			return
+		var action = BUILD_HOTKEYS[key_index]["action"]
+		match action:
+			"build":
+				_on_build_button_pressed()
+			"demolish":
+				_on_demolish_button_pressed()
+			"move":
+				_on_move_button_pressed()
+			"upgrade":
+				_on_upgrade_button_pressed()
+			"flat_view":
+				_on_flat_view_button_pressed()
+	elif PhaseManager.is_combat_phase():
+		if key_index < _combat_abilities.size():
+			_on_ability_pressed(_combat_abilities[key_index]["id"])
 
 
 func _get_tool_slot(tool_name: String) -> Node:
@@ -195,6 +310,10 @@ func _process(_delta: float) -> void:
 	if active_tool:
 		active_tool.update()
 
+	# Обновляем оверлеи кулдаунов абилок
+	if PhaseManager.is_combat_phase():
+		_update_cooldown_overlays()
+
 	# Автовозврат камеры при движении игрока
 	if _camera_focused:
 		var player_node = get_node_or_null("YSort/Player") as Player
@@ -203,6 +322,13 @@ func _process(_delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	# Хоткеи тулбара 1-9
+	if event is InputEventKey and event.pressed:
+		var key = event.keycode
+		if key >= KEY_1 and key <= KEY_9:
+			_handle_toolbar_hotkey(key - KEY_1)
+			return
+
 	if event is InputEventKey and event.pressed and event.keycode == KEY_F1:
 		_unfocus_camera()
 		return
@@ -395,21 +521,152 @@ func _on_phase_changed(phase) -> void:
 		_set_toolbar_mode("build")
 
 
+var _combat_abilities: Array[Dictionary] = []
+var _ability_nodes: Array[Node] = []
+
+
 func _set_toolbar_mode(mode: String) -> void:
 	var toolbar_grid = get_node_or_null("UILayer/Toolbar/Grid")
 	if not toolbar_grid:
 		return
+
+	# Убираем старые абилки
+	for node in _ability_nodes:
+		if is_instance_valid(node):
+			node.queue_free()
+	_ability_nodes.clear()
+
 	if mode == "combat":
+		# Скрываем инструменты, но оставляем HotkeyLabel
 		for slot in toolbar_grid.get_children():
-			# Скрываем содержимое слота, оставляем подложку
 			for child in slot.get_children():
-				child.visible = false
+				if child.name != "HotkeyLabel":
+					child.visible = false
 			slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	elif mode == "build":
-		for slot in toolbar_grid.get_children():
-			for child in slot.get_children():
-				child.visible = true
+
+		# Заполняем слоты только открытыми абилками
+		var sm = get_node_or_null("/root/SkillManager")
+		var visible_abilities: Array[Dictionary] = []
+		for ab in _combat_abilities:
+			if sm and sm.is_ability_unlocked(ab["id"]):
+				visible_abilities.append(ab)
+			elif not sm:
+				visible_abilities.append(ab)
+
+		var slots = toolbar_grid.get_children()
+		for i in range(mini(visible_abilities.size(), slots.size())):
+			var ability = visible_abilities[i]
+			var slot = slots[i]
+			var icon_path = ability.get("icon", "")
+
+			var tex_btn = TextureButton.new()
+			tex_btn.name = "AbilityBtn"
+			tex_btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			tex_btn.ignore_texture_size = true
+			tex_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+			tex_btn.anchors_preset = Control.PRESET_FULL_RECT
+			tex_btn.anchor_right = 1.0
+			tex_btn.anchor_bottom = 1.0
+			tex_btn.offset_left = 4
+			tex_btn.offset_top = 4
+			tex_btn.offset_right = -4
+			tex_btn.offset_bottom = -4
+
+			if icon_path != "" and ResourceLoader.exists(icon_path):
+				tex_btn.texture_normal = load(icon_path)
+
+			var ability_id = ability["id"]
+			tex_btn.set_meta("ability_id", ability_id)
+			tex_btn.pressed.connect(_on_ability_pressed.bind(ability_id))
+			slot.add_child(tex_btn)
+			tex_btn.visible = true
+			_ability_nodes.append(tex_btn)
+
+			# Оверлей кулдауна — чёрный прямоугольник сверху вниз
+			var cd_overlay = ColorRect.new()
+			cd_overlay.name = "CooldownOverlay"
+			cd_overlay.color = Color(0, 0, 0, 0.6)
+			cd_overlay.anchors_preset = Control.PRESET_FULL_RECT
+			cd_overlay.anchor_right = 1.0
+			cd_overlay.anchor_bottom = 1.0
+			cd_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			cd_overlay.visible = false
+			slot.add_child(cd_overlay)
+			_ability_nodes.append(cd_overlay)
+
 			slot.mouse_filter = Control.MOUSE_FILTER_STOP
+
+		# Обновляем лейблы хоткеев для абилок
+		_update_hotkey_labels("combat")
+
+	elif mode == "build":
+		var sm = get_node_or_null("/root/SkillManager")
+		var tool_names = ["build", "demolish", "move", "upgrade", "flat_view"]
+		var slots = toolbar_grid.get_children()
+		for i in range(slots.size()):
+			var slot = slots[i]
+			if i < tool_names.size() and sm:
+				var tool_unlocked = sm.is_tool_unlocked(tool_names[i])
+				for child in slot.get_children():
+					if child.name == "HotkeyLabel":
+						child.visible = tool_unlocked
+					else:
+						child.visible = tool_unlocked
+				slot.mouse_filter = Control.MOUSE_FILTER_STOP if tool_unlocked else Control.MOUSE_FILTER_IGNORE
+			else:
+				# Пустые слоты
+				for child in slot.get_children():
+					if child.name != "HotkeyLabel":
+						child.visible = false
+				slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_update_hotkey_labels("build")
+
+
+func _update_cooldown_overlays() -> void:
+	var player = get_node_or_null("YSort/Player")
+	if not player or not is_instance_valid(player):
+		return
+	var toolbar_grid = get_node_or_null("UILayer/Toolbar/Grid")
+	if not toolbar_grid:
+		return
+	var slots = toolbar_grid.get_children()
+	for i in range(slots.size()):
+		var slot = slots[i]
+		var overlay = slot.get_node_or_null("CooldownOverlay")
+		if not overlay:
+			continue
+		# Находим id абилки по кнопке в слоте
+		var btn = slot.get_node_or_null("AbilityBtn")
+		if not btn or not btn.visible:
+			overlay.visible = false
+			continue
+		# Ищем ability_id через сигнал pressed
+		var ability_id = ""
+		for ab in _combat_abilities:
+			if btn.pressed.is_connected(_on_ability_pressed):
+				ability_id = ab["id"]
+				break
+		# Проще: храним id в meta
+		if btn.has_meta("ability_id"):
+			ability_id = btn.get_meta("ability_id")
+		if ability_id == "":
+			continue
+		var cd = player._cooldowns.get(ability_id, 0.0)
+		var max_cd = player._abilities.get(ability_id, {}).get("cooldown", 1.0)
+		if cd > 0:
+			overlay.visible = true
+			var ratio = clampf(cd / max_cd, 0.0, 1.0)
+			overlay.anchor_top = 0.0
+			overlay.anchor_bottom = ratio
+		else:
+			overlay.visible = false
+
+
+func _on_ability_pressed(ability_id: String) -> void:
+	var player = get_node_or_null("YSort/Player") as Player
+	if not player:
+		return
+	player._try_cast(ability_id)
 
 
 func _on_wave_started(wave_number: int) -> void:

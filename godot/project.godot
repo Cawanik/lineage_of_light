@@ -25,6 +25,7 @@ GameManager="*res://scripts/autoload/game_manager.gd"
 WaveManager="*res://scripts/autoload/wave_manager.gd"
 PathfindingSystem="*res://scripts/autoload/pathfinding_system.gd"
 PhaseManager="*res://scripts/autoload/phase_manager.gd"
+SkillManager="*res://scripts/autoload/skill_manager.gd"
 
 [display]
 
