@@ -46,14 +46,19 @@
 	},
 	"fireball": {
 		"name": "Огненный шар",
+		"draw_mode": "orb",
+		"orb_radius": 10.0,
+		"orb_color": "#ff4400",
+		"orb_glow_color": "#ffaa00",
 		"speed": 150.0,
 		"damage": 30.0,
 		"homing": false,
+		"hit_type": "aoe",
+		"aoe_radius": 128.0,
 		"hit_radius": 15.0,
 		"lifetime": 5.0,
 		"trail": true,
-		"trail_length": 8,
-		"trail_color": "#ff6600aa",
-		"scale": 0.8
+		"trail_length": 12,
+		"trail_color": "#ff6600aa"
 	}
 }

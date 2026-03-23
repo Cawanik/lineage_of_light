@@ -37,6 +37,20 @@ var is_afk: bool = false
 var move_marker_scene: PackedScene = preload("res://scenes/ui/move_marker.tscn")
 var current_marker: Node2D = null
 
+var _abilities: Dictionary = {}
+var _cooldowns: Dictionary = {}
+var _storm_placing: bool = false
+var _storm_ghost: Node2D = null
+var _fireball_placing: bool = false
+var _fireball_ghost: Node2D = null
+
+const _KEY_MAP: Dictionary = {
+	"space": KEY_SPACE,
+	"q": KEY_Q, "w": KEY_W, "e": KEY_E, "r": KEY_R,
+	"1": KEY_1, "2": KEY_2, "3": KEY_3,
+	"f": KEY_F, "g": KEY_G,
+}
+
 const WALK_PATH = "res://assets/sprites/player/wizard/animations/walking-8-frames/"
 const IDLE_PATH = "res://assets/sprites/player/wizard/animations/breathing-idle/"
 const SMOKE_PATH = "res://assets/sprites/player/wizard/animations/smoke/"
@@ -56,6 +70,10 @@ func _ready() -> void:
 
 	_setup_animations()
 	sprite.play("idle_south")
+
+	_abilities = Config.player.get("abilities", {})
+	for id in _abilities:
+		_cooldowns[id] = 0.0
 
 
 func _setup_animations() -> void:
@@ -124,6 +142,31 @@ func _setup_animations() -> void:
 		frames.remove_animation("default")
 
 	sprite.sprite_frames = frames
+
+
+func _process(delta: float) -> void:
+	for id in _cooldowns:
+		if _cooldowns[id] > 0.0:
+			_cooldowns[id] -= delta
+
+	if _storm_placing and is_instance_valid(_storm_ghost):
+		var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid")
+		if bg:
+			var tile = bg.world_to_tile(get_global_mouse_position())
+			_storm_ghost.global_position = bg.tile_to_world(tile)
+			_storm_ghost.set_meta("hovered_tile", tile)
+			var is_free = bg.get_building(tile) == null
+			_storm_ghost.modulate = Color(1, 1, 1, 1) if is_free else Color(1, 0.3, 0.3, 1)
+
+	if _fireball_placing and is_instance_valid(_fireball_ghost):
+		var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid")
+		if bg:
+			var mouse_tile = bg.world_to_tile(get_global_mouse_position())
+			# Центр 2x2 блока: верхний-левый тайл = mouse_tile
+			var center = (bg.tile_to_world(mouse_tile) + bg.tile_to_world(mouse_tile + Vector2i(1, 1))) * 0.5
+			_fireball_ghost.global_position = center
+			_fireball_ghost.base_tile = mouse_tile
+			_fireball_ghost.is_valid_placement = true
 
 
 func _physics_process(delta: float) -> void:
@@ -211,11 +254,32 @@ func _vec_to_direction(v: Vector2) -> String:
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
-		_cast_magic_bolt()
+	if event is InputEventKey and event.pressed and not event.echo:
+		for ability_id in _abilities:
+			var key_str = _abilities[ability_id].get("key", "").to_lower()
+			if key_str in _KEY_MAP and event.keycode == _KEY_MAP[key_str]:
+				_try_cast(ability_id)
+				return
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Размещение шторма или фаербола
+	if _storm_placing or _fireball_placing:
+		if event is InputEventMouseButton and event.pressed:
+			if event.button_index == MOUSE_BUTTON_LEFT:
+				if _storm_placing: _place_storm()
+				else: _place_fireball()
+				get_viewport().set_input_as_handled()
+				return
+			elif event.button_index == MOUSE_BUTTON_RIGHT:
+				if _storm_placing: _cancel_storm()
+				else: _cancel_fireball()
+				return
+		elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+			if _storm_placing: _cancel_storm()
+			else: _cancel_fireball()
+			return
+
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			move_target = get_global_mouse_position()
@@ -232,12 +296,144 @@ func _unhandled_input(event: InputEvent) -> void:
 		_reset_afk()
 
 
+func _try_cast(ability_id: String) -> void:
+	if _cooldowns.get(ability_id, 0.0) > 0.0:
+		return
+	match ability_id:
+		"magic_bolt":    _cast_magic_bolt()
+		"magic_missile": _cast_magic_missile()
+		"fireball":
+			_cast_fireball()
+			return  # кулдаун ставится в _place_fireball()
+		"storm":
+			_cast_storm()
+			return  # кулдаун ставится в _place_storm()
+	_cooldowns[ability_id] = _abilities[ability_id].get("cooldown", 1.0)
+
+
+func _get_nearest_enemies(max_range: float, count: int) -> Array:
+	var candidates: Array = []
+	var max_dist_sq = max_range * max_range
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if not is_instance_valid(e):
+			continue
+		var d = global_position.distance_squared_to(e.global_position)
+		if d < max_dist_sq:
+			candidates.append({"node": e, "dist": d})
+	candidates.sort_custom(func(a, b): return a.dist < b.dist)
+	var result: Array = []
+	for i in range(mini(count, candidates.size())):
+		result.append(candidates[i].node)
+	return result
+
+
+func _get_nearest_enemy(max_range: float) -> Node2D:
+	var best: Node2D = null
+	var best_dist = max_range * max_range
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if not is_instance_valid(e):
+			continue
+		var d = global_position.distance_squared_to(e.global_position)
+		if d < best_dist:
+			best_dist = d
+			best = e
+	return best
+
+
 func _cast_magic_bolt() -> void:
-	# Рандомная точка в пределах 2 тайлов (128px)
-	var angle = randf() * TAU
-	var dist = randf_range(64.0, 128.0)
-	var target = global_position + Vector2(cos(angle), sin(angle)) * dist
-	Projectile.spawn(get_tree(), "magic_bolt", global_position, target)
+	var ability = _abilities.get("magic_bolt", {})
+	var enemy = _get_nearest_enemy(ability.get("range", 400.0))
+	if enemy == null:
+		return
+	var proj_type = ability.get("projectile", "magic_bolt")
+	Projectile.spawn(get_tree(), proj_type, global_position, enemy.global_position, enemy)
+
+
+func _cast_magic_missile() -> void:
+	var ability = _abilities.get("magic_missile", {})
+	var count = ability.get("count", 3)
+	var proj_type = ability.get("projectile", "magic_bolt")
+	var delay = ability.get("shot_delay", 0.15)
+	var enemies = _get_nearest_enemies(ability.get("range", 400.0), count)
+	if enemies.is_empty():
+		return
+	for i in range(count):
+		var target = enemies[i % enemies.size()]
+		Projectile.spawn(get_tree(), proj_type, global_position, target.global_position, target)
+		if i < count - 1:
+			await get_tree().create_timer(delay).timeout
+
+
+func _cast_fireball() -> void:
+	if _fireball_placing:
+		return
+	_fireball_placing = true
+
+	var ability = _abilities.get("fireball", {})
+	var ghost = FireballZone.new()
+	ghost.damage = ability.get("damage", 30.0)
+	ghost.fall_duration = ability.get("fall_duration", 0.5)
+	ghost.is_preview = true
+	get_tree().current_scene.get_node("YSort").add_child(ghost)
+	ghost.global_position = get_global_mouse_position()
+	_fireball_ghost = ghost
+
+
+func _place_fireball() -> void:
+	if not is_instance_valid(_fireball_ghost):
+		_fireball_placing = false
+		return
+	_fireball_ghost.activate()
+	_fireball_ghost = null
+	_fireball_placing = false
+	_cooldowns["fireball"] = _abilities["fireball"].get("cooldown", 3.0)
+
+
+func _cancel_fireball() -> void:
+	if is_instance_valid(_fireball_ghost):
+		_fireball_ghost.queue_free()
+	_fireball_ghost = null
+	_fireball_placing = false
+
+
+func _cast_storm() -> void:
+	if _storm_placing:
+		return
+	_storm_placing = true
+
+	var ability = _abilities.get("storm", {})
+	var ghost = StormZone.new()
+	ghost.damage = ability.get("damage", 10.0)
+	ghost.duration = ability.get("duration", 5.0)
+	ghost.tick_interval = ability.get("tick_interval", 0.5)
+	ghost.is_preview = true
+	get_tree().current_scene.get_node("YSort").add_child(ghost)
+	ghost.global_position = get_global_mouse_position()
+	_storm_ghost = ghost
+
+
+func _place_storm() -> void:
+	if not is_instance_valid(_storm_ghost):
+		_storm_placing = false
+		return
+	var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid")
+	if bg:
+		var tile = _storm_ghost.get_meta("hovered_tile", Vector2i(-1, -1))
+		if bg.get_building(tile) != null:
+			return  # занято — не ставим
+		_storm_ghost.storm_tile = tile
+	_storm_ghost.modulate = Color(1, 1, 1, 1)
+	_storm_ghost.activate()
+	_storm_ghost = null
+	_storm_placing = false
+	_cooldowns["storm"] = _abilities["storm"].get("cooldown", 8.0)
+
+
+func _cancel_storm() -> void:
+	if is_instance_valid(_storm_ghost):
+		_storm_ghost.queue_free()
+	_storm_ghost = null
+	_storm_placing = false
 
 
 func _on_sit_finished() -> void:

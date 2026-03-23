@@ -36,7 +36,7 @@
     "speed": 50.0,
     "reward": 20,
     "damage_to_base": 3,
-    "wall_dps": 5.0,
+    "wall_dps": 10.0,
     "brain": "mage",
     "color": "#1a1030",
     "accent": "#f0d060"

@@ -19,6 +19,8 @@ var target_pos: Vector2 = Vector2.ZERO
 var target_node: Node2D = null
 var homing: bool = false
 var hit_radius: float = 8.0
+var hit_type: String = ""  # "" = single, "aoe" = area
+var aoe_radius: float = 0.0
 var lifetime: float = 5.0
 var _age: float = 0.0
 var arc_height: float = 40.0
@@ -53,6 +55,8 @@ func setup(type: String, from: Vector2, to_pos: Vector2, to_node: Node2D = null)
 	damage = data.get("damage", 10.0)
 	homing = data.get("homing", false)
 	hit_radius = data.get("hit_radius", 8.0)
+	hit_type = data.get("hit_type", "")
+	aoe_radius = data.get("aoe_radius", 0.0)
 	lifetime = data.get("lifetime", 5.0)
 	trail_enabled = data.get("trail", false)
 	_trail_max = data.get("trail_length", 10)
@@ -136,8 +140,16 @@ func _process(delta: float) -> void:
 
 
 func _on_hit() -> void:
-	if is_instance_valid(target_node) and target_node.has_method("take_damage"):
-		target_node.take_damage(damage)
+	if hit_type == "aoe":
+		var aoe_sq = aoe_radius * aoe_radius
+		var hit_pos = target_pos  # точка назначения, не текущая позиция снаряда
+		for e in get_tree().get_nodes_in_group("enemies"):
+			if is_instance_valid(e) and e.has_method("take_damage"):
+				if hit_pos.distance_squared_to(e.global_position) <= aoe_sq:
+					e.take_damage(damage)
+	else:
+		if is_instance_valid(target_node) and target_node.has_method("take_damage"):
+			target_node.take_damage(damage)
 	_spawn_hit_effect()
 	queue_free()
 

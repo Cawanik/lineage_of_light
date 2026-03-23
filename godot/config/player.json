@@ -8,5 +8,40 @@
 	"walk_anim_speed": 10.0,
 	"idle_anim_speed": 2.0,
 	"smoke_anim_speed": 6.0,
-	"smoke_sit_frames": 8
+	"smoke_sit_frames": 8,
+	"abilities": {
+		"magic_bolt": {
+			"key": "space",
+			"cooldown": 0.5,
+			"damage": 15.0,
+			"range": 400.0,
+			"projectile": "magic_bolt"
+		},
+		"magic_missile": {
+			"key": "1",
+			"cooldown": 1.0,
+			"damage": 15.0,
+			"range": 400.0,
+			"projectile": "magic_bolt",
+			"count": 3,
+			"shot_delay": 0.15
+		},
+		"fireball": {
+			"key": "q",
+			"cooldown": 3.0,
+			"damage": 60.0,
+			"range": 500.0,
+			"aoe_radius": 256.0,
+			"projectile": "fireball"
+		},
+		"storm": {
+			"key": "e",
+			"cooldown": 1.0,
+			"damage": 30.0,
+			"duration": 5.0,
+			"tick_interval": 0.5,
+			"aoe_radius": 96.0,
+			"range": 500.0
+		}
+	}
 }
