@@ -52,30 +52,56 @@ func get_attack_range() -> int:
 
 
 func get_path_target(ps: Node, from: Vector2i, building_grid: Node) -> Vector2i:
-	var throne = ps.throne_tile
 	var atk_range = get_attack_range()
-	var best_tile = throne
-	var best_dist = INF
+	var best_tile = ps.throne_tile
+	var best_path_len = INF
 
-	for dx in range(-atk_range, atk_range + 1):
-		for dy in range(-atk_range, atk_range + 1):
-			if maxi(absi(dx), absi(dy)) != atk_range:
-				continue
-			var tile = throne + Vector2i(dx, dy)
-			if not ps.is_in_bounds(tile):
-				continue
-			if building_grid and building_grid.is_occupied(tile):
-				continue
-			var dist = float(from.distance_to(tile))
-			if dist < best_dist:
-				best_dist = dist
-				best_tile = tile
+	# Кандидаты: трон + все production здания
+	var targets: Array[Vector2i] = [ps.throne_tile]
+	if building_grid:
+		for tile in building_grid.buildings.keys():
+			var bld = building_grid.get_building(tile)
+			if is_instance_valid(bld) and Config.buildings.get(bld.building_type, {}).get("type", "") == "production":
+				targets.append(tile)
+
+	for target_tile in targets:
+		for dx in range(-atk_range, atk_range + 1):
+			for dy in range(-atk_range, atk_range + 1):
+				if maxi(absi(dx), absi(dy)) != atk_range:
+					continue
+				var candidate = target_tile + Vector2i(dx, dy)
+				if not ps.is_in_bounds(candidate):
+					continue
+				if building_grid and building_grid.is_occupied(candidate):
+					continue
+				var path = ps.get_path_to_tile(from, candidate)
+				if path.is_empty():
+					continue
+				if path.size() < best_path_len:
+					best_path_len = path.size()
+					best_tile = candidate
 
 	return best_tile
 
 
 func get_projectile_type() -> String:
 	return "poison_flask"
+
+
+func get_priority_attack_target(building_grid: Node, current_tile: Vector2i, attack_range: int) -> Building:
+	if not building_grid:
+		return null
+	var best: Building = null
+	var best_dist = INF
+	for tile in building_grid.buildings.keys():
+		var bld = building_grid.get_building(tile)
+		if not is_instance_valid(bld) or Config.buildings.get(bld.building_type, {}).get("type", "") != "production":
+			continue
+		var dist = maxi(absi(tile.x - current_tile.x), absi(tile.y - current_tile.y))
+		if dist <= attack_range and dist < best_dist:
+			best_dist = dist
+			best = bld
+	return best
 
 
 func on_first_hit() -> void:

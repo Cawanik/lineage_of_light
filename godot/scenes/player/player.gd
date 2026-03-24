@@ -379,6 +379,8 @@ func _cast_magic_missile() -> void:
 func _cast_fireball() -> void:
 	if _fireball_placing:
 		return
+	if _storm_placing:
+		_cancel_storm()
 	_fireball_placing = true
 
 	var ability = _abilities.get("fireball", {})
@@ -411,6 +413,8 @@ func _cancel_fireball() -> void:
 func _cast_storm() -> void:
 	if _storm_placing:
 		return
+	if _fireball_placing:
+		_cancel_fireball()
 	_storm_placing = true
 
 	var ability = _abilities.get("storm", {})

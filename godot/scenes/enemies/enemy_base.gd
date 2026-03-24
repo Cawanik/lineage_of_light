@@ -58,7 +58,7 @@ var state: State = State.MOVING
 var attacking_edge_key: StringName = &""
 var attacking_building: Building = null
 var attack_timer: float = 0.0
-const ATTACK_INTERVAL: float = 0.5
+var ATTACK_INTERVAL: float = 0.5
 
 var _repath_queued: bool = false
 
@@ -78,6 +78,7 @@ func setup(type: String) -> void:
 	reward = enemy_data["reward"]
 	damage_to_base = enemy_data["damage_to_base"]
 	wall_dps = enemy_data.get("wall_dps", 10.0)
+	ATTACK_INTERVAL = enemy_data.get("attack_interval", 0.5)
 	_init_brain()
 
 
@@ -435,6 +436,12 @@ func _process_movement(delta: float) -> void:
 				_start_building_attack(throne)
 				return
 
+		# Приоритетное здание в радиусе атаки (production для мага/алхимика)
+		var priority_bld = brain.get_priority_attack_target(building_grid, current_tile, brain.get_attack_range())
+		if priority_bld:
+			_start_building_attack(priority_bld)
+			return
+
 		# Башня в соседней клетке — атакуем только если brain разрешает
 		if brain.should_attack_adjacent_towers():
 			var adjacent_tower = _find_adjacent_tower()
@@ -471,7 +478,7 @@ func _calculate_path_cost(path: Array[Vector2i]) -> float:
 	return move_time + break_time
 
 
-## Ищет атакующую башню (не wall_block, не трон) в 8 соседних клетках
+## Ищет любое здание (не wall_block, не трон) в 8 соседних клетках
 func _find_adjacent_tower() -> Building:
 	if not building_grid:
 		return null
@@ -482,7 +489,7 @@ func _find_adjacent_tower() -> Building:
 	]
 	for tile in adjacent_tiles:
 		var building = building_grid.get_building(tile)
-		if building and building is Building and building.attack_speed > 0:
+		if building and building is Building and building.building_type != "wall_block" and building.building_type != "throne":
 			return building
 	return null
 
