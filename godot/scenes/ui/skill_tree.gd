@@ -17,11 +17,13 @@ const UPGRADE_ICON_PATH = "res://assets/sprites/ui/upgrade_arrow.png"
 
 var _canvas: Control
 var _info_panel: Control
+var _info_category: Label
 var _info_name: Label
 var _info_desc: Label
 var _info_cost: Label
-var _unlock_btn: Button
+var _unlock_btn: TextureButton
 var _souls_label: Label
+var _btn_cost_label: Label
 var _selected_skill: String = ""
 
 # Камера/скролл
@@ -44,13 +46,20 @@ func _ready() -> void:
 	for child in get_children():
 		child.queue_free()
 
-	# Фон
+	# Фон с шейдером дымки
 	var bg = ColorRect.new()
 	bg.name = "BG"
-	bg.color = BG_COLOR
+	bg.color = Color.WHITE
 	bg.anchors_preset = Control.PRESET_FULL_RECT
 	bg.anchor_right = 1.0
 	bg.anchor_bottom = 1.0
+	var fog_shader = load("res://shaders/purple_fog.gdshader")
+	if fog_shader:
+		var mat = ShaderMaterial.new()
+		mat.shader = fog_shader
+		bg.material = mat
+	else:
+		bg.color = BG_COLOR
 	add_child(bg)
 
 	# Canvas для отрисовки
@@ -78,62 +87,161 @@ func _ready() -> void:
 	title.add_theme_font_size_override("font_size", 20)
 	bg.add_child(title)
 
-	# Souls counter top-right
-	_souls_label = Label.new()
-	_souls_label.anchors_preset = Control.PRESET_TOP_RIGHT
-	_souls_label.anchor_left = 1.0
-	_souls_label.anchor_right = 1.0
-	_souls_label.offset_left = -200
-	_souls_label.offset_right = -80
-	_souls_label.offset_top = 15
-	_souls_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	bg.add_child(_souls_label)
+	# Souls counter top-right с иконкой
+	var souls_hbox = HBoxContainer.new()
+	souls_hbox.anchors_preset = Control.PRESET_TOP_RIGHT
+	souls_hbox.anchor_left = 1.0
+	souls_hbox.anchor_right = 1.0
+	souls_hbox.offset_left = -140
+	souls_hbox.offset_right = -60
+	souls_hbox.offset_top = 12
+	souls_hbox.add_theme_constant_override("separation", 4)
+	souls_hbox.alignment = BoxContainer.ALIGNMENT_END
+	bg.add_child(souls_hbox)
 
-	# Close button
-	var close_btn = Button.new()
-	close_btn.text = "✕"
+	var soul_icon = TextureRect.new()
+	soul_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	soul_icon.custom_minimum_size = Vector2(20, 20)
+	soul_icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	soul_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	if ResourceLoader.exists("res://assets/sprites/ui/icon_soul.png"):
+		soul_icon.texture = load("res://assets/sprites/ui/icon_soul.png")
+	souls_hbox.add_child(soul_icon)
+
+	_souls_label = Label.new()
+	_souls_label.add_theme_font_size_override("font_size", 16)
+	souls_hbox.add_child(_souls_label)
+
+	# Close button — иконка крестик
+	var close_btn = TextureButton.new()
+	close_btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	close_btn.ignore_texture_size = true
+	close_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	close_btn.anchors_preset = Control.PRESET_TOP_RIGHT
 	close_btn.anchor_left = 1.0
 	close_btn.anchor_right = 1.0
-	close_btn.offset_left = -50
+	close_btn.offset_left = -46
 	close_btn.offset_right = -10
 	close_btn.offset_top = 10
-	close_btn.offset_bottom = 40
+	close_btn.offset_bottom = 46
+	if ResourceLoader.exists("res://assets/sprites/ui/icon_close.png"):
+		close_btn.texture_normal = load("res://assets/sprites/ui/icon_close.png")
+	close_btn.mouse_entered.connect(func(): close_btn.modulate = Color(1.3, 0.8, 0.8))
+	close_btn.mouse_exited.connect(func(): close_btn.modulate = Color.WHITE)
 	close_btn.pressed.connect(close)
 	bg.add_child(close_btn)
 
-	# Info panel (bottom-left)
-	_info_panel = PanelContainer.new()
+	# Info panel (bottom-left) — 300x400 по спрайту
+	_info_panel = Control.new()
 	_info_panel.anchors_preset = Control.PRESET_BOTTOM_LEFT
 	_info_panel.anchor_top = 1.0
 	_info_panel.anchor_bottom = 1.0
 	_info_panel.offset_left = 10
-	_info_panel.offset_top = -130
-	_info_panel.offset_right = 280
+	_info_panel.offset_top = -410
+	_info_panel.offset_right = 310
 	_info_panel.offset_bottom = -10
 	_info_panel.visible = false
 	bg.add_child(_info_panel)
 
-	var vbox = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 4)
-	_info_panel.add_child(vbox)
+	# Фон панели
+	var info_bg = TextureRect.new()
+	info_bg.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	info_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	info_bg.stretch_mode = TextureRect.STRETCH_SCALE
+	info_bg.anchors_preset = Control.PRESET_FULL_RECT
+	info_bg.anchor_right = 1.0
+	info_bg.anchor_bottom = 1.0
+	info_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if ResourceLoader.exists("res://assets/sprites/ui/skill_info_panel_bg.png"):
+		info_bg.texture = load("res://assets/sprites/ui/skill_info_panel_bg.png")
+	_info_panel.add_child(info_bg)
+
+	# Категория в верхней плашке
+	_info_category = Label.new()
+	_info_category.add_theme_font_size_override("font_size", 10)
+	_info_category.add_theme_color_override("font_color", Color("#9988bb"))
+	_info_category.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_info_category.anchor_left = 0.15
+	_info_category.anchor_right = 0.85
+	_info_category.offset_top = 17
+	_info_category.offset_bottom = 35
+	_info_panel.add_child(_info_category)
+
+	# Контент — название и описание
+	var content = VBoxContainer.new()
+	content.add_theme_constant_override("separation", 6)
+	content.anchor_right = 1.0
+	content.offset_left = 30
+	content.offset_top = 50
+	content.offset_right = -30
+	_info_panel.add_child(content)
 
 	_info_name = Label.new()
 	_info_name.add_theme_font_size_override("font_size", 16)
-	vbox.add_child(_info_name)
+	_info_name.add_theme_color_override("font_color", Color("#e8e0ff"))
+	content.add_child(_info_name)
 
 	_info_desc = Label.new()
 	_info_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
-	_info_desc.custom_minimum_size.x = 250
-	vbox.add_child(_info_desc)
+	_info_desc.custom_minimum_size.x = 240
+	_info_desc.add_theme_color_override("font_color", Color("#9988bb"))
+	content.add_child(_info_desc)
 
 	_info_cost = Label.new()
-	vbox.add_child(_info_cost)
+	_info_cost.add_theme_color_override("font_color", Color("#f0d060"))
+	content.add_child(_info_cost)
 
-	_unlock_btn = Button.new()
-	_unlock_btn.text = "Изучить"
+	# Кнопка изучить — прибита к низу, бэкграунд start_wave_btn
+	_unlock_btn = TextureButton.new()
+	_unlock_btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_unlock_btn.ignore_texture_size = true
+	_unlock_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	_unlock_btn.anchor_left = 0.5
+	_unlock_btn.anchor_right = 0.5
+	_unlock_btn.anchor_top = 1.0
+	_unlock_btn.anchor_bottom = 1.0
+	_unlock_btn.offset_left = -75
+	_unlock_btn.offset_right = 75
+	_unlock_btn.offset_top = -70
+	_unlock_btn.offset_bottom = -20
+	if ResourceLoader.exists("res://assets/sprites/ui/start_wave_btn.png"):
+		_unlock_btn.texture_normal = load("res://assets/sprites/ui/start_wave_btn.png")
+	_unlock_btn.mouse_entered.connect(func(): _unlock_btn.modulate = Color(1.2, 1.1, 1.3))
+	_unlock_btn.mouse_exited.connect(func(): _unlock_btn.modulate = Color.WHITE)
 	_unlock_btn.pressed.connect(_on_unlock_pressed)
-	vbox.add_child(_unlock_btn)
+	_info_panel.add_child(_unlock_btn)
+
+	# Содержимое кнопки — иконка кристалла + стоимость
+	var btn_hbox = HBoxContainer.new()
+	btn_hbox.anchors_preset = Control.PRESET_CENTER
+	btn_hbox.anchor_left = 0.5
+	btn_hbox.anchor_right = 0.5
+	btn_hbox.anchor_top = 0.5
+	btn_hbox.anchor_bottom = 0.5
+	btn_hbox.offset_left = -35
+	btn_hbox.offset_right = 35
+	btn_hbox.offset_top = -10
+	btn_hbox.offset_bottom = 10
+	btn_hbox.add_theme_constant_override("separation", 6)
+	btn_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_unlock_btn.add_child(btn_hbox)
+
+	var btn_icon = TextureRect.new()
+	btn_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	btn_icon.custom_minimum_size = Vector2(18, 18)
+	btn_icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	btn_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	btn_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if ResourceLoader.exists("res://assets/sprites/ui/icon_soul.png"):
+		btn_icon.texture = load("res://assets/sprites/ui/icon_soul.png")
+	btn_hbox.add_child(btn_icon)
+
+	_btn_cost_label = Label.new()
+	_btn_cost_label.add_theme_font_size_override("font_size", 14)
+	_btn_cost_label.add_theme_color_override("font_color", Color("#b088dd"))
+	_btn_cost_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn_hbox.add_child(_btn_cost_label)
 
 	# Центрируем вид
 	_offset = _calc_center_offset()
@@ -180,7 +288,7 @@ func close() -> void:
 
 
 func _update_souls_label() -> void:
-	_souls_label.text = "Души: %d" % GameManager.souls
+	_souls_label.text = "%d" % GameManager.souls
 
 
 func _on_skill_unlocked(_skill_id: String) -> void:
@@ -346,6 +454,7 @@ func _update_info_panel() -> void:
 		return
 
 	_info_panel.visible = true
+	_info_category.text = data.get("category", "").to_upper()
 	_info_name.text = data.get("name", "")
 	_info_desc.text = data.get("desc", "")
 
@@ -357,9 +466,11 @@ func _update_info_panel() -> void:
 			_info_cost.text = "Изучено"
 			_unlock_btn.visible = false
 		"available":
-			_info_cost.text = "Стоимость: %d душ" % cost
+			_info_cost.text = ""
 			_unlock_btn.visible = true
-			_unlock_btn.disabled = not SkillManager.can_unlock(_selected_skill)
+			_btn_cost_label.text = str(cost)
+			var can = SkillManager.can_unlock(_selected_skill)
+			_unlock_btn.modulate = Color.WHITE if can else Color(0.5, 0.5, 0.5)
 		_:
 			_info_cost.text = "???"
 			_unlock_btn.visible = false
@@ -367,7 +478,10 @@ func _update_info_panel() -> void:
 
 func _on_unlock_pressed() -> void:
 	if _selected_skill != "":
-		SkillManager.unlock(_selected_skill)
+		if not SkillManager.unlock(_selected_skill):
+			var as_node = get_node_or_null("/root/AlertSystem")
+			if as_node:
+				as_node.alert_error("Недостаточно душ!")
 
 
 func _unhandled_input(event: InputEvent) -> void:

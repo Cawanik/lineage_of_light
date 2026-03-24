@@ -96,7 +96,8 @@
       "Bash(ls:*)",
       "Bash(find /c/Users/user/WebstormProjects/lineage_of_light/godot/scripts -type f -name *.gd)",
       "Bash(grep -r \"magic_shot\\\\|fireball\\\\|ball_lightning\\\\|cast\\\\|ability\\\\|spell\" /c/Users/user/WebstormProjects/lineage_of_light/godot --include=*.gd)",
-      "Bash(grep -r \"get_projectile_type\\\\|projectile\\\\|attack\" /c/Users/user/WebstormProjects/lineage_of_light/godot/scripts/ai --include=*.gd)"
+      "Bash(grep -r \"get_projectile_type\\\\|projectile\\\\|attack\" /c/Users/user/WebstormProjects/lineage_of_light/godot/scripts/ai --include=*.gd)",
+      "Bash(identify /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/ui/skill_info_panel_bg.png)"
     ]
   }
 }

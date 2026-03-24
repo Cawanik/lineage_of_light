@@ -35,6 +35,9 @@ var attack_speed: float = 0.0
 var attack_projectile: String = ""
 var _attack_timer: float = 0.0
 var contact_damage: float = 0.0  # Урон при контакте (шипы)
+var target_mode: String = "closest"  # "closest" или "highest_hp"
+var _has_attack_anim: bool = false
+var _anim_sprite: AnimatedSprite2D = null  # Ссылка на IdleAnim если есть
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var hp_bar_bg: ColorRect = $HPBarBG
@@ -48,13 +51,23 @@ func _process(_delta: float) -> void:
 	OcclusionFade.find_player(get_tree())
 	OcclusionFade.update_node_fade(self)
 
+	# Анимация атаки — играть пока есть проклятые в радиусе
+	if _has_attack_anim and _anim_sprite:
+		var data = Config.buildings.get(building_type, {})
+		if data.get("attack_mode", "") == "instant_curse" and PhaseManager.is_combat_phase():
+			var has_cursed = _has_cursed_enemy_in_range()
+			if has_cursed and _anim_sprite.animation != "attack":
+				_anim_sprite.play("attack")
+			elif not has_cursed and _anim_sprite.animation == "attack":
+				_anim_sprite.play("idle")
+
 	# Атака врагов
 	if attack_speed > 0 and PhaseManager.is_combat_phase():
 		_attack_timer -= _delta
 		if _attack_timer <= 0:
 			var target = _find_enemy_in_range()
 			if target:
-				_shoot(target)
+				_attack(target)
 				_attack_timer = 1.0 / attack_speed
 			else:
 				_attack_timer = 0.1  # Быстрее проверяем когда нет цели
@@ -85,10 +98,12 @@ func setup(type: String) -> void:
 	attack_range_diagonal = int(data.get("attack_range_diagonal", 0))
 	attack_speed = data.get("attack_speed", 0.0)
 	attack_projectile = data.get("attack_projectile", "")
+	target_mode = data.get("target_mode", "closest")
 
 	_create_tile_collision()
 	_setup_unit(data)
 	_setup_idle_anim(data)
+	_setup_attack_anim(data)
 
 
 func _setup_idle_anim(data: Dictionary) -> void:
@@ -142,9 +157,88 @@ func _setup_idle_anim(data: Dictionary) -> void:
 	anim_sprite.scale = sprite.scale
 	add_child(anim_sprite)
 	anim_sprite.play("idle")
+	_anim_sprite = anim_sprite
 
 	# Прячем статичный спрайт
 	sprite.visible = false
+
+
+func _setup_attack_anim(data: Dictionary) -> void:
+	var anim_path = data.get("attack_anim", "")
+	if anim_path == "":
+		return
+
+	# Если нет idle_anim — создаём AnimatedSprite2D с одним idle фреймом из статичного спрайта
+	if not _anim_sprite:
+		_anim_sprite = AnimatedSprite2D.new()
+		_anim_sprite.name = "IdleAnim"
+		var sf = SpriteFrames.new()
+		sf.add_animation("idle")
+		sf.set_animation_speed("idle", 1.0)
+		sf.set_animation_loop("idle", true)
+		if sprite.texture:
+			sf.add_frame("idle", sprite.texture)
+		if sf.has_animation("default"):
+			sf.remove_animation("default")
+		_anim_sprite.sprite_frames = sf
+		_anim_sprite.position = sprite.position
+		_anim_sprite.scale = sprite.scale
+		add_child(_anim_sprite)
+		_anim_sprite.play("idle")
+		sprite.visible = false
+
+	var frames_arr: Array[Texture2D] = []
+	var dir_name = anim_path.get_file()
+
+	# Паттерн: dir_name_0001.png
+	for i in range(1, 100):
+		var path = anim_path + "/%s_%04d.png" % [dir_name, i]
+		if ResourceLoader.exists(path):
+			frames_arr.append(load(path))
+		else:
+			break
+
+	if frames_arr.is_empty():
+		return
+
+	var sf = _anim_sprite.sprite_frames
+	sf.add_animation("attack")
+	sf.set_animation_speed("attack", data.get("attack_anim_fps", 8.0))
+	sf.set_animation_loop("attack", true)
+	for tex in frames_arr:
+		sf.add_frame("attack", tex)
+
+	_has_attack_anim = true
+	# При окончании атаки — вернуться к idle
+	_anim_sprite.animation_finished.connect(_on_building_attack_finished)
+
+
+func _on_building_attack_finished() -> void:
+	if _anim_sprite and _anim_sprite.animation == "attack":
+		_anim_sprite.play("idle")
+
+
+func _play_attack_anim() -> void:
+	pass  # Анимация управляется из _process
+
+
+func _has_cursed_enemy_in_range() -> bool:
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	var my_tile = _get_my_tile()
+	if my_tile == Vector2i(-9999, -9999):
+		return false
+	for enemy in enemies:
+		if not is_instance_valid(enemy) or enemy.is_dead:
+			continue
+		if not enemy.debuffs.has("curse"):
+			continue
+		var enemy_tile = enemy.current_tile
+		var dx = absi(enemy_tile.x - my_tile.x)
+		var dy = absi(enemy_tile.y - my_tile.y)
+		var euclidean = sqrt(float(dx * dx + dy * dy))
+		if euclidean <= float(attack_range_cardinal) + 0.5:
+			return true
+	return false
 
 
 func _create_tile_collision() -> void:
@@ -256,8 +350,8 @@ func _find_enemy_in_range() -> Node2D:
 	if my_tile == Vector2i(-9999, -9999):
 		return null
 
-	var closest: Node2D = null
-	var closest_dist: float = 9999.0
+	var best: Node2D = null
+	var best_score: float = -1.0 if target_mode == "highest_hp" else 9999.0
 
 	for enemy in enemies:
 		if not is_instance_valid(enemy) or enemy.is_dead:
@@ -266,15 +360,24 @@ func _find_enemy_in_range() -> Node2D:
 		var dx = absi(enemy_tile.x - my_tile.x)
 		var dy = absi(enemy_tile.y - my_tile.y)
 
-		# Евклидово расстояние — круговой радиус
 		var euclidean = sqrt(float(dx * dx + dy * dy))
-		if euclidean <= float(attack_range_cardinal) + 0.5:
-			var dist = global_position.distance_to(enemy.global_position)
-			if dist < closest_dist:
-				closest_dist = dist
-				closest = enemy
+		if euclidean > float(attack_range_cardinal) + 0.5:
+			continue
 
-	return closest
+		if target_mode == "highest_hp":
+			# Пропускаем уже проклятых
+			if enemy.debuffs.has("curse"):
+				continue
+			if enemy.hp > best_score:
+				best_score = enemy.hp
+				best = enemy
+		else:
+			var dist = global_position.distance_to(enemy.global_position)
+			if dist < best_score:
+				best_score = dist
+				best = enemy
+
+	return best
 
 
 func _get_unit_sprites() -> Array:
@@ -285,16 +388,42 @@ func _get_unit_sprites() -> Array:
 	return units
 
 
+func _attack(target: Node2D) -> void:
+	_play_attack_anim()
+	var data = Config.buildings.get(building_type, {})
+	var attack_mode = data.get("attack_mode", "projectile")
+	match attack_mode:
+		"instant_curse":
+			if target.has_method("apply_curse"):
+				var curse_value = data.get("curse_value", 1.0)
+				var curse_duration = data.get("curse_duration", 5.0)
+				target.apply_curse(curse_value, curse_duration)
+		_:
+			_shoot(target)
+
+
 func _shoot(target: Node2D) -> void:
 	if attack_projectile == "":
 		return
+
+	# Статичный проджектайл — спавнится на тайле врага
+	var proj_data = Config.projectiles.get(attack_projectile, {})
+	if proj_data.get("static", false):
+		var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid") as BuildingGrid
+		if bg:
+			var enemy_tile = bg.world_to_tile(target.global_position)
+			var tile_center = bg.tile_to_world(enemy_tile)
+			Projectile.spawn(get_tree(), attack_projectile, tile_center, tile_center, target)
+		else:
+			Projectile.spawn(get_tree(), attack_projectile, target.global_position, target.global_position, target)
+		return
+
 	var units = _get_unit_sprites()
 	if units.is_empty():
 		Projectile.spawn(get_tree(), attack_projectile, global_position + Vector2(0, -40), target.global_position, target)
 		return
 
 	for unit in units:
-		# Проджектайл из позиции юнита
 		var shoot_from = global_position + unit.position + Vector2(0, 5)
 		var target_jitter = Vector2(randf_range(-6, 6), randf_range(-3, 3))
 		Projectile.spawn(get_tree(), attack_projectile, shoot_from, target.global_position + target_jitter, target)

@@ -27,7 +27,7 @@
 [ext_resource type="Texture2D" uid="uid://dyajeqqccfgyk" path="res://assets/sprites/ui/slot_bg.png" id="18_slot_bg"]
 [ext_resource type="PackedScene" uid="uid://crhdxovukmpdt" path="res://scenes/ui/currency_bar.tscn" id="19_currency_bar"]
 [ext_resource type="PackedScene" uid="uid://b2cj0ceoixmc3" path="res://scenes/ui/start_wave_button.tscn" id="20_start_wave"]
-[ext_resource type="PackedScene" path="res://scenes/ui/skill_tree_button.tscn" id="21_skill_tree"]
+[ext_resource type="PackedScene" uid="uid://0x13wp6nddum" path="res://scenes/ui/skill_tree_button.tscn" id="21_skill_tree"]
 [ext_resource type="Texture2D" uid="uid://dnsme7wsv58uy" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0001.png" id="22_ocean1"]
 [ext_resource type="Texture2D" uid="uid://dd34jx5f81jox" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0002.png" id="22_ocean2"]
 [ext_resource type="Texture2D" uid="uid://bk8thbf5wmui7" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0003.png" id="22_ocean3"]
@@ -37,10 +37,9 @@
 [ext_resource type="Texture2D" uid="uid://bix3o6g3qg2vo" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0007.png" id="22_ocean7"]
 [ext_resource type="Texture2D" uid="uid://dd3lqtxug2qcp" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0008.png" id="22_ocean8"]
 [ext_resource type="Texture2D" uid="uid://b52p0oglifsma" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0009.png" id="22_ocean9"]
-[ext_resource type="PackedScene" path="res://scenes/ui/skill_tree.tscn" id="22_skill_tree"]
+[ext_resource type="PackedScene" uid="uid://cskilltree001" path="res://scenes/ui/skill_tree.tscn" id="22_skill_tree"]
 [ext_resource type="Texture2D" uid="uid://xuf2ivg08rwu" path="res://assets/sprites/ui/upgrade_arrow.png" id="22_upgrade_icon"]
 [ext_resource type="Texture2D" uid="uid://cpe7ei5mw25lr" path="res://assets/sprites/ui/icon_flat_view_0001.png" id="23_flat_view_closed"]
-[ext_resource type="Script" path="res://scenes/ui/ability_bar.gd" id="23_ability_bar"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6g32y"]
 texture = ExtResource("3_pg34l")
@@ -184,10 +183,14 @@ offset_bottom = 91.0
 grow_horizontal = 2
 
 [node name="SkillTreeButton" parent="UILayer" unique_id=1552339584 instance=ExtResource("21_skill_tree")]
-offset_left = 404.0
-offset_top = 17.0
-offset_right = 454.0
-offset_bottom = 67.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -268.0
+offset_top = 6.0
+offset_right = -193.0
+offset_bottom = 81.0
+grow_horizontal = 2
 
 [node name="StartWaveButton" parent="UILayer" unique_id=280072439 instance=ExtResource("20_start_wave")]
 offset_left = 137.0
@@ -379,4 +382,3 @@ stretch_mode = 5
 [node name="DevPanel" parent="UILayer" unique_id=2068489733 instance=ExtResource("14_devpanel")]
 
 [node name="SkillTree" parent="." unique_id=1552904102 instance=ExtResource("22_skill_tree")]
-visible = false

@@ -60,6 +60,12 @@ func _build_slots() -> void:
 		var sm = get_node_or_null("/root/SkillManager")
 		if sm and not sm.is_building_unlocked(key):
 			continue
+		# Тир 2 здания — если навык требует epoch_gate, нужны врата на карте
+		if sm:
+			var skill_data = Config.skill_tree.get(key, {})
+			var requires = skill_data.get("requires", [])
+			if "epoch_gate" in requires and not sm.is_epoch_active():
+				continue
 		_add_building_row(key, data)
 
 
@@ -215,6 +221,8 @@ func _create_wall_icon() -> TextureRect:
 
 
 func rebuild() -> void:
+	if not is_instance_valid(item_list):
+		return
 	for child in item_list.get_children():
 		item_list.remove_child(child)
 		child.queue_free()

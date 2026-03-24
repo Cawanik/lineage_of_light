@@ -75,5 +75,40 @@
 		"trail": true,
 		"trail_length": 20,
 		"trail_color": "#8844ffcc"
+	},
+	"curse_bolt": {
+		"name": "Проклятие",
+		"draw_mode": "orb",
+		"orb_radius": 4.0,
+		"orb_color": "#cc2244",
+		"orb_glow_color": "#ff4466",
+		"speed": 300.0,
+		"damage": 0.0,
+		"homing": true,
+		"hit_radius": 10.0,
+		"lifetime": 3.0,
+		"trail": true,
+		"trail_length": 12,
+		"trail_color": "#cc224488",
+		"on_hit_debuff": "curse",
+		"debuff_value": 1.0,
+		"debuff_duration": 5.0
+	},
+	"zombie_hand": {
+		"name": "Рука зомби",
+		"draw_mode": "sprite_tex",
+		"texture": "res://assets/sprites/buildings/towers/zombie_hand.png",
+		"scale": 1.0,
+		"sprite_offset": [0.0, -15.0],
+		"static": true,
+		"static_duration": 4.0,
+		"static_tick": 0.8,
+		"damage": 5.0,
+		"hit_radius": 24.0,
+		"slow": 0.5,
+		"speed": 0.0,
+		"homing": false,
+		"lifetime": 4.0,
+		"trail": false
 	}
 }

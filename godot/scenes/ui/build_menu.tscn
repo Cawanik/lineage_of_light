@@ -1,12 +1,9 @@
 [gd_scene format=3 uid="uid://cbuildmenu01"]
 
-[ext_resource type="Script" path="res://scenes/ui/build_menu.gd" id="1_menu"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/scroll_bg.png" id="2_bg"]
-[ext_resource type="Texture2D" uid="uid://dyajeqqccfgyk" path="res://assets/sprites/ui/slot_bg.png" id="3_slot"]
+[ext_resource type="Script" uid="uid://cvb8wbklc7cy2" path="res://scenes/ui/build_menu.gd" id="1_menu"]
+[ext_resource type="Texture2D" uid="uid://bw73wqj2l1hsw" path="res://assets/sprites/ui/scroll_bg.png" id="2_bg"]
 
-[node name="BuildMenu" type="TextureRect"]
-mouse_filter = 0
-texture_filter = 0
+[node name="BuildMenu" type="TextureRect" unique_id=1142380762]
 anchors_preset = 6
 anchor_left = 1.0
 anchor_top = 0.5
@@ -18,12 +15,13 @@ offset_right = -10.0
 offset_bottom = 130.0
 grow_horizontal = 0
 grow_vertical = 2
+mouse_filter = 0
 texture = ExtResource("2_bg")
 expand_mode = 1
 stretch_mode = 5
 script = ExtResource("1_menu")
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="." unique_id=532403563]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,20 +33,20 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 20
 
-[node name="VBox" type="VBoxContainer" parent="Margin"]
+[node name="VBox" type="VBoxContainer" parent="Margin" unique_id=896470353]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="Title" type="Label" parent="Margin/VBox"]
+[node name="Title" type="Label" parent="Margin/VBox" unique_id=2047337941]
 layout_mode = 2
 horizontal_alignment = 1
 
-[node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="Margin/VBox" unique_id=1252590317]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="ItemList" type="VBoxContainer" parent="Margin/VBox/Scroll"]
+[node name="ItemList" type="VBoxContainer" parent="Margin/VBox/Scroll" unique_id=46861562]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4

@@ -148,7 +148,9 @@ func spawn_test_enemy(enemy_type: String) -> void:
 	enemies_alive += 1
 
 	# Pick spawn tile from AI-selected side (alternate sides if multiple)
-	var side = _current_spawn_sides[_spawn_side_index % _current_spawn_sides.size()]
+	var side = SpawnZone.Side.SOUTH
+	if not _current_spawn_sides.is_empty():
+		side = _current_spawn_sides[_spawn_side_index % _current_spawn_sides.size()]
 	_spawn_side_index += 1
 	var spawn_tile = SpawnZone.pick_spawn_tile(side)
 

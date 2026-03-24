@@ -87,6 +87,9 @@ func _try_upgrade(building: Building) -> bool:
 	var upgrade = upgrades[building.upgrade_level]
 	var cost = int(upgrade.get("cost", 0))
 	if not GameManager.spend_gold(cost):
+		var as_node = wall_system.get_node_or_null("/root/AlertSystem")
+		if as_node:
+			as_node.alert_error("Недостаточно золота!")
 		return false
 
 	# HP бонус

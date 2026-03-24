@@ -30,8 +30,16 @@ func _ready() -> void:
 	_build_spawn_popup()
 
 	spawn_test_button.pressed.connect(_on_spawn_test_pressed)
+
+	# Кнопка тестового проджектайла
+	var proj_btn = Button.new()
+	proj_btn.text = "Spawn Projectile (click tile)"
+	proj_btn.pressed.connect(_on_spawn_proj_pressed)
+	spawn_test_button.get_parent().add_child(proj_btn)
+
 	start_wave_button.pressed.connect(_on_start_wave_pressed)
-	test_path_button.pressed.connect(_on_test_path_pressed)
+	test_path_button.text = "Unlock All Skills"
+	test_path_button.pressed.connect(_on_unlock_all_pressed)
 	reset_game_button.pressed.connect(_on_reset_game_pressed)
 	toggle_debug_button.pressed.connect(_on_toggle_debug_pressed)
 	add_gold_button.pressed.connect(_on_add_gold_pressed)
@@ -63,19 +71,41 @@ func _update_info() -> void:
 	lives_label.text = "Lives: %d" % GameManager.lives
 
 
+var _placing_projectile: bool = false
+
+var _debuff_slow_check: CheckBox
+var _debuff_curse_check: CheckBox
+
+
 func _build_spawn_popup() -> void:
 	spawn_popup = PopupPanel.new()
 	spawn_popup.title = "Spawn Enemy"
 	add_child(spawn_popup)
 
 	var vbox = VBoxContainer.new()
-	vbox.custom_minimum_size = Vector2(200, 0)
+	vbox.custom_minimum_size = Vector2(220, 0)
 	spawn_popup.add_child(vbox)
 
 	var label = Label.new()
 	label.text = "Выбери врага:"
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(label)
+
+	vbox.add_child(HSeparator.new())
+
+	# Дебаффы
+	var debuff_label = Label.new()
+	debuff_label.text = "Дебаффы:"
+	debuff_label.add_theme_font_size_override("font_size", 12)
+	vbox.add_child(debuff_label)
+
+	_debuff_slow_check = CheckBox.new()
+	_debuff_slow_check.text = "Замедление (50%)"
+	vbox.add_child(_debuff_slow_check)
+
+	_debuff_curse_check = CheckBox.new()
+	_debuff_curse_check.text = "Проклятие (+100% урон)"
+	vbox.add_child(_debuff_curse_check)
 
 	vbox.add_child(HSeparator.new())
 
@@ -90,7 +120,40 @@ func _build_spawn_popup() -> void:
 func _spawn_enemy(enemy_type: String) -> void:
 	spawn_popup.hide()
 	WaveManager.spawn_test_enemy(enemy_type)
+
+	# Применяем дебаффы к последнему заспавненному врагу
+	if _debuff_slow_check.button_pressed or _debuff_curse_check.button_pressed:
+		await get_tree().process_frame
+		var enemies = get_tree().get_nodes_in_group("enemies")
+		if not enemies.is_empty():
+			var enemy = enemies[-1]
+			if _debuff_slow_check.button_pressed and enemy.has_method("apply_slow"):
+				enemy.apply_slow(0.5, 9999.0)
+			if _debuff_curse_check.button_pressed and enemy.has_method("apply_curse"):
+				enemy.apply_curse(1.0, 9999.0)
+
 	print("DevPanel: Spawned %s" % enemy_type)
+
+
+func _on_spawn_proj_pressed() -> void:
+	_placing_projectile = true
+	print("DevPanel: Click on a tile to spawn zombie_hand")
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not _placing_projectile:
+		return
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		var main = get_tree().current_scene
+		var bg = main.get_node_or_null("YSort/BuildingGrid") as BuildingGrid
+		if bg:
+			var mouse_pos = main.get_node("YSort/Player").get_global_mouse_position()
+			var tile = bg.world_to_tile(mouse_pos)
+			var tile_center = bg.tile_to_world(tile)
+			var proj = Projectile.spawn(get_tree(), "zombie_hand", tile_center, tile_center)
+			print("DevPanel: Spawned zombie_hand at tile %s (world %s, proj.pos.y=%s)" % [tile, tile_center, proj.position.y])
+		_placing_projectile = false
+		get_viewport().set_input_as_handled()
 
 
 func _on_spawn_test_pressed() -> void:
@@ -103,32 +166,16 @@ func _on_start_wave_pressed() -> void:
 	WaveManager.start_next_wave()
 
 
-func _on_test_path_pressed() -> void:
-	print("DevPanel: Testing pathfinding from multiple locations")
-	var ps = get_node_or_null("/root/PathfindingSystem")
-	if ps:
-		# Test from different edges
-		var test_locations = [
-			Vector2i(0, 15),   # West edge  
-			Vector2i(29, 15),  # East edge
-			Vector2i(15, 0),   # North edge
-			Vector2i(15, 29),  # South edge
-		]
-		
-		for location in test_locations:
-			var path = ps.get_path_to_throne(location)
-			print("Path from %s: %d tiles" % [location, path.size()])
-			if path.size() > 0:
-				print("  Route: %s -> ... -> %s" % [path[0], path[-1]])
-				# Check if goes through entrance area (17,15)
-				var goes_through_entrance = false
-				for tile in path:
-					if tile.x == 17 and tile.y >= 14 and tile.y <= 16:
-						goes_through_entrance = true
-						break
-				print("  Goes through entrance: %s" % goes_through_entrance)
+func _on_unlock_all_pressed() -> void:
+	var sm = get_node_or_null("/root/SkillManager")
+	if sm:
+		for skill_id in Config.skill_tree:
+			if not sm.is_unlocked(skill_id):
+				sm.unlocked[skill_id] = true
+				sm.skill_unlocked.emit(skill_id)
+		print("DevPanel: All %d skills unlocked" % Config.skill_tree.size())
 	else:
-		print("PathfindingSystem not found!")
+		print("SkillManager not found!")
 
 
 func _on_reset_game_pressed() -> void:

@@ -26,6 +26,7 @@ WaveManager="*res://scripts/autoload/wave_manager.gd"
 PathfindingSystem="*res://scripts/autoload/pathfinding_system.gd"
 PhaseManager="*res://scripts/autoload/phase_manager.gd"
 SkillManager="*res://scripts/autoload/skill_manager.gd"
+AlertSystem="*res://scenes/ui/alert_system.gd"
 
 [display]
 

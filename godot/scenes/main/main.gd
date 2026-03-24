@@ -123,6 +123,9 @@ func _ready() -> void:
 	# Применяем блокировку инструментов по навыкам
 	call_deferred("_set_toolbar_mode", "build")
 
+	# Перестраиваем меню при изменении зданий на карте
+	building_grid.buildings_changed.connect(_on_buildings_changed)
+
 
 # Маппинг id абилки из player.json -> id навыка в skill_tree.json
 const ABILITY_TO_SKILL: Dictionary = {
@@ -662,6 +665,18 @@ func _update_cooldown_overlays() -> void:
 			overlay.visible = false
 
 
+func _on_buildings_changed() -> void:
+	if PhaseManager.is_build_phase():
+		# Отложенный rebuild чтобы не ломать UI в процессе размещения
+		call_deferred("_deferred_rebuild_menu")
+
+
+func _deferred_rebuild_menu() -> void:
+	var bm = get_node_or_null("UILayer/BuildMenu")
+	if bm and is_instance_valid(bm):
+		bm.rebuild()
+
+
 func _on_ability_pressed(ability_id: String) -> void:
 	var player = get_node_or_null("YSort/Player") as Player
 	if not player:
@@ -749,8 +764,7 @@ func _draw_flat_labels() -> void:
 
 		var draw_n = label_node
 		var display_text = short
-		if tier > 0:
-			display_text += "%d" % tier
+		var tier_text = str(tier) if tier > 0 else ""
 		draw_n.draw.connect(func():
 			var hw = 32.0
 			var hh = 16.0
@@ -759,8 +773,11 @@ func _draw_flat_labels() -> void:
 				Vector2(0, -hh), Vector2(hw, 0), Vector2(0, hh), Vector2(-hw, 0)
 			])
 			draw_n.draw_colored_polygon(diamond, tile_color)
-			# Текст на тайле (центрирован)
-			draw_n.draw_string(ThemeDB.fallback_font, Vector2(-12, 5), display_text, HORIZONTAL_ALIGNMENT_CENTER, 24, 10, Color.WHITE)
+			# Название постройки
+			draw_n.draw_string(ThemeDB.fallback_font, Vector2(-12, 3), display_text, HORIZONTAL_ALIGNMENT_CENTER, 24, 10, Color.WHITE)
+			# Тир (цифра снизу)
+			if tier_text != "":
+				draw_n.draw_string(ThemeDB.fallback_font, Vector2(-4, 13), tier_text, HORIZONTAL_ALIGNMENT_CENTER, 8, 8, Color(1.0, 0.85, 0.2))
 		)
 		ysort.add_child(label_node)
 		label_node.queue_redraw()

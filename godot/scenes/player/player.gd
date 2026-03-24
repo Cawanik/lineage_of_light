@@ -256,8 +256,14 @@ func _vec_to_direction(v: Vector2) -> String:
 
 
 func _input(event: InputEvent) -> void:
+	if not PhaseManager.is_combat_phase():
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
+		var sm = get_node_or_null("/root/SkillManager")
 		for ability_id in _abilities:
+			# Проверяем что абилка открыта в дереве
+			if sm and not sm.is_ability_unlocked(ability_id):
+				continue
 			var key_str = _abilities[ability_id].get("key", "").to_lower()
 			if key_str in _KEY_MAP and event.keycode == _KEY_MAP[key_str]:
 				_try_cast(ability_id)
@@ -360,9 +366,11 @@ func _cast_magic_missile() -> void:
 	if enemies.is_empty():
 		return
 	for i in range(count):
+		# Фильтруем мёртвых после await
+		enemies = enemies.filter(func(e): return is_instance_valid(e))
+		if enemies.is_empty():
+			break
 		var target = enemies[i % enemies.size()]
-		if not is_instance_valid(target):
-			continue
 		Projectile.spawn(get_tree(), proj_type, global_position, target.global_position, target)
 		if i < count - 1:
 			await get_tree().create_timer(delay).timeout

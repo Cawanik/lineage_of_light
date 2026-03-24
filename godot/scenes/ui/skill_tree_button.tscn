@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://0x13wp6nddum"]
 
 [ext_resource type="Script" path="res://scenes/ui/skill_tree_button.gd" id="0_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/slot_bg.png" id="1_slot"]
 [ext_resource type="Texture2D" path="res://assets/sprites/ui/icon_skill_tree.png" id="2_icon"]
 
 [node name="SkillTreeButton" type="TextureRect"]
@@ -10,9 +9,8 @@ texture_filter = 0
 anchors_preset = 0
 offset_left = 10.0
 offset_top = 10.0
-offset_right = 60.0
-offset_bottom = 60.0
-texture = ExtResource("1_slot")
+offset_right = 160.0
+offset_bottom = 160.0
 expand_mode = 1
 stretch_mode = 5
 mouse_filter = 0
@@ -25,10 +23,6 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 6.0
-offset_top = 6.0
-offset_right = -6.0
-offset_bottom = -6.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_icon")

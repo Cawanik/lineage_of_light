@@ -34,6 +34,10 @@ var path_progress: float = 0.0
 var slow_timer: float = 0.0
 var slow_factor: float = 1.0
 
+# Дебаффы
+var debuffs: Dictionary = {}  # "slow" -> {timer, value}, "curse" -> {timer, value}
+var _debuff_icons: Dictionary = {}  # "slow" -> Sprite2D
+
 # Invincibility (выдаётся brain'ом)
 var invincible_timer: float = 0.0
 var _inv_pulse: float = 0.0
@@ -341,7 +345,9 @@ func _process(delta: float) -> void:
 		modulate = Color(1.0 + pulse * 0.6, 1.0 + pulse * 0.4, 0.2 + pulse * 0.2)
 		if invincible_timer <= 0:
 			modulate = Color.WHITE
-	# Slow effect
+	# Дебаффы
+	_update_debuffs(delta)
+	# Slow effect (визуал)
 	if slow_timer > 0:
 		slow_timer -= delta
 		current_speed = base_speed * slow_factor
@@ -767,11 +773,73 @@ func _show_base_attack_effect() -> void:
 	tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), 0.15)
 
 
+func apply_slow(percent: float, duration: float) -> void:
+	debuffs["slow"] = {"timer": duration, "value": percent}
+	slow_factor = 1.0 - percent
+	slow_timer = duration
+	current_speed = base_speed * slow_factor
+	_ensure_debuff_icon("slow", "res://assets/sprites/ui/debuff_slow.png")
+
+
+func apply_curse(damage_mult: float, duration: float) -> void:
+	debuffs["curse"] = {"timer": duration, "value": damage_mult}
+	_ensure_debuff_icon("curse", "res://assets/sprites/ui/debuff_curse.png")
+
+
+func get_damage_multiplier() -> float:
+	if debuffs.has("curse"):
+		return 1.0 + debuffs["curse"]["value"]
+	return 1.0
+
+
+func _update_debuffs(delta: float) -> void:
+	var to_remove: Array[String] = []
+	for key in debuffs:
+		debuffs[key]["timer"] -= delta
+		if debuffs[key]["timer"] <= 0:
+			to_remove.append(key)
+	for key in to_remove:
+		debuffs.erase(key)
+		_remove_debuff_icon(key)
+		if key == "slow":
+			slow_timer = 0
+			slow_factor = 1.0
+			current_speed = base_speed
+
+
+func _ensure_debuff_icon(key: String, icon_path: String) -> void:
+	if _debuff_icons.has(key):
+		return
+	if not ResourceLoader.exists(icon_path):
+		return
+	var icon = Sprite2D.new()
+	icon.texture = load(icon_path)
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.scale = Vector2(0.5, 0.5)
+	icon.z_index = 10
+	# Позиция над головой, смещаем по кол-ву иконок
+	var idx = _debuff_icons.size()
+	icon.position = Vector2(-10 + idx * 14, -28)
+	add_child(icon)
+	_debuff_icons[key] = icon
+
+
+func _remove_debuff_icon(key: String) -> void:
+	if _debuff_icons.has(key):
+		var icon = _debuff_icons[key]
+		if is_instance_valid(icon):
+			icon.queue_free()
+		_debuff_icons.erase(key)
+
+
 func take_damage(amount: float) -> void:
 	if is_dead:
 		return
 	if invincible_timer > 0:
 		return
+
+	# Применяем множитель от проклятия
+	amount *= get_damage_multiplier()
 
 	var was_full_hp = hp >= max_hp
 	hp -= amount
@@ -792,11 +860,6 @@ func take_damage(amount: float) -> void:
 func activate_invincibility(duration: float) -> void:
 	invincible_timer = duration
 	_inv_pulse = 0.0
-
-
-func apply_slow(factor: float, duration: float) -> void:
-	slow_factor = factor
-	slow_timer = duration
 
 
 func die() -> void:

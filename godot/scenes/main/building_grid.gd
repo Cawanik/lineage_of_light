@@ -23,6 +23,7 @@ extends Node2D
 ## Stores buildings, walls, and provides tile<->world conversion
 
 signal building_moved(building_type: String, from_tile: Vector2i, to_tile: Vector2i)
+signal buildings_changed()
 
 var CELL_SIZE: int = 64
 var ISO_RATIO: float = 0.5
@@ -82,6 +83,7 @@ func place_building(tile: Vector2i, building: Node2D) -> void:
 	var ps = get_node_or_null("/root/PathfindingSystem")
 	if ps:
 		ps.set_tile_solid(tile, true)
+	buildings_changed.emit()
 
 
 func remove_building(tile: Vector2i) -> Node2D:
@@ -92,6 +94,7 @@ func remove_building(tile: Vector2i) -> Node2D:
 	var ps = get_node_or_null("/root/PathfindingSystem")
 	if ps:
 		ps.set_tile_solid(tile, false)
+	buildings_changed.emit()
 	return building
 
 

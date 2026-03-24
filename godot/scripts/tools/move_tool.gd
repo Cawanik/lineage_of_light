@@ -110,6 +110,9 @@ func _finish_building_move() -> void:
 		# Тайл свободный, но блокирует путь — рисуем путь
 		if not can_place_at(target_tile, _moving_building_tile):
 			flash_blocked_path()
+			var as_node = wall_system.get_node_or_null("/root/AlertSystem")
+			if as_node:
+				as_node.alert_error("Нельзя заблокировать путь к трону!")
 			return
 
 	var bg = get_building_grid()

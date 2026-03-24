@@ -139,7 +139,7 @@
 		"short_name": "КУЗ",
 		"type": "production",
 		"cost": 120,
-		"desc": "Проклятая кузня. Открывает улучшения зданий.",
+		"desc": "Проклятая кузня. Чинит постройки после боя.",
 		"hp": 200,
 		"sprite": "res://assets/sprites/buildings/production/shadow_forge.png",
 		"sprite_offset": [0.0, -30.0],
@@ -157,7 +157,7 @@
 		"short_name": "МСТ",
 		"type": "production",
 		"cost": 130,
-		"desc": "Алхимическая лаборатория. Авторемонт зданий между волнами.",
+		"desc": "Тёмная мастерская. Открывает улучшения зданий.",
 		"hp": 150,
 		"sprite": "res://assets/sprites/buildings/production/dark_workshop.png",
 		"sprite_offset": [0.0, -25.0],
@@ -166,9 +166,11 @@
 		"can_demolish": true,
 		"can_move": true,
 		"move_cost": 65,
-		"auto_repair_percent": 0.25,
 		"idle_anim": "res://assets/sprites/buildings/production/dark_workshop",
-		"idle_anim_fps": 4.0
+		"idle_anim_fps": 4.0,
+		"upgrades": [
+			{"name": "Улучшенная Мастерская", "cost": 100, "hp_bonus": 50, "desc": "Открывает апгрейды 2-го уровня"}
+		]
 	},
 	"epoch_gate": {
 		"name": "Врата Эпох",
@@ -187,5 +189,47 @@
 		"unlock_epoch": true,
 		"idle_anim": "res://assets/sprites/buildings/production/epoch_gate",
 		"idle_anim_fps": 4.0
+	},
+	"zombie_tower": {
+		"name": "Башня Зомби",
+		"short_name": "ЗМБ",
+		"type": "tower",
+		"cost": 180,
+		"desc": "Генерирует руки зомби на тайлах врагов. Замедляет и наносит урон.",
+		"hp": 180,
+		"sprite": "res://assets/sprites/buildings/towers/zombie_tower.png",
+		"sprite_offset": [0.0, -30.0],
+		"hotkey": "8",
+		"can_build": true,
+		"can_demolish": true,
+		"can_move": true,
+		"move_cost": 90,
+		"attack_range_cardinal": 4,
+		"attack_speed": 0.3,
+		"attack_projectile": "zombie_hand"
+	},
+	"curse_tower": {
+		"name": "Башня Проклятия",
+		"short_name": "ПРК",
+		"type": "tower",
+		"cost": 200,
+		"desc": "Проклинает самого толстого врага. +100% входящего урона.",
+		"hp": 150,
+		"sprite": "res://assets/sprites/buildings/towers/curse_tower.png",
+		"sprite_offset": [0.0, -27.0],
+		"hotkey": "9",
+		"can_build": true,
+		"can_demolish": true,
+		"can_move": true,
+		"move_cost": 100,
+		"attack_range_cardinal": 6,
+		"attack_speed": 0.2,
+		"attack_projectile": "",
+		"attack_mode": "instant_curse",
+		"curse_value": 1.0,
+		"curse_duration": 5.0,
+		"target_mode": "highest_hp",
+		"attack_anim": "res://assets/sprites/buildings/towers/curse_tower",
+		"attack_anim_fps": 10.0
 	}
 }

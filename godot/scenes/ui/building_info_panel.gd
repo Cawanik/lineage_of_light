@@ -227,6 +227,9 @@ func _apply_upgrade(upgrade: Dictionary, level: int) -> void:
 		return
 	var cost = int(upgrade.get("cost", 0))
 	if not GameManager.spend_gold(cost):
+		var as_node = get_node_or_null("/root/AlertSystem")
+		if as_node:
+			as_node.alert_error("Недостаточно золота! Нужно: %d" % cost)
 		return
 
 	# HP бонус
@@ -256,6 +259,12 @@ func _apply_upgrade(upgrade: Dictionary, level: int) -> void:
 
 	# Пуф
 	DustEffect.spawn(get_tree(), _building.global_position)
+
+	# Переоткрываем панель чтобы обновить кнопки
+	var b = _building
+	var tree = get_tree()
+	hide_panel(tree)
+	show_for(b, b.global_position, tree)
 
 	# Перерисовываем панель
 	BuildingInfoPanel.show_for(_building, _building.global_position + Vector2(0, 30), get_tree())

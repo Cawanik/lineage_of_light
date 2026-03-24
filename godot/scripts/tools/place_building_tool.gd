@@ -99,7 +99,13 @@ func on_release() -> void:
 			valid_tiles.append(t)
 
 	var total_cost = valid_tiles.size() * cost_per
-	if total_cost > GameManager.gold or valid_tiles.is_empty():
+	if valid_tiles.is_empty():
+		_clear_line_previews()
+		return
+	if total_cost > GameManager.gold:
+		var as_node = wall_system.get_node_or_null("/root/AlertSystem")
+		if as_node:
+			as_node.alert_error("Недостаточно золота!")
 		_clear_line_previews()
 		return
 
@@ -114,12 +120,18 @@ func on_release() -> void:
 		if not border_tiles.is_empty():
 			if not PathChecker._bfs(throne_tile, border_tiles, bg, extra_blocked):
 				flash_blocked_path()
+				var as_node = wall_system.get_node_or_null("/root/AlertSystem")
+				if as_node:
+					as_node.alert_error("Нельзя заблокировать путь к трону!")
 				_clear_line_previews()
 				return
 
 	# Строим всё
 	for t in valid_tiles:
 		if not GameManager.spend_gold(cost_per):
+			var as_node = wall_system.get_node_or_null("/root/AlertSystem")
+			if as_node:
+				as_node.alert_error("Недостаточно золота!")
 			break
 		var building = building_scene.instantiate()
 		bg.place_building(t, building)

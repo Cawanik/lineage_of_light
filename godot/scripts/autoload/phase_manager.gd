@@ -95,14 +95,38 @@ func end_combat_phase() -> void:
 
 
 func _heal_all_buildings() -> void:
+	# Авторемонт работает только если Тёмная кузня стоит на карте
+	var sm = get_node_or_null("/root/SkillManager")
+	if sm and not sm.is_repair_active():
+		return
 	var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid") as BuildingGrid
 	if not bg:
 		return
+
+	# Собираем повреждённые постройки
+	var damaged: Array[Dictionary] = []
 	for tile in bg.buildings:
 		var b = bg.get_building(tile)
-		if b and is_instance_valid(b):
-			b.hp = b.max_hp
-			b._update_hp_bar()
+		if b and is_instance_valid(b) and b is Building and b.hp < b.max_hp:
+			damaged.append({"building": b, "damage": b.max_hp - b.hp})
+
+	if damaged.is_empty():
+		return
+
+	# Сортируем по урону — самые повреждённые первые
+	damaged.sort_custom(func(a, d): return a["damage"] > d["damage"])
+
+	# Количество построек зависит от апгрейдов ремонта
+	var repair_count = 3  # Базовое: 3 постройки
+	if sm and sm.is_unlocked("repair_up1"):
+		repair_count = 10
+	if sm and sm.is_unlocked("repair_up2"):
+		repair_count = damaged.size()  # Все
+
+	for i in range(mini(repair_count, damaged.size())):
+		var b = damaged[i]["building"]
+		b.hp = b.max_hp
+		b._update_hp_bar()
 
 
 func skip_build_phase() -> void:

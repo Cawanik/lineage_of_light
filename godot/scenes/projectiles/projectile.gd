@@ -32,10 +32,15 @@ var trail_enabled: bool = false
 var trail_color: Color = Color(0.6, 0.3, 1.0, 0.8)
 var _trail_points: PackedVector2Array = PackedVector2Array()
 var _trail_max: int = 10
-var draw_mode: String = ""  # "" = sprite, "orb" = процедурный шар
+var draw_mode: String = ""  # "" = sprite, "orb" = процедурный шар, "sprite_tex" = текстура из конфига
 var orb_radius: float = 5.0
 var orb_color: Color = Color(0.7, 0.2, 1.0, 1.0)
 var orb_glow_color: Color = Color(1.0, 0.5, 0.0, 0.4)
+var is_static: bool = false  # Статичный на тайле (не летит)
+var static_duration: float = 3.0  # Сколько живёт статичный
+var static_tick: float = 0.5  # Интервал нанесения урона
+var _static_tick_timer: float = 0.0
+var slow_percent: float = 0.0  # Замедление врагов (0.0-1.0)
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -71,19 +76,36 @@ func setup(type: String, from: Vector2, to_pos: Vector2, to_node: Node2D = null)
 	if data.has("orb_glow_color"):
 		orb_glow_color = Color(data["orb_glow_color"])
 
+	is_static = data.get("static", false)
+	static_duration = data.get("static_duration", 3.0)
+	static_tick = data.get("static_tick", 0.5)
+	slow_percent = data.get("slow", 0.0)
+
+	if is_static:
+		lifetime = static_duration
+		position = to_pos
+		# Сбрасываем z_index чтобы YSort сортировал нормально
+		z_index = 0
+
 	if draw_mode == "orb":
-		# Прячем спрайт — рисуем сами через _draw()
 		sprite.visible = false
+	elif draw_mode == "sprite_tex":
+		# Текстура из конфига
+		var tex_path = data.get("texture", "")
+		if tex_path != "" and ResourceLoader.exists(tex_path):
+			sprite.texture = load(tex_path)
+			sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		var sc = data.get("scale", 1.0)
+		sprite.scale = Vector2(sc, sc)
+		sprite.rotation = 0.0
+		var spr_offset = data.get("sprite_offset", [0.0, 0.0])
+		sprite.position = Vector2(spr_offset[0], spr_offset[1])
 	else:
-		# Спрайт
 		var sprite_path = data.get("sprite", "")
 		if sprite_path != "" and ResourceLoader.exists(sprite_path):
 			sprite.texture = load(sprite_path)
-
 		var sc = data.get("scale", 1.0)
 		sprite.scale = Vector2(sc, sc)
-
-		# Поворачиваем в сторону цели
 		var dir = (target_pos - position).normalized()
 		sprite.rotation = dir.angle()
 
@@ -96,6 +118,18 @@ func _process(delta: float) -> void:
 	_age += delta
 	if _age > lifetime:
 		_on_miss()
+		return
+
+	# Статичный проджектайл — наносит урон по тику
+	if is_static:
+		_static_tick_timer -= delta
+		if _static_tick_timer <= 0:
+			_static_tick_timer = static_tick
+			_apply_static_effects()
+		# Fade out в конце жизни
+		var remaining = lifetime - _age
+		if remaining < 0.5:
+			modulate.a = remaining / 0.5
 		return
 
 	# Обновляем цель для самонаводящихся
@@ -139,19 +173,51 @@ func _process(delta: float) -> void:
 		queue_redraw()
 
 
+func _apply_static_effects() -> void:
+	var radius_sq = hit_radius * hit_radius
+	for e in get_tree().get_nodes_in_group("enemies"):
+		if not is_instance_valid(e):
+			continue
+		if position.distance_squared_to(e.global_position) > radius_sq:
+			continue
+		if e.has_method("take_damage"):
+			e.take_damage(damage)
+		if slow_percent > 0 and e.has_method("apply_slow"):
+			e.apply_slow(slow_percent, static_tick * 1.5)
+
+
 func _on_hit() -> void:
 	if hit_type == "aoe":
 		var aoe_sq = aoe_radius * aoe_radius
-		var hit_pos = target_pos  # точка назначения, не текущая позиция снаряда
+		var hit_pos = target_pos
 		for e in get_tree().get_nodes_in_group("enemies"):
 			if is_instance_valid(e) and e.has_method("take_damage"):
 				if hit_pos.distance_squared_to(e.global_position) <= aoe_sq:
 					e.take_damage(damage)
+					_apply_hit_debuff(e)
 	else:
-		if is_instance_valid(target_node) and target_node.has_method("take_damage"):
-			target_node.take_damage(damage)
+		if is_instance_valid(target_node):
+			if damage > 0 and target_node.has_method("take_damage"):
+				target_node.take_damage(damage)
+			_apply_hit_debuff(target_node)
 	_spawn_hit_effect()
 	queue_free()
+
+
+func _apply_hit_debuff(enemy: Node2D) -> void:
+	var data = _get_config()
+	var debuff_type = data.get("on_hit_debuff", "")
+	if debuff_type == "":
+		return
+	var value = data.get("debuff_value", 1.0)
+	var duration = data.get("debuff_duration", 3.0)
+	match debuff_type:
+		"slow":
+			if enemy.has_method("apply_slow"):
+				enemy.apply_slow(value, duration)
+		"curse":
+			if enemy.has_method("apply_curse"):
+				enemy.apply_curse(value, duration)
 
 
 func _on_miss() -> void:
