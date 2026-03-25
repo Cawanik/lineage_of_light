@@ -686,6 +686,9 @@ func _deferred_rebuild_menu() -> void:
 
 
 func _on_ability_pressed(ability_id: String) -> void:
+	var sm = get_node_or_null("/root/SkillManager")
+	if sm and not sm.is_ability_unlocked(ability_id):
+		return
 	var player = get_node_or_null("YSort/Player") as Player
 	if not player:
 		return

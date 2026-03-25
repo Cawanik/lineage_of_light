@@ -39,6 +39,17 @@ var current_marker: Node2D = null
 
 var _abilities: Dictionary = {}
 var _cooldowns: Dictionary = {}
+var _is_casting: bool = false
+var _cast_direction: String = ""
+var _gcd: float = 0.0
+
+const _DIR_VECTORS: Dictionary = {
+	"south": Vector2(0, 1), "south-east": Vector2(1, 1),
+	"east": Vector2(1, 0), "north-east": Vector2(1, -1),
+	"north": Vector2(0, -1), "north-west": Vector2(-1, -1),
+	"west": Vector2(-1, 0), "south-west": Vector2(-1, 1),
+}
+const GCD_TIME: float = 0.8
 var _storm_placing: bool = false
 var _storm_ghost: Node2D = null
 var _fireball_placing: bool = false
@@ -56,6 +67,8 @@ const _KEY_MAP: Dictionary = {
 const WALK_PATH = "res://assets/sprites/player/wizard/animations/walking-8-frames/"
 const IDLE_PATH = "res://assets/sprites/player/wizard/animations/breathing-idle/"
 const SMOKE_PATH = "res://assets/sprites/player/wizard/animations/smoke/"
+const CAST_IDLE_PATH = "res://assets/sprites/player/wizard/animations/cast-idle/"
+const CAST_WALK_PATH = "res://assets/sprites/player/wizard/animations/cast-walk/"
 
 const DIRECTIONS = ["south", "south-west", "west", "north-west", "north", "north-east", "east", "south-east"]
 
@@ -140,6 +153,24 @@ func _setup_animations() -> void:
 		else:
 			break
 
+	# Cast стоя + в движении (9 кадров, 11.25fps = 0.8 сек, однократно, все 8 направлений)
+	for dir in DIRECTIONS:
+		var dir_key = dir.replace("-", "_")
+		var is_se = (dir == "south-east")
+		var fallback_dir = "south-west" if is_se else dir
+		for anim_data in [
+			{"name": "cast_idle_", "path": CAST_IDLE_PATH},
+			{"name": "cast_walk_", "path": CAST_WALK_PATH},
+		]:
+			var anim_name = anim_data["name"] + dir_key
+			frames.add_animation(anim_name)
+			frames.set_animation_speed(anim_name, 11.25)
+			frames.set_animation_loop(anim_name, false)
+			for i in range(9):
+				var path = anim_data["path"] + fallback_dir + "/frame_%03d.png" % i
+				if ResourceLoader.exists(path):
+					frames.add_frame(anim_name, load(path))
+
 	if frames.has_animation("default"):
 		frames.remove_animation("default")
 
@@ -147,6 +178,8 @@ func _setup_animations() -> void:
 
 
 func _process(delta: float) -> void:
+	if _gcd > 0.0:
+		_gcd -= delta
 	for id in _cooldowns:
 		if _cooldowns[id] > 0.0:
 			_cooldowns[id] -= delta
@@ -154,20 +187,28 @@ func _process(delta: float) -> void:
 	if _storm_placing and is_instance_valid(_storm_ghost):
 		var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid")
 		if bg:
-			var tile = bg.world_to_tile(get_global_mouse_position())
-			_storm_ghost.global_position = bg.tile_to_world(tile)
-			_storm_ghost.set_meta("hovered_tile", tile)
-			var is_free = bg.get_building(tile) == null
+			var mouse_tile = bg.world_to_tile(get_global_mouse_position())
+			var gs = _storm_ghost.grid_size
+			var half = gs / 2
+			var base = mouse_tile - Vector2i(half, half)
+			var corner = base + Vector2i(gs - 1, gs - 1)
+			var center = (bg.tile_to_world(base) + bg.tile_to_world(corner)) * 0.5
+			_storm_ghost.global_position = center
+			_storm_ghost.set_meta("base_tile", base)
+			var is_free = bg.get_building(mouse_tile) == null
 			_storm_ghost.modulate = Color(1, 1, 1, 1) if is_free else Color(1, 0.3, 0.3, 1)
 
 	if _fireball_placing and is_instance_valid(_fireball_ghost):
 		var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid")
 		if bg:
 			var mouse_tile = bg.world_to_tile(get_global_mouse_position())
-			# Центр 2x2 блока: верхний-левый тайл = mouse_tile
-			var center = (bg.tile_to_world(mouse_tile) + bg.tile_to_world(mouse_tile + Vector2i(1, 1))) * 0.5
+			var gs = _fireball_ghost.grid_size
+			var half = gs / 2
+			var base = mouse_tile - Vector2i(half, half)
+			var corner = base + Vector2i(gs - 1, gs - 1)
+			var center = (bg.tile_to_world(base) + bg.tile_to_world(corner)) * 0.5
 			_fireball_ghost.global_position = center
-			_fireball_ghost.base_tile = mouse_tile
+			_fireball_ghost.base_tile = base
 			_fireball_ghost.is_valid_placement = true
 
 
@@ -231,19 +272,39 @@ func _update_animation(input: Vector2) -> void:
 	var dir_key = last_direction.replace("-", "_")
 
 	if velocity.length() > 1.0:
-		var anim = "walk_" + dir_key
-		if sprite.sprite_frames.has_animation(anim) and sprite.animation != anim:
-			sprite.play(anim)
+		if _is_casting and _cast_direction != "":
+			var cast_vec = _DIR_VECTORS.get(_cast_direction, Vector2.ZERO).normalized()
+			if cast_vec.dot(input.normalized()) < 0.0:
+				_is_casting = false
+		if not _is_casting:
+			var anim = "walk_" + dir_key
+			if sprite.sprite_frames.has_animation(anim) and sprite.animation != anim:
+				sprite.play(anim)
 	elif is_afk:
+		_is_casting = false
 		if sprite.animation != "smoke_sit" and sprite.animation != "smoke_loop":
 			last_direction = "south"
 			sprite.flip_h = false
 			sprite.play("smoke_sit")
 			sprite.animation_finished.connect(_on_sit_finished, CONNECT_ONE_SHOT)
-	else:
+	elif not _is_casting:
 		var anim = "idle_" + dir_key
 		if sprite.sprite_frames.has_animation(anim) and sprite.animation != anim:
 			sprite.play(anim)
+
+
+func _play_cast_animation() -> void:
+	_gcd = GCD_TIME
+	_cast_direction = last_direction
+	var is_se = (last_direction == "south-east")
+	var cast_dir = "south-west" if is_se else last_direction
+	var dir_key = cast_dir.replace("-", "_")
+	var anim = ("cast_walk_" if velocity.length() > 1.0 else "cast_idle_") + dir_key
+	if sprite.sprite_frames.has_animation(anim):
+		_is_casting = true
+		sprite.flip_h = is_se
+		sprite.play(anim)
+		sprite.animation_finished.connect(func(): _is_casting = false, CONNECT_ONE_SHOT)
 
 
 func _vec_to_direction(v: Vector2) -> String:
@@ -305,6 +366,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _try_cast(ability_id: String) -> void:
+	if _gcd > 0.0:
+		return
 	if _cooldowns.get(ability_id, 0.0) > 0.0:
 		return
 	match ability_id:
@@ -349,12 +412,23 @@ func _get_nearest_enemy(max_range: float) -> Node2D:
 
 
 func _cast_magic_bolt() -> void:
+	var sm = get_node_or_null("/root/SkillManager")
+	if sm:
+		var replacement = sm.get_ability_replacement("magic_bolt")
+		if replacement != "":
+			_cast_magic_missile()
+			return
 	var ability = _abilities.get("magic_bolt", {})
 	var enemy = _get_nearest_enemy(ability.get("range", 400.0))
 	if enemy == null:
 		return
+	_play_cast_animation()
+	var base_damage = ability.get("damage", 15.0)
+	var bonus = sm.get_ability_bonus("magic_bolt", "damage") if sm else 0.0
 	var proj_type = ability.get("projectile", "magic_bolt")
-	Projectile.spawn(get_tree(), proj_type, global_position, enemy.global_position, enemy)
+	var proj = Projectile.spawn(get_tree(), proj_type, global_position, enemy.global_position, enemy)
+	if proj and bonus > 0.0:
+		proj.damage = base_damage + bonus
 
 
 func _cast_magic_missile() -> void:
@@ -365,6 +439,7 @@ func _cast_magic_missile() -> void:
 	var enemies = _get_nearest_enemies(ability.get("range", 400.0), count)
 	if enemies.is_empty():
 		return
+	_play_cast_animation()
 	for i in range(count):
 		# Фильтруем мёртвых после await
 		enemies = enemies.filter(func(e): return is_instance_valid(e))
@@ -384,8 +459,10 @@ func _cast_fireball() -> void:
 	_fireball_placing = true
 
 	var ability = _abilities.get("fireball", {})
+	var sm = get_node_or_null("/root/SkillManager")
 	var ghost = _FireballZone.new()
-	ghost.damage = ability.get("damage", 30.0)
+	ghost.damage = ability.get("damage", 30.0) + (sm.get_ability_bonus("fireball", "damage") if sm else 0.0)
+	ghost.grid_size = 2 + int(sm.get_ability_bonus("fireball", "grid_size")) if sm else 2
 	ghost.fall_duration = ability.get("fall_duration", 0.5)
 	ghost.is_preview = true
 	get_tree().current_scene.get_node("YSort").add_child(ghost)
@@ -397,6 +474,7 @@ func _place_fireball() -> void:
 	if not is_instance_valid(_fireball_ghost):
 		_fireball_placing = false
 		return
+	_play_cast_animation()
 	_fireball_ghost.activate()
 	_fireball_ghost = null
 	_fireball_placing = false
@@ -418,10 +496,12 @@ func _cast_storm() -> void:
 	_storm_placing = true
 
 	var ability = _abilities.get("storm", {})
+	var sm_s = get_node_or_null("/root/SkillManager")
 	var ghost = StormZone.new()
 	ghost.damage = ability.get("damage", 10.0)
 	ghost.duration = ability.get("duration", 5.0)
 	ghost.tick_interval = ability.get("tick_interval", 0.5)
+	ghost.grid_size = 1 + int(sm_s.get_ability_bonus("storm", "grid_size")) if sm_s else 1
 	ghost.is_preview = true
 	get_tree().current_scene.get_node("YSort").add_child(ghost)
 	ghost.global_position = get_global_mouse_position()
@@ -434,15 +514,16 @@ func _place_storm() -> void:
 		return
 	var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid")
 	if bg:
-		var tile = _storm_ghost.get_meta("hovered_tile", Vector2i(-1, -1))
-		if bg.get_building(tile) != null:
-			return  # занято — не ставим
-		_storm_ghost.storm_tile = tile
+		var base = _storm_ghost.get_meta("base_tile", Vector2i(-1, -1))
+		_storm_ghost.storm_tile = base
+	_play_cast_animation()
 	_storm_ghost.modulate = Color(1, 1, 1, 1)
 	_storm_ghost.activate()
 	_storm_ghost = null
 	_storm_placing = false
-	_cooldowns["storm"] = _abilities["storm"].get("cooldown", 8.0)
+	var sm_storm = get_node_or_null("/root/SkillManager")
+	var cd_reduction = sm_storm.get_ability_bonus("storm", "cooldown_reduction") if sm_storm else 0.0
+	_cooldowns["storm"] = maxf(_abilities["storm"].get("cooldown", 8.0) - cd_reduction, 0.5)
 
 
 func _cancel_storm() -> void:

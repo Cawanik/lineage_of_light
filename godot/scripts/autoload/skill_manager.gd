@@ -95,6 +95,29 @@ func is_ability_unlocked(ability_id: String) -> bool:
 	return _has_unlock("ability:" + ability_id)
 
 
+## Суммирует бонусы к стату абилки из всех открытых талантов
+## Формат unlock: "bonus:ability_id:stat:value"
+func get_ability_bonus(ability_id: String, stat: String) -> float:
+	var total := 0.0
+	var prefix = "bonus:" + ability_id + ":" + stat + ":"
+	for skill_id in unlocked:
+		for entry in _get_unlocks(skill_id):
+			if entry.begins_with(prefix):
+				total += float(entry.substr(prefix.length()))
+	return total
+
+
+## Возвращает id абилки-замены или "" если замены нет
+## Формат unlock: "replace:ability_id:replacement_id"
+func get_ability_replacement(ability_id: String) -> String:
+	var prefix = "replace:" + ability_id + ":"
+	for skill_id in unlocked:
+		for entry in _get_unlocks(skill_id):
+			if entry.begins_with(prefix):
+				return entry.substr(prefix.length())
+	return ""
+
+
 func get_max_upgrade_level(building_type: String) -> int:
 	# Апгрейды работают только если Тёмная мастерская стоит на карте
 	if not _building_exists_on_map("dark_workshop"):

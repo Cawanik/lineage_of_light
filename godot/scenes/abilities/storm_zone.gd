@@ -1,27 +1,33 @@
 class_name StormZone
 extends Node2D
 
-# Полуразмеры изо-тайла (CELL_SIZE=64, ISO_RATIO=0.5)
-const TILE_HW = 32.0  # half-width
-const TILE_HH = 16.0  # half-height
+const TILE_HW = 32.0
+const TILE_HH = 16.0
 
 var storm_tile: Vector2i = Vector2i(-1, -1)
 var damage: float = 10.0
 var duration: float = 5.0
 var tick_interval: float = 0.5
 var is_preview: bool = true
+var grid_size: int = 1  # 1 = 1x1, 4 = 4x4
 
 var _age: float = 0.0
 var _tick_timer: float = 0.0
 var _pulse: float = 0.0
+var _tile_local_offsets: Array = []
 
-# Угла изо-ромба (локальные координаты относительно центра тайла)
-var _diamond: PackedVector2Array = PackedVector2Array([
-	Vector2(0, -TILE_HH),       # верх
-	Vector2(TILE_HW, 0),        # право
-	Vector2(0, TILE_HH),        # низ
-	Vector2(-TILE_HW, 0),       # лево
-])
+
+func _ready() -> void:
+	_rebuild_tile_data()
+
+
+func _rebuild_tile_data() -> void:
+	_tile_local_offsets.clear()
+	var center_y = (grid_size - 1) * TILE_HH
+	for y in range(grid_size):
+		for x in range(grid_size):
+			var world = Vector2((x - y) * TILE_HW, (x + y) * TILE_HH)
+			_tile_local_offsets.append(world - Vector2(0.0, center_y))
 
 
 func activate() -> void:
@@ -51,41 +57,82 @@ func _process(delta: float) -> void:
 func _do_damage() -> void:
 	for e in get_tree().get_nodes_in_group("enemies"):
 		if is_instance_valid(e) and e.has_method("take_damage"):
-			if e.get("current_tile") == storm_tile:
+			var diff = e.get("current_tile") - storm_tile
+			if diff.x >= 0 and diff.x < grid_size and diff.y >= 0 and diff.y < grid_size:
 				e.take_damage(damage)
 
 
 func _draw() -> void:
 	var fade = 1.0 if is_preview else 1.0 - (_age / duration) * 0.4
 	var base_a = 0.45 if is_preview else fade
-	var pulse = sin(_pulse * 5.0) * 0.15 + 0.85
+	var pulse  = sin(_pulse * 5.0) * 0.15 + 0.85
+	var pulse2 = sin(_pulse * 7.3 + 1.1) * 0.12 + 0.88
 
-	# Ромб — граница тайла
-	var border_col = Color(0.4, 0.65, 1.0, 0.55 * base_a)
-	draw_colored_polygon(_diamond, Color(0.25, 0.5, 1.0, 0.1 * base_a))
-	draw_polyline(_diamond + PackedVector2Array([_diamond[0]]), border_col, 1.5)
+	# Размер зоны в экранных координатах
+	var zone_rx = grid_size * TILE_HW
+	var zone_ry = grid_size * TILE_HH
 
-	# Облако в центре (пульсирует)
-	var cloud_r = 10.0 * pulse
-	draw_circle(Vector2.ZERO, cloud_r + 4.0, Color(0.4, 0.6, 1.0, 0.3 * base_a))
-	draw_circle(Vector2.ZERO, cloud_r, Color(0.7, 0.85, 1.0, 0.7 * base_a))
-	draw_circle(Vector2.ZERO, cloud_r * 0.4, Color(0.95, 0.98, 1.0, 0.9 * base_a))
+	# Свечение под всей зоной
+	draw_circle(Vector2.ZERO, zone_rx * 1.05 * pulse,  Color(0.1,  0.25, 0.9,  0.10 * base_a))
+	draw_circle(Vector2.ZERO, zone_rx * 0.7  * pulse2, Color(0.25, 0.5,  1.0,  0.15 * base_a))
+
+	# Ромбы тайлов (яркость пульсирует)
+	var border_col = Color(0.45, 0.7, 1.0, 0.6 * base_a)
+	var fill_a = 0.13 * base_a * pulse
+	for offset in _tile_local_offsets:
+		var pts = PackedVector2Array([
+			offset + Vector2(0, -TILE_HH),
+			offset + Vector2(TILE_HW, 0),
+			offset + Vector2(0,  TILE_HH),
+			offset + Vector2(-TILE_HW, 0),
+		])
+		draw_colored_polygon(pts, Color(0.2, 0.45, 1.0, fill_a))
+		draw_polyline(PackedVector2Array([pts[0], pts[1], pts[2], pts[3], pts[0]]), border_col, 1.5)
+
+	# Облако в центре — масштабируется с зоной
+	var cloud_r = (7.0 + grid_size * 5.0) * pulse
+	draw_circle(Vector2.ZERO, cloud_r + 6.0, Color(0.3, 0.55, 1.0, 0.22 * base_a))
+	draw_circle(Vector2.ZERO, cloud_r,        Color(0.65, 0.83, 1.0, 0.7  * base_a))
+	draw_circle(Vector2.ZERO, cloud_r * 0.38, Color(0.93, 0.97, 1.0, 0.9  * base_a))
 
 	if is_preview:
 		return
 
-	# Молнии — меняются каждые несколько кадров
 	var rng = RandomNumberGenerator.new()
-	rng.seed = int(_pulse * 12.0)
-	for i in range(4):
-		var angle = rng.randf() * TAU
-		# Ограничиваем длину молний размером тайла
-		var max_len = rng.randf_range(8.0, TILE_HW * 0.8)
-		var tip = Vector2(cos(angle) * max_len, sin(angle) * max_len * (TILE_HH / TILE_HW))
-		var mid = tip * 0.5 + Vector2(
-			rng.randf_range(-6.0, 6.0),
-			rng.randf_range(-4.0, 4.0)
+	rng.seed = int(_pulse * 15.0)
+
+	# Молнии из каждого тайла — количество растёт с зоной
+	var bolt_count = 2 + grid_size * 2
+	for i in range(bolt_count):
+		var origin = _tile_local_offsets[rng.randi() % _tile_local_offsets.size()]
+		var angle  = rng.randf() * TAU
+		var blen   = rng.randf_range(10.0, zone_rx * 0.75)
+		var tip    = origin + Vector2(cos(angle) * blen, sin(angle) * blen * (TILE_HH / TILE_HW))
+		var mid    = (origin + tip) * 0.5 + Vector2(
+			rng.randf_range(-9.0, 9.0),
+			rng.randf_range(-6.0, 6.0)
 		)
-		var lc = Color(0.85, 0.93, 1.0, 0.85 * fade)
-		draw_line(Vector2.ZERO, mid, lc, 1.5)
-		draw_line(mid, tip, lc, 1.5)
+		# Свечение (толстая полупрозрачная линия)
+		draw_line(origin, mid, Color(0.35, 0.65, 1.0, 0.3 * fade), 5.0)
+		draw_line(mid,   tip,  Color(0.35, 0.65, 1.0, 0.3 * fade), 5.0)
+		# Сама молния
+		draw_line(origin, mid, Color(0.82, 0.93, 1.0, 0.92 * fade), 1.8)
+		draw_line(mid,   tip,  Color(0.82, 0.93, 1.0, 0.92 * fade), 1.8)
+
+	# Молнии между тайлами (только если зона больше 1x1)
+	if _tile_local_offsets.size() > 1:
+		for i in range(grid_size):
+			var ia = rng.randi() % _tile_local_offsets.size()
+			var ib = rng.randi() % _tile_local_offsets.size()
+			if ia == ib:
+				continue
+			var pa  = _tile_local_offsets[ia]
+			var pb  = _tile_local_offsets[ib]
+			var mid2 = (pa + pb) * 0.5 + Vector2(
+				rng.randf_range(-14.0, 14.0),
+				rng.randf_range(-8.0,  8.0)
+			)
+			draw_line(pa, mid2, Color(0.6, 0.82, 1.0, 0.55 * fade), 4.0)
+			draw_line(mid2, pb, Color(0.6, 0.82, 1.0, 0.55 * fade), 4.0)
+			draw_line(pa, mid2, Color(0.9, 0.97, 1.0, 0.85 * fade), 1.5)
+			draw_line(mid2, pb, Color(0.9, 0.97, 1.0, 0.85 * fade), 1.5)

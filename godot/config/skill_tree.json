@@ -91,23 +91,23 @@
 	},
 	"magic_shot_up1": {
 		"name": "Улучшение магического выстрела",
-		"desc": "Усиливает магический выстрел.",
+		"desc": "Усиливает магический выстрел (+15 урона).",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_magic_shot.png",
 		"cost": 1,
 		"requires": ["magic_shot"],
 		"position": [-400, 170],
-		"unlocks": []
+		"unlocks": ["bonus:magic_bolt:damage:15"]
 	},
 	"magic_shot_up2": {
 		"name": "Улучшение магического выстрела",
-		"desc": "Ещё сильнее магический выстрел.",
+		"desc": "Заменяет выстрел на Магические Ракеты (3 снаряда).",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_magic_shot.png",
 		"cost": 1,
 		"requires": ["magic_shot_up1"],
 		"position": [-570, 170],
-		"unlocks": []
+		"unlocks": ["replace:magic_bolt:magic_missile"]
 	},
 	"fireball": {
 		"name": "Огненный шар",
@@ -121,23 +121,23 @@
 	},
 	"fireball_up1": {
 		"name": "Улучшение огненного шара",
-		"desc": "Усиливает огненный шар.",
+		"desc": "Усиливает огненный шар (+30 урона).",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_fireball.png",
 		"cost": 1,
 		"requires": ["fireball"],
 		"position": [-400, 280],
-		"unlocks": []
+		"unlocks": ["bonus:fireball:damage:30"]
 	},
 	"fireball_up2": {
 		"name": "Улучшение огненного шара",
-		"desc": "Ещё сильнее огненный шар.",
+		"desc": "Увеличивает область огненного шара до 9 клеток (3x3).",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_fireball.png",
 		"cost": 1,
 		"requires": ["fireball_up1"],
 		"position": [-570, 280],
-		"unlocks": []
+		"unlocks": ["bonus:fireball:grid_size:1"]
 	},
 	"ball_lightning": {
 		"name": "Шаровая молния",
@@ -151,23 +151,23 @@
 	},
 	"ball_lightning_up1": {
 		"name": "Улучшение шаровой молнии",
-		"desc": "Усиливает шаровую молнию.",
+		"desc": "Уменьшает кулдаун шторма на 2 секунды.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_ball_lightning.png",
 		"cost": 1,
 		"requires": ["ball_lightning"],
 		"position": [-400, 390],
-		"unlocks": []
+		"unlocks": ["bonus:storm:cooldown_reduction:2"]
 	},
 	"ball_lightning_up2": {
 		"name": "Улучшение шаровой молнии",
-		"desc": "Ещё сильнее шаровая молния.",
+		"desc": "Увеличивает область шторма до 2x2 клетки.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_ball_lightning.png",
 		"cost": 1,
 		"requires": ["ball_lightning_up1"],
 		"position": [-570, 390],
-		"unlocks": []
+		"unlocks": ["bonus:storm:grid_size:1"]
 	},
 	"workshop_t1": {
 		"name": "Улучшение зданий 1-го уровня",

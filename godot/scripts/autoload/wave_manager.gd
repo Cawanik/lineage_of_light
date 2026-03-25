@@ -203,12 +203,12 @@ func spawn_test_enemy(enemy_type: String) -> void:
 
 
 func on_enemy_died() -> void:
-	enemies_alive -= 1
+	enemies_alive = maxi(0, enemies_alive - 1)
 	_check_wave_complete()
 
 
 func on_enemy_reached_end() -> void:
-	enemies_alive -= 1
+	enemies_alive = maxi(0, enemies_alive - 1)
 	_check_wave_complete()
 
 
