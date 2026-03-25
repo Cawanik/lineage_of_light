@@ -273,14 +273,25 @@ func open() -> void:
 	_update_souls_label()
 	_canvas.queue_redraw()
 	GameManager.pause_game()
+	# Приглушаем музыку (tween через AudioManager — он не паузится)
+	var am = get_node_or_null("/root/AudioManager")
+	if am and am._music_player.playing:
+		var tween = am.create_tween()
+		tween.tween_property(am._music_player, "volume_db", am._music_player.volume_db - 3.0, 0.5)
 
 
 func close() -> void:
 	visible = false
+	# Возвращаем громкость музыки (через AudioManager, он PROCESS_MODE_ALWAYS)
+	var am = get_node_or_null("/root/AudioManager")
+	if am and am._music_player.playing:
+		var target_db = linear_to_db(am.music_volume * am.master_volume)
+		var tween = am.create_tween()
+		tween.tween_property(am._music_player, "volume_db", target_db, 0.5)
 	GameManager.resume_game()
-	# Обновляем тулбар и меню строительства после возможных изменений
+	# Обновляем тулбар и меню строительства (только в игровой сцене)
 	var main = get_tree().current_scene
-	if main:
+	if main and main.has_method("_set_toolbar_mode"):
 		main.call("_set_toolbar_mode", "build")
 		var bm = main.get_node_or_null("UILayer/BuildMenu")
 		if bm:

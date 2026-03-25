@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cplayer001" path="res://scenes/player/player.tscn" id="2_player"]
 [ext_resource type="Script" uid="uid://bt3wkenme1gmn" path="res://scenes/main/iso_ground.gd" id="3_isoground"]
 [ext_resource type="Texture2D" uid="uid://dyao3stoytnp8" path="res://assets/sprites/tiles/iso_grass_0.png" id="3_pg34l"]
-[ext_resource type="PackedScene" path="res://scenes/ui/placement_grid.tscn" id="4_grid"]
+[ext_resource type="PackedScene" uid="uid://cplacegrid01" path="res://scenes/ui/placement_grid.tscn" id="4_grid"]
 [ext_resource type="Texture2D" uid="uid://xwq3irmhlhmw" path="res://assets/sprites/tiles/iso_grass_2.png" id="4_m4h2d"]
 [ext_resource type="PackedScene" uid="uid://cbuildmenu01" path="res://scenes/ui/build_menu.tscn" id="5_buildmenu"]
 [ext_resource type="Texture2D" uid="uid://d387jwdoqjxqv" path="res://assets/sprites/tiles/iso_grass_1.png" id="5_p8abn"]
@@ -380,5 +380,10 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="DevPanel" parent="UILayer" unique_id=2068489733 instance=ExtResource("14_devpanel")]
+offset_left = 2.0
+offset_top = -543.0
+offset_right = 150.0
+offset_bottom = -99.0
+grow_horizontal = 1
 
 [node name="SkillTree" parent="." unique_id=1552904102 instance=ExtResource("22_skill_tree")]

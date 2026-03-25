@@ -542,6 +542,9 @@ func _process_wall_attack(delta: float) -> void:
 	if attack_timer >= ATTACK_INTERVAL:
 		attack_timer -= ATTACK_INTERVAL
 		var destroyed = wall_system.damage_wall_edge(attacking_edge_key, wall_dps * ATTACK_INTERVAL)
+		var am = get_node_or_null("/root/AudioManager")
+		if am:
+			am.play("enemy_hit")
 		var remaining_hp = wall_system.edge_hp.get(attacking_edge_key, 0)
 		
 		if destroyed:
@@ -728,6 +731,9 @@ func _process_building_attack(delta: float) -> void:
 			Projectile.spawn(get_tree(), proj_type, global_position, attacking_building.global_position, attacking_building).damage = damage
 		else:
 			attacking_building.take_damage(damage)
+			var am = get_node_or_null("/root/AudioManager")
+			if am:
+				am.play("enemy_hit")
 			# Клив: дополнительный урон соседним зданиям вдоль линии
 			var cleave_targets = brain.get_cleave_targets(attacking_building, current_tile, building_grid)
 			for cleave_target in cleave_targets:

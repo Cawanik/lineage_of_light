@@ -97,7 +97,25 @@
       "Bash(find /c/Users/user/WebstormProjects/lineage_of_light/godot/scripts -type f -name *.gd)",
       "Bash(grep -r \"magic_shot\\\\|fireball\\\\|ball_lightning\\\\|cast\\\\|ability\\\\|spell\" /c/Users/user/WebstormProjects/lineage_of_light/godot --include=*.gd)",
       "Bash(grep -r \"get_projectile_type\\\\|projectile\\\\|attack\" /c/Users/user/WebstormProjects/lineage_of_light/godot/scripts/ai --include=*.gd)",
-      "Bash(identify /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/ui/skill_info_panel_bg.png)"
+      "Bash(identify /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sprites/ui/skill_info_panel_bg.png)",
+      "Bash(md5sum:*)",
+      "Bash(ffprobe -show_entries format=duration /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/sfx/enemies/enemies_hit.wav)",
+      "Bash(where ffmpeg.exe)",
+      "Read(//c/ProgramData/chocolatey/bin/**)",
+      "Read(//c/Program Files/ffmpeg/bin/**)",
+      "Read(//c/ffmpeg/bin/**)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"$PATH:/c/Users/user/AppData/Local/Microsoft/WinGet/Links\")",
+      "Bash(ffmpeg -i /c/Users/user/WebstormProjects/lineage_of_light/Hide.wav.bak -c:a libvorbis -q:a 5 /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/music/build_theme.ogg -y)",
+      "Read(//c/Users/user/AppData/Local/Microsoft/WinGet/Links/**)",
+      "Bash(find /c/ffmpeg* -name ffmpeg.exe)",
+      "Read(//c/Users/user/AppData/Local/**)",
+      "Bash(\"/c/Users/user/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1-full_build/bin/ffmpeg.exe\" -i /c/Users/user/WebstormProjects/lineage_of_light/Hide.wav.bak -c:a libvorbis -q:a 5 /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/music/build_theme.ogg -y)",
+      "Bash(FFMPEG=\"/c/Users/user/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1-full_build/bin/ffmpeg.exe\")",
+      "Bash(\"$FFMPEG\" -i /c/Users/user/WebstormProjects/lineage_of_light/main_menu.wav -af \"afade=t=out:st=0:d=0\" -c:a libvorbis -q:a 5 /tmp/main_menu_full.ogg -y)",
+      "Bash(\"$FFMPEG\" -i /tmp/main_menu_full.ogg)",
+      "Bash(\"$FFMPEG\" -i /c/Users/user/WebstormProjects/lineage_of_light/main_menu.wav -t 166.81 -c:a libvorbis -q:a 5 /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/music/main_menu.ogg -y)",
+      "Bash(\"$FFMPEG\" -i /c/Users/user/WebstormProjects/lineage_of_light/main_menu.wav -c:a libvorbis -q:a 5 /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/music/main_menu.ogg -y)"
     ]
   }
 }

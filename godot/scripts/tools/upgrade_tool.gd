@@ -70,6 +70,11 @@ func on_release() -> void:
 			upgraded_count += 1
 			DustEffect.spawn(wall_system.get_tree(), bg.tile_to_world(t))
 
+	if upgraded_count > 0:
+		var am = wall_system.get_node_or_null("/root/AudioManager")
+		if am:
+			am.play("upgrade")
+
 	_clear_line_highlights()
 	_hovered_building_tile = Vector2i(-9999, -9999)
 

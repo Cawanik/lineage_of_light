@@ -1,0 +1,42 @@
+[
+	{
+		"id": "island",
+		"name": "Остров",
+		"desc": "Небольшой остров посреди океана. Враги наступают со всех берегов.",
+		"icon": "res://assets/sprites/ui/maps/map_island.png",
+		"scene": "res://scenes/main/main.tscn",
+		"unlock_after": ""
+	},
+	{
+		"id": "mountain",
+		"name": "Горный Хребет",
+		"desc": "Узкие горные перевалы. Враги атакуют через ущелья.",
+		"icon": "res://assets/sprites/ui/maps/map_mountain.png",
+		"scene": "",
+		"unlock_after": "island"
+	},
+	{
+		"id": "map_3",
+		"name": "???",
+		"desc": "Скоро...",
+		"icon": "",
+		"scene": "",
+		"unlock_after": "mountain"
+	},
+	{
+		"id": "map_4",
+		"name": "???",
+		"desc": "Скоро...",
+		"icon": "",
+		"scene": "",
+		"unlock_after": "map_3"
+	},
+	{
+		"id": "map_5",
+		"name": "???",
+		"desc": "Скоро...",
+		"icon": "",
+		"scene": "",
+		"unlock_after": "map_4"
+	}
+]

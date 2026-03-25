@@ -83,12 +83,47 @@ func setup(type: String, from: Vector2, to_pos: Vector2, to_node: Node2D = null)
 
 	if is_static:
 		lifetime = static_duration
-		position = to_pos
-		# Сбрасываем z_index чтобы YSort сортировал нормально
+		# Jitter для статичных проджектайлов
+		var jitter_r = data.get("jitter", 0.0)
+		var jitter_offset = Vector2.ZERO
+		if jitter_r > 0:
+			jitter_offset = Vector2(randf_range(-jitter_r, jitter_r), randf_range(-jitter_r, jitter_r))
+		position = to_pos + jitter_offset
 		z_index = 0
 
 	if draw_mode == "orb":
 		sprite.visible = false
+	elif draw_mode == "animated":
+		# Анимированный проджектайл — рандомный вариант
+		sprite.visible = false
+		var variants = data.get("anim_variants", [])
+		if not variants.is_empty():
+			var variant_path = variants[randi() % variants.size()]
+			var anim_spr = AnimatedSprite2D.new()
+			anim_spr.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			var sf = SpriteFrames.new()
+			sf.add_animation("play")
+			sf.set_animation_speed("play", data.get("anim_fps", 4.0))
+			sf.set_animation_loop("play", true)
+			# Загружаем фреймы: prefix_0001.png ...
+			var prefix = variant_path.get_file()
+			for i in range(1, 100):
+				var path = variant_path + "_%04d.png" % i if not variant_path.ends_with("/") else variant_path + "%04d.png" % i
+				# Пробуем prefix_0001 формат
+				var frame_path = variant_path.get_base_dir() + "/" + prefix + "_%04d.png" % i
+				if ResourceLoader.exists(frame_path):
+					sf.add_frame("play", load(frame_path))
+				else:
+					break
+			if sf.has_animation("default"):
+				sf.remove_animation("default")
+			anim_spr.sprite_frames = sf
+			var spr_offset = data.get("sprite_offset", [0.0, 0.0])
+			anim_spr.position = Vector2(spr_offset[0], spr_offset[1])
+			var sc = data.get("scale", 1.0)
+			anim_spr.scale = Vector2(sc, sc)
+			add_child(anim_spr)
+			anim_spr.play("play")
 	elif draw_mode == "sprite_tex":
 		# Текстура из конфига
 		var tex_path = data.get("texture", "")

@@ -39,6 +39,9 @@ var souls: int = 0:
 
 var current_epoch: int = 1
 var is_game_active: bool = true
+var current_save_slot: int = 0
+var current_map: String = "island"
+var toolbar_keybinds: Array = [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9]
 
 # Grid-based tower placement
 const GRID_SIZE = 32

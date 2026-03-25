@@ -138,6 +138,12 @@ func on_release() -> void:
 		building.setup(building_type)
 		DustEffect.spawn(wall_system.get_tree(), bg.tile_to_world(t))
 
+	# Один звук на всю линию
+	if not valid_tiles.is_empty():
+		var am = wall_system.get_node_or_null("/root/AudioManager")
+		if am:
+			am.play("build")
+
 	# Обновляем flat view если включён
 	var main = wall_system.get_tree().current_scene
 	if main.has_method("refresh_flat_view"):

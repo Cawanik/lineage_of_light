@@ -60,6 +60,7 @@ func on_release() -> void:
 
 	var tiles = _get_line_tiles(_drag_start_tile, _drag_current_tile)
 
+	var demolished = 0
 	for t in tiles:
 		var building = bg.get_building(t)
 		if building and building.can_demolish:
@@ -67,6 +68,12 @@ func on_release() -> void:
 			bg.remove_building(t)
 			DustEffect.spawn(wall_system.get_tree(), bg.tile_to_world(t))
 			building.queue_free()
+			demolished += 1
+
+	if demolished > 0:
+		var am = wall_system.get_node_or_null("/root/AudioManager")
+		if am:
+			am.play("demolish")
 
 	_clear_line_highlights()
 	_hovered_building_tile = Vector2i(-9999, -9999)

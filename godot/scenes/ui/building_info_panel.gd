@@ -257,8 +257,11 @@ func _apply_upgrade(upgrade: Dictionary, level: int) -> void:
 
 	_building.upgrade_level = level + 1
 
-	# Пуф
+	# Пуф + звук
 	DustEffect.spawn(get_tree(), _building.global_position)
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("upgrade")
 
 	# Переоткрываем панель чтобы обновить кнопки
 	var b = _building

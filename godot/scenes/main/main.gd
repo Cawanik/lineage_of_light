@@ -55,6 +55,7 @@ var _flat_labels: Array[Node2D] = []
 
 
 func _ready() -> void:
+	PhaseManager.init_game()
 	tools = {
 		"build": BuildTool.new(),
 		"demolish": DemolishTool.new(),
@@ -325,12 +326,13 @@ func _process(_delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	# Хоткеи тулбара 1-9
+	# Хоткеи тулбара из настроек
 	if event is InputEventKey and event.pressed:
 		var key = event.keycode
-		if key >= KEY_1 and key <= KEY_9:
-			_handle_toolbar_hotkey(key - KEY_1)
-			return
+		for i in range(GameManager.toolbar_keybinds.size()):
+			if key == GameManager.toolbar_keybinds[i]:
+				_handle_toolbar_hotkey(i)
+				return
 
 	if event is InputEventKey and event.pressed and event.keycode == KEY_F1:
 		_unfocus_camera()

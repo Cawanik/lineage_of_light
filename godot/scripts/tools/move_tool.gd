@@ -119,6 +119,9 @@ func _finish_building_move() -> void:
 	var building = bg.get_building(_moving_building_tile)
 	if bg.move_building(_moving_building_tile, target_tile):
 		DustEffect.spawn(wall_system.get_tree(), bg.tile_to_world(target_tile))
+		var am = wall_system.get_node_or_null("/root/AudioManager")
+		if am:
+			am.play("build")
 		building = bg.get_building(target_tile)
 		if building:
 			building.modulate = Color.WHITE

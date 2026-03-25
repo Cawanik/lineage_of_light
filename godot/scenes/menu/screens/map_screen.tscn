@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://cjq4dt7usdvhv"]
+
+[ext_resource type="Script" uid="uid://bq4ycjsntok51" path="res://scenes/menu/screens/map_screen.gd" id="1_script"]
+
+[node name="MapScreen" type="CenterContainer" unique_id=766470888]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="VBox" type="VBoxContainer" parent="." unique_id=1604842446]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="VBox" unique_id=76329208]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.878, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Выбор локации"
+horizontal_alignment = 1
+
+[node name="Maps" type="HBoxContainer" parent="VBox" unique_id=575041963]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Back" type="Button" parent="VBox" unique_id=93291189]
+custom_minimum_size = Vector2(200, 45)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "← Назад"
+
+[connection signal="pressed" from="VBox/Back" to="." method="_on_back_pressed"]

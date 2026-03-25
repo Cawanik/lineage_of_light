@@ -96,10 +96,14 @@
 	},
 	"zombie_hand": {
 		"name": "Рука зомби",
-		"draw_mode": "sprite_tex",
-		"texture": "res://assets/sprites/buildings/towers/zombie_hand.png",
+		"draw_mode": "animated",
+		"anim_variants": [
+			"res://assets/sprites/projectiles/zombie_hand/hand_3"
+		],
+		"anim_fps": 4.0,
 		"scale": 1.0,
 		"sprite_offset": [0.0, -15.0],
+		"jitter": 10.0,
 		"static": true,
 		"static_duration": 4.0,
 		"static_tick": 0.8,

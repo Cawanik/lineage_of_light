@@ -51,15 +51,16 @@ func _process(_delta: float) -> void:
 	OcclusionFade.find_player(get_tree())
 	OcclusionFade.update_node_fade(self)
 
-	# Анимация атаки — играть пока есть проклятые в радиусе
+	# Анимация атаки — играть пока есть враги в радиусе
 	if _has_attack_anim and _anim_sprite:
-		var data = Config.buildings.get(building_type, {})
-		if data.get("attack_mode", "") == "instant_curse" and PhaseManager.is_combat_phase():
-			var has_cursed = _has_cursed_enemy_in_range()
-			if has_cursed and _anim_sprite.animation != "attack":
+		if PhaseManager.is_combat_phase():
+			var has_target = _find_enemy_in_range() != null
+			if has_target and _anim_sprite.animation != "attack":
 				_anim_sprite.play("attack")
-			elif not has_cursed and _anim_sprite.animation == "attack":
+			elif not has_target and _anim_sprite.animation == "attack":
 				_anim_sprite.play("idle")
+		elif _anim_sprite.animation == "attack":
+			_anim_sprite.play("idle")
 
 	# Атака врагов
 	if attack_speed > 0 and PhaseManager.is_combat_phase():
@@ -205,8 +206,16 @@ func _setup_attack_anim(data: Dictionary) -> void:
 	sf.add_animation("attack")
 	sf.set_animation_speed("attack", data.get("attack_anim_fps", 8.0))
 	sf.set_animation_loop("attack", true)
-	for tex in frames_arr:
-		sf.add_frame("attack", tex)
+	# Пинг-понг: 1 2 3 4 5 4 3 2 1
+	if data.get("attack_anim_pingpong", false):
+		for tex in frames_arr:
+			sf.add_frame("attack", tex)
+		if frames_arr.size() > 2:
+			for i in range(frames_arr.size() - 2, 0, -1):
+				sf.add_frame("attack", frames_arr[i])
+	else:
+		for tex in frames_arr:
+			sf.add_frame("attack", tex)
 
 	_has_attack_anim = true
 	# При окончании атаки — вернуться к idle
@@ -219,7 +228,12 @@ func _on_building_attack_finished() -> void:
 
 
 func _play_attack_anim() -> void:
-	pass  # Анимация управляется из _process
+	if _has_attack_anim and _anim_sprite:
+		var data = Config.buildings.get(building_type, {})
+		# Для instant_curse анимация управляется из _process
+		if data.get("attack_mode", "") == "instant_curse":
+			return
+		_anim_sprite.play("attack")
 
 
 func _has_cursed_enemy_in_range() -> bool:
@@ -479,6 +493,9 @@ func _on_destroyed() -> void:
 		var tile = bg.world_to_tile(global_position)
 		if bg.buildings.get(tile) == self:
 			bg.remove_building(tile)
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("demolish")
 	queue_free()
 
 

@@ -15,13 +15,14 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Lineage of Light"
-run/main_scene="res://scenes/main/main.tscn"
+run/main_scene="res://scenes/menu/main_menu.tscn"
 config/features=PackedStringArray("4.6")
 
 [autoload]
 
 Config="*res://scripts/autoload/config.gd"
 GameManager="*res://scripts/autoload/game_manager.gd"
+AudioManager="*res://scripts/autoload/audio_manager.gd"
 WaveManager="*res://scripts/autoload/wave_manager.gd"
 PathfindingSystem="*res://scripts/autoload/pathfinding_system.gd"
 PhaseManager="*res://scripts/autoload/phase_manager.gd"

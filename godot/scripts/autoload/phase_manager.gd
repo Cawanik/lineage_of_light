@@ -20,11 +20,21 @@ var _canvas_modulate: CanvasModulate = null
 var director: EnemyDirector = null
 
 
+var _initialized: bool = false
+
+
 func _ready() -> void:
+	pass
+
+
+func init_game() -> void:
+	_initialized = true
 	_start_build_phase()
 
 
 func _process(delta: float) -> void:
+	if not _initialized:
+		return
 	if current_phase == Phase.BUILD:
 		_build_timer -= delta
 		build_phase_timer_tick.emit(_build_timer)
@@ -69,6 +79,10 @@ func _start_build_phase() -> void:
 	_build_timer = build_time
 	phase_changed.emit(Phase.BUILD)
 	call_deferred("_transition_to_night")
+	# Фоновая музыка
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play_music("build_theme", 2.0)
 
 
 func start_combat_phase() -> void:
@@ -82,6 +96,10 @@ func start_combat_phase() -> void:
 	phase_changed.emit(Phase.COMBAT)
 	_transition_to_day()
 	WaveManager.start_next_wave()
+	# Стопаем музыку строительства
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.stop_music(1.5)
 
 
 func end_combat_phase() -> void:

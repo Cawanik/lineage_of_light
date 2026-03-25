@@ -1,0 +1,104 @@
+{
+	"ui_click": {
+		"path": "res://assets/sounds/sfx/ui_click.wav",
+		"volume": 0.6
+	},
+	"ui_hover": {
+		"path": "res://assets/sounds/sfx/ui_hover.wav",
+		"volume": 0.3
+	},
+	"build": {
+		"path": "res://assets/sounds/sfx/buildings/create_building.wav",
+		"volume": 0.5,
+		"pitch_min": 0.9,
+		"pitch_max": 1.1
+	},
+	"demolish": {
+		"path": "res://assets/sounds/sfx/buildings/demolish_building.mp3",
+		"volume": 0.5,
+		"pitch_min": 0.9,
+		"pitch_max": 1.1,
+		"start_from": 0.5,
+		"max_duration": 1.0
+	},
+	"upgrade": {
+		"path": "res://assets/sounds/sfx/buildings/upgrade.wav",
+		"start_from": 1.0,
+		"volume": 0.5,
+		"max_duration": 1.0
+	},
+	"skill_unlock": {
+		"path": "res://assets/sounds/sfx/skill_unlock.wav",
+		"volume": 0.8
+	},
+	"error": {
+		"path": "res://assets/sounds/sfx/error.wav",
+		"volume": 0.5
+	},
+	"arrow_shoot": {
+		"path": "res://assets/sounds/sfx/arrow_shoot.wav",
+		"volume": 0.5,
+		"pitch_min": 0.85,
+		"pitch_max": 1.15
+	},
+	"magic_cast": {
+		"path": "res://assets/sounds/sfx/magic_cast.wav",
+		"volume": 0.6,
+		"pitch_min": 0.9,
+		"pitch_max": 1.1
+	},
+	"fireball_cast": {
+		"path": "res://assets/sounds/sfx/fireball_cast.wav",
+		"volume": 0.7
+	},
+	"curse_cast": {
+		"path": "res://assets/sounds/sfx/curse_cast.wav",
+		"volume": 0.6,
+		"pitch_min": 0.8,
+		"pitch_max": 1.0
+	},
+	"zombie_grab": {
+		"path": "res://assets/sounds/sfx/zombie_grab.wav",
+		"volume": 0.5,
+		"pitch_min": 0.8,
+		"pitch_max": 1.2
+	},
+	"enemy_hit": {
+		"path": "res://assets/sounds/sfx/enemies/enemies_hit.wav",
+		"volume": 0.5,
+		"pitch_min": 0.9,
+		"pitch_max": 1.1
+	},
+	"enemy_die": {
+		"path": "res://assets/sounds/sfx/enemy_die.wav",
+		"volume": 0.6,
+		"pitch_min": 0.85,
+		"pitch_max": 1.15
+	},
+	"wave_start": {
+		"path": "res://assets/sounds/sfx/wave_start.wav",
+		"volume": 0.8
+	},
+	"wave_complete": {
+		"path": "res://assets/sounds/sfx/wave_complete.wav",
+		"volume": 0.8
+	},
+	"game_over": {
+		"path": "res://assets/sounds/sfx/game_over.wav",
+		"volume": 1.0
+	},
+	"build_theme": {
+		"path": "res://assets/sounds/music/build_theme.ogg",
+		"volume": 0.3,
+		"trim_end": 7.0
+	},
+	"main_menu_theme": {
+		"path": "res://assets/sounds/music/main_menu.ogg",
+		"volume": 0.3,
+		"trim_end": 7.0
+	},
+	"combat_theme": {
+		"path": "res://assets/sounds/music/combat_theme.ogg",
+		"volume": 0.5
+	}
+}
