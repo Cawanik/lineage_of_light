@@ -26,7 +26,10 @@
     "wall_dps": 25.0,
     "brain": "knight",
     "color": "#2d5080",
-    "accent": "#c47a45"
+    "accent": "#c47a45",
+    "sprite_path": "res://assets/sprites/enemies/knight/",
+    "walk_anim": "walk",
+    "attack_anim": "strike"
   },
   "hero_mage": {
     "name": "Маг",
@@ -39,7 +42,11 @@
     "wall_dps": 10.0,
     "brain": "mage",
     "color": "#1a1030",
-    "accent": "#f0d060"
+    "accent": "#f0d060",
+    "sprite_path": "res://assets/sprites/enemies/mage/",
+    "walk_anim": "walk",
+    "attack_anim": "fireball",
+    "attack_interval": 0.6
   },
   "hero_alchemist": {
     "name": "Алхимик",
@@ -52,7 +59,11 @@
     "wall_dps": 20.0,
     "brain": "alchemist",
     "color": "#2d5a27",
-    "accent": "#4a8c3f"
+    "accent": "#4a8c3f",
+    "sprite_path": "res://assets/sprites/enemies/alchemist/",
+    "walk_anim": "walk",
+    "attack_anim": "throw-object",
+    "attack_interval": 0.6
   },
   "hero_heir": {
     "name": "Наследник",
@@ -65,6 +76,9 @@
     "wall_dps": 30.0,
     "brain": "heir",
     "color": "#b8860b",
-    "accent": "#e8e0ff"
+    "accent": "#e8e0ff",
+    "sprite_path": "res://assets/sprites/enemies/heir/",
+    "walk_anim": "walk",
+    "attack_anim": "uppercut"
   }
 }

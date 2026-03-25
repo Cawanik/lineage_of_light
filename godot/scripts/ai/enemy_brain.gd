@@ -80,3 +80,9 @@ func on_first_hit() -> void:
 ## Пустой массив = нет клива (по умолчанию).
 func get_cleave_targets(_attacking_building: Building, _attacker_tile: Vector2i, _building_grid: Node) -> Array[Building]:
 	return [] as Array[Building]
+
+
+## Возвращает приоритетное здание для атаки в радиусе (или null).
+## Переопределяется в брейнах у которых есть приоритеты (маг, алхимик).
+func get_priority_attack_target(_building_grid: Node, _current_tile: Vector2i, _attack_range: int) -> Building:
+	return null
