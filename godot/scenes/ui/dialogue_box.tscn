@@ -1,0 +1,84 @@
+[gd_scene format=3 uid="uid://bkkrxkpgluftg"]
+
+[ext_resource type="Script" uid="uid://t1jb0a2o8k5o" path="res://scenes/ui/dialogue_box.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://c2rwbqxha0crg" path="res://assets/sprites/ui/dialogue_bg.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://bkdg60q1h7dve" path="res://assets/sprites/ui/skills/icon_grimoire.png" id="3_test_portrait"]
+
+[node name="DialogueBox" type="CanvasLayer" unique_id=1853509973]
+process_mode = 3
+layer = 110
+script = ExtResource("1_script")
+
+[node name="Container" type="Control" parent="." unique_id=925967553]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -336.0
+offset_top = -302.0
+offset_right = 320.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="BG" type="TextureRect" parent="Container" unique_id=575795194]
+texture_filter = 1
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Portrait" type="TextureRect" parent="Container" unique_id=745957331]
+texture_filter = 1
+layout_mode = 0
+offset_left = 53.0
+offset_top = 71.0
+offset_right = 184.0
+offset_bottom = 221.0
+mouse_filter = 2
+texture = ExtResource("3_test_portrait")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="NameLabel" type="Label" parent="Container" unique_id=266417421]
+layout_mode = 0
+offset_left = 198.0
+offset_top = 82.0
+offset_right = 613.0
+offset_bottom = 105.0
+theme_override_colors/font_color = Color(0.941, 0.816, 0.376, 1)
+theme_override_font_sizes/font_size = 16
+text = "Книгыч"
+
+[node name="TextLabel" type="RichTextLabel" parent="Container" unique_id=183104936]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 201.0
+offset_top = 111.0
+offset_right = -68.0
+offset_bottom = -60.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.91, 0.878, 1, 1)
+theme_override_font_sizes/normal_font_size = 14
+bbcode_enabled = true
+text = "О! Вот и он, я боялся что и в этот раз не получится! Значит, слушай. Расклад такой, ты был призван сюда для одной большой и важной задачи. выфаываываыв ыва ыва ыва ыва ыва ыв аыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ываыв аыв аыва ываываы ваыва ы"
+scroll_active = false
+
+[node name="ClickArea" type="Control" parent="Container" unique_id=1966821936]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

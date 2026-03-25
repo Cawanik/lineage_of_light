@@ -94,8 +94,13 @@ func on_release() -> void:
 
 	# Фильтруем только свободные тайлы
 	var valid_tiles: Array[Vector2i] = []
+	# Проверяем ограничение туториала
+	var tutorial = wall_system.get_tree().current_scene.get_node_or_null("Tutorial") if wall_system else null
 	for t in tiles:
 		if not bg.is_occupied(t) and bg.is_on_ground(t):
+			if tutorial and tutorial.tutorial_restrict_placement:
+				if t not in tutorial.tutorial_allowed_tiles:
+					continue
 			valid_tiles.append(t)
 
 	var total_cost = valid_tiles.size() * cost_per

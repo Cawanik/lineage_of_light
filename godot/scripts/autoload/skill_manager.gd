@@ -9,13 +9,15 @@ signal skill_unlocked(skill_id: String)
 # Множество открытых навыков
 var unlocked: Dictionary = {}  # skill_id -> true
 
+# Туториал: если не пустой — можно качать только эти навыки
+var allowed_skills: Array = []
+
 
 const DEFAULT_UNLOCKED = ["build_plan", "archers", "walls", "flat_view"]
 
 
 func _ready() -> void:
-	for skill_id in DEFAULT_UNLOCKED:
-		unlocked[skill_id] = true
+	pass
 
 
 func is_unlocked(skill_id: String) -> bool:
@@ -27,6 +29,9 @@ func can_unlock(skill_id: String) -> bool:
 	if data.is_empty():
 		return false
 	if is_unlocked(skill_id):
+		return false
+	# Туториал — ограничение навыков
+	if not allowed_skills.is_empty() and skill_id not in allowed_skills:
 		return false
 	# Проверяем все зависимости
 	var requires = data.get("requires", [])

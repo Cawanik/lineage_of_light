@@ -124,6 +124,12 @@ func _ready() -> void:
 	# Применяем блокировку инструментов по навыкам
 	call_deferred("_set_toolbar_mode", "build")
 
+	# Туториал — запускаем если первый раз
+	if GameManager.souls == 0 and SkillManager.unlocked.size() <= SkillManager.DEFAULT_UNLOCKED.size():
+		var tutorial = Tutorial.new()
+		tutorial.name = "Tutorial"
+		add_child(tutorial)
+
 	# Перестраиваем меню при изменении зданий на карте
 	building_grid.buildings_changed.connect(_on_buildings_changed)
 

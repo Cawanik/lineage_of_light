@@ -38,6 +38,7 @@
 [ext_resource type="Texture2D" uid="uid://dd3lqtxug2qcp" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0008.png" id="22_ocean8"]
 [ext_resource type="Texture2D" uid="uid://b52p0oglifsma" path="res://assets/sprites/tiles/animations/ocean/iso_ocean_animate_0009.png" id="22_ocean9"]
 [ext_resource type="PackedScene" uid="uid://cskilltree001" path="res://scenes/ui/skill_tree.tscn" id="22_skill_tree"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="24_dialogue"]
 [ext_resource type="Texture2D" uid="uid://xuf2ivg08rwu" path="res://assets/sprites/ui/upgrade_arrow.png" id="22_upgrade_icon"]
 [ext_resource type="Texture2D" uid="uid://cpe7ei5mw25lr" path="res://assets/sprites/ui/icon_flat_view_0001.png" id="23_flat_view_closed"]
 
@@ -387,3 +388,5 @@ offset_bottom = -99.0
 grow_horizontal = 1
 
 [node name="SkillTree" parent="." unique_id=1552904102 instance=ExtResource("22_skill_tree")]
+
+[node name="DialogueBox" parent="." instance=ExtResource("24_dialogue")]

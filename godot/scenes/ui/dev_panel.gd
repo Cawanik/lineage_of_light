@@ -37,6 +37,12 @@ func _ready() -> void:
 	proj_btn.pressed.connect(_on_spawn_proj_pressed)
 	spawn_test_button.get_parent().add_child(proj_btn)
 
+	# Кнопка тестового диалога
+	var dlg_btn = Button.new()
+	dlg_btn.text = "Test Dialogue"
+	dlg_btn.pressed.connect(_on_test_dialogue)
+	spawn_test_button.get_parent().add_child(dlg_btn)
+
 	start_wave_button.pressed.connect(_on_start_wave_pressed)
 	test_path_button.text = "Unlock All Skills"
 	test_path_button.pressed.connect(_on_unlock_all_pressed)
@@ -133,6 +139,15 @@ func _spawn_enemy(enemy_type: String) -> void:
 				enemy.apply_curse(1.0, 9999.0)
 
 	print("DevPanel: Spawned %s" % enemy_type)
+
+
+func _on_test_dialogue() -> void:
+	DialogueBox.say([
+		{"name": "Книгыч", "text": "О! Вот и он, я боялся что и в этот раз не получится!", "portrait": "res://assets/sprites/ui/skills/icon_grimoire.png", "voice": ""},
+		{"name": "Книгыч", "text": "Значит, слушай. Расклад такой, ты был призван сюда для одной большой и важной задачи.", "portrait": "res://assets/sprites/ui/skills/icon_grimoire.png", "voice": ""},
+		{"name": "Герой", "text": "Что?! Где я?! Что происходит?!", "portrait": "", "voice": ""},
+		{"name": "Книгыч", "text": "Не переживай, этот замок является неприступной крепостью, а ты лишь временная замена!", "portrait": "res://assets/sprites/ui/skills/icon_grimoire.png", "voice": ""},
+	])
 
 
 func _on_spawn_proj_pressed() -> void:

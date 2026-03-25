@@ -287,6 +287,12 @@ func play_music(music_id: String, fade_in: float = 1.0, ease_type: Ease = Ease.E
 	if not stream:
 		return
 
+	# Убиваем предыдущие tweens музыки
+	if _music_trim_tween and _music_trim_tween.is_valid():
+		_music_trim_tween.kill()
+	if _music_stop_tween and _music_stop_tween.is_valid():
+		_music_stop_tween.kill()
+
 	_current_music = music_id
 	print("[AudioManager] Playing music: %s (%s)" % [music_id, music_path])
 
@@ -319,6 +325,7 @@ func play_music(music_id: String, fade_in: float = 1.0, ease_type: Ease = Ease.E
 
 
 var _music_trim_tween: Tween = null
+var _music_stop_tween: Tween = null
 
 func _start_music_trim_timer(play_duration: float) -> void:
 	if _music_trim_tween and _music_trim_tween.is_valid():
@@ -341,10 +348,12 @@ func stop_music(fade_out: float = 1.0, ease_type: Ease = Ease.EASE_OUT) -> void:
 	if not _music_player.playing:
 		return
 	_current_music = ""
-	var tween = create_tween()
-	_apply_ease(tween, ease_type)
-	tween.tween_property(_music_player, "volume_db", -40.0, fade_out)
-	tween.tween_callback(_music_player.stop)
+	if _music_stop_tween and _music_stop_tween.is_valid():
+		_music_stop_tween.kill()
+	_music_stop_tween = create_tween()
+	_apply_ease(_music_stop_tween, ease_type)
+	_music_stop_tween.tween_property(_music_player, "volume_db", -40.0, fade_out)
+	_music_stop_tween.tween_callback(_music_player.stop)
 
 
 # === Настройки громкости ===

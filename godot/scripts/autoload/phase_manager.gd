@@ -82,6 +82,7 @@ func _start_build_phase() -> void:
 	# Фоновая музыка
 	var am = get_node_or_null("/root/AudioManager")
 	if am:
+		am._current_music = ""  # Сброс чтобы гарантировать запуск
 		am.play_music("build_theme", 2.0)
 
 
