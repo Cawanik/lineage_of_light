@@ -40,24 +40,7 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		_container.visible = false
 	_click_area.gui_input.connect(_on_input)
-
-	# Надпись "нажмите, чтобы продолжить"
-	_skip_label = Label.new()
-	_skip_label.text = "Нажмите, чтобы продолжить"
-	_skip_label.add_theme_font_size_override("font_size", 10)
-	_skip_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.7, 0.7))
-	_skip_label.anchors_preset = Control.PRESET_BOTTOM_RIGHT
-	_skip_label.anchor_left = 1.0
-	_skip_label.anchor_top = 1.0
-	_skip_label.anchor_right = 1.0
-	_skip_label.anchor_bottom = 1.0
-	_skip_label.offset_left = -200
-	_skip_label.offset_top = -25
-	_skip_label.offset_right = -15
-	_skip_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_skip_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_skip_label.visible = false
-	_container.add_child(_skip_label)
+	_skip_label = $Container/SkipLabel
 
 
 func _process(delta: float) -> void:

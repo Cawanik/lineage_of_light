@@ -38,7 +38,8 @@ var _block_rect: ColorRect = null
 const REQUIRED_SKILLS = ["build_plan", "archers", "flat_view", "magic_abilities"]
 const PORTRAIT_OWNER = "res://assets/sprites/ui/portraits/portrait_owner.png"
 const PORTRAIT_BOOK = "res://assets/sprites/ui/skills/icon_grimoire.png"
-const PORTRAIT_KNIGHT = ""
+const PORTRAIT_PLAYER = "res://assets/sprites/ui/portraits/portrait_player.png"
+const PORTRAIT_KNIGHT = "res://assets/sprites/ui/portraits/portrait_knight.png"
 
 
 func _ready() -> void:
@@ -79,6 +80,7 @@ func _process(_delta: float) -> void:
 			var st = get_tree().current_scene.get_node_or_null("SkillTree")
 			if st and not _skill_tree_opened and st.visible:
 				_skill_tree_opened = true
+				_highlight_skill_tree_button(false)
 				_advance(Step.GIVE_CRYSTALS)
 
 		Step.WAIT_SKILLS_UNLOCKED:
@@ -146,9 +148,9 @@ func _advance(step: Step) -> void:
 		Step.INTRO:
 			_block_input()
 			_show_dialogue([
-				{"name": "Владыка", "text": "Ох, слава мне, что это получилось!", "portrait": PORTRAIT_OWNER, "voice": ""},
-				{"name": "Герой", "text": "Что, кто я? Где я?", "portrait": "", "voice": ""},
-				{"name": "Владыка", "text": "Сложно будет тебе всё сразу объяснить, давай сначала посмотрим, что ты можешь. Подвигайся, пожалуйста.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "Ох, слава мне... Наконец-то получилось. Знаешь, сколько я потратил маны на этот ритуал? Не знаешь. И лучше тебе не знать.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Вы", "text": "Что?.. Кто я? Где я? Почему так темно? И почему от вас веет... смертью?", "portrait": PORTRAIT_PLAYER, "voice": ""},
+				{"name": "Владыка", "text": "Вопросы потом. Сейчас мне нужно убедиться, что ты не бракованный. Пошевелись-ка.", "portrait": PORTRAIT_OWNER, "voice": ""},
 			], func():
 				_unblock_input()
 				_advance(Step.WAIT_MOVE)
@@ -159,14 +161,18 @@ func _advance(step: Step) -> void:
 			_block_input()
 			_hide_hint()
 			_show_dialogue([
-				{"name": "Владыка", "text": "Отлично! Я слышал, что люди уничтожили троны моих братьев, из-за этого я призвал тебя, лучшего архитектора из мира людей.", "portrait": PORTRAIT_OWNER, "voice": ""},
-				{"name": "Владыка", "text": "Я дам тебе способности и не буду ставить жёстких дедлайнов, которые у тебя были в их мире, взамен прошу воссоздать мне неприступную крепость. Согласен?", "portrait": PORTRAIT_OWNER, "voice": ""},
-				{"name": "Герой", "text": "...", "portrait": "", "voice": ""},
-				{"name": "Герой", "text": "Да это всё, о чём я мечтал! Конечно.", "portrait": "", "voice": ""},
-				{"name": "Владыка", "text": "Поздравляю. Теперь ты бессмертный и можешь распоряжаться всеми моими ресурсами, которые остались после призыва тебя.", "portrait": PORTRAIT_OWNER, "voice": ""},
-				{"name": "Владыка", "text": "Давай научу тебя пользоваться твоими способностями. Загляни в омут древних знаний.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "О, двигается! Чудесно. Последний, кого я призвал, просто стоял и плакал. Три часа. Пришлось развоплощать.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "Слушай внимательно. Люди — эти суетливые создания — уничтожили троны моих братьев. Всех до одного. Мы их не трогали, заметь. Ни одного набега, ни одной войны.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "Мы просто... существуем. Тихо. Мирно. В своих тёмных замках. Но им этого мало — видите ли, мы \"угроза\". Какая угроза? Я за последние триста лет даже с территории не выходил!", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "Мне нужен архитектор. Лучший. А ты, говорят, в мире людей строил что-то... как это... \"офисные центры\"? Звучит ужасающе. Идеально.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "Я дам тебе силу, бессмертие и полное отсутствие дедлайнов. Взамен — построй мне крепость, которую эти параноики не смогут разрушить. Согласен?", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Вы", "text": "...", "portrait": PORTRAIT_PLAYER, "voice": ""},
+				{"name": "Вы", "text": "Бессмертие и никаких дедлайнов? Это всё, о чём я мечтал! Конечно!", "portrait": PORTRAIT_PLAYER, "voice": ""},
+				{"name": "Владыка", "text": "Восхитительно. Такой энтузиазм я видел только у свежеподнятых скелетов. Это комплимент, если что.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "Теперь загляни в омут древних знаний. Там хранятся способности, которые помогут тебе в строительстве.", "portrait": PORTRAIT_OWNER, "voice": ""},
 			], func():
-				_unblock_input()
+				_block_input()
+				_highlight_skill_tree_button(true)
 				_advance(Step.WAIT_SKILL_TREE)
 			)
 			_show_hint("Откройте древо навыков")
@@ -177,7 +183,8 @@ func _advance(step: Step) -> void:
 			GameManager.souls += 5
 			SkillManager.allowed_skills = REQUIRED_SKILLS.duplicate()
 			_show_dialogue([
-				{"name": "Владыка", "text": "Отлично, теперь возьми мои кристаллы и потрать их на следующие навыки: Строительный план, Лучники, Смена вида, Магические способности.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "Держи кристаллы — всё, что осталось после твоего призыва. Не благодари, ты и так обошёлся мне в целое состояние.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "Вложи их с умом: Строительный план, Лучники, Смена вида и Магические способности. Остальное — потом, когда заслужишь.", "portrait": PORTRAIT_OWNER, "voice": ""},
 			], func():
 				_unblock_input()
 				_show_hint("Прокачайте: Строительный план, Лучники, Смена вида, Магические способности")
@@ -187,24 +194,25 @@ func _advance(step: Step) -> void:
 		Step.BOOK_INTRO:
 			_block_input()
 			_hide_hint()
-			SkillManager.allowed_skills = []  # Снимаем ограничение
+			SkillManager.allowed_skills = []
 			_show_dialogue([
-				{"name": "Книга", "text": "Ах, вы, гады! Я здесь лежал 500 лет! А как понадобился — берете даже без \"как дела, как настроение\"?!", "portrait": PORTRAIT_BOOK, "voice": ""},
-				{"name": "Владыка", "text": "О! Ты открыл моего старого фамильяра. Эта книга помогала мне, когда я был ещё маленьким принцем.", "portrait": PORTRAIT_OWNER, "voice": ""},
-				{"name": "Книга", "text": "Да, помню тебя, сорванца такого.", "portrait": PORTRAIT_BOOK, "voice": ""},
-				{"name": "Владыка", "text": "Сейчас договоришься!", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Книга", "text": "ПЯТЬСОТ. ЛЕТ. Пятьсот лет я лежал на этой полке! И ни одного \"как дела\", ни одного \"спасибо за службу\"!", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "А стоит понадобиться — сразу \"о, Книга, помоги, Книга, подскажи\". Вы хоть пыль с меня стряхнули? НЕТ.", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Владыка", "text": "О, ты нашёл моего старого фамильяра! Эта книга учила меня, когда я был ещё маленьким принцем тьмы. Ностальгия...", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Книга", "text": "Ага, помню. Рисовал чертей на моих страницах. До сих пор на 347-й странице какой-то монстр с подписью \"папа\".", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Владыка", "text": "...Ещё одно слово, и я найду тебе применение поинтереснее. Например, растопка камина.", "portrait": PORTRAIT_OWNER, "voice": ""},
 				{"name": "Книга", "text": "...", "portrait": PORTRAIT_BOOK, "voice": ""},
-				{"name": "Владыка", "text": "Я вас оставляю. Он подскажет тебе как и что здесь происходит.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "Вот и славно. Я вас оставляю. Книга подскажет, что к чему. А мне пора — дела тёмные, сами понимаете.", "portrait": PORTRAIT_OWNER, "voice": ""},
 			], func(): _advance(Step.OWNER_LEAVES))
 
 		Step.OWNER_LEAVES:
 			_block_input()
 			_show_dialogue([
-				{"name": "Книга", "text": "Дела обстоят так, нам нужно защитить его трон, если мы хотим НЕ БЫТЬ обезглавленными или сожжёнными.", "portrait": PORTRAIT_BOOK, "voice": ""},
-				{"name": "Книга", "text": "Первое, что тебе нужно сделать — это взять лучников и поставить рядом с троном.", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "Ушёл. Наконец-то. Ладно, слушай сюда, человечек.", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "Видишь этот трон? Это единственное, что стоит между нами и толпой людей, которые почему-то считают, что мы угрожаем их существованию. Мы! Которые сидим тут тише воды, ниже травы!", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "Поставь лучников рядом с троном. Да-да, скелетов с луками. Не спрашивай, откуда у них глаза — просто ставь.", "portrait": PORTRAIT_BOOK, "voice": ""},
 			], func():
 				_unblock_input()
-				# Ограничиваем размещение только вокруг трона
 				_setup_throne_placement()
 				_advance(Step.WAIT_BUILD_ARCHERS)
 			)
@@ -214,10 +222,10 @@ func _advance(step: Step) -> void:
 			_block_input()
 			_hide_hint()
 			_show_dialogue([
-				{"name": "Книга", "text": "Неплохо для человека! Смотри, там кто-то идёт...", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "Хм, неплохо для существа без магического образования. Я впечатлён. Немного. Самую каплю.", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "Стоп. Ты слышишь? Шаги. Кажется, к нам кто-то идёт...", "portrait": PORTRAIT_BOOK, "voice": ""},
 			], func():
 				_unblock_input()
-				# Переводим в боевую фазу без запуска волны
 				PhaseManager.current_phase = PhaseManager.Phase.COMBAT
 				PhaseManager.phase_changed.emit(PhaseManager.Phase.COMBAT)
 				PhaseManager._transition_to_day()
@@ -227,9 +235,11 @@ func _advance(step: Step) -> void:
 		Step.OUTRO:
 			_block_input()
 			_show_dialogue([
-				{"name": "Рыцарь", "text": "Чёртова нежить! Мои... Потомки... Придут отомстить.", "portrait": PORTRAIT_KNIGHT, "voice": ""},
-				{"name": "Книга", "text": "Чёрт! Так всё и начинается. Эх, приятным отпуском и не пахнет.", "portrait": PORTRAIT_BOOK, "voice": ""},
-				{"name": "Книга", "text": "А ты чего стоишь? Строй давай! Через одно их поколение придут ещё люди, так что поторопись, ненавижу дедлайны.", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Рыцарь", "text": "Во имя света! Тьма будет повер... к-как?! Одна стрела?! Мои потомки... отомстят...", "portrait": PORTRAIT_KNIGHT, "voice": ""},
+				{"name": "Книга", "text": "Мы буквально сидели у себя дома. ОН пришёл к НАМ. И мы ещё злодеи?", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "Вот так всегда. Один фанатик, одна стрела, а потом — армия обиженных потомков с факелами и \"священной миссией\".", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "Ладно, хватит глазеть. У нас примерно одно человеческое поколение до следующей атаки.", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "Строй, укрепляй, готовься. И учти — в следующий раз одной башней не отделаешься. Ненавижу дедлайны, но тут уж ничего не поделать.", "portrait": PORTRAIT_BOOK, "voice": ""},
 			], func(): _advance(Step.DONE))
 
 		Step.DONE:
@@ -320,6 +330,65 @@ func _hide_hint() -> void:
 
 
 var _enemy_weakened: bool = false
+var _skill_tree_btn_original_parent: Node = null
+var _skill_tree_btn_original_z: int = 0
+
+
+var _highlight_btn: TextureRect = null
+
+func _highlight_skill_tree_button(enable: bool) -> void:
+	if enable:
+		if not _block_layer:
+			_create_block_layer()
+		_block_layer.visible = true
+
+		# Создаём кнопку-дубликат поверх блока
+		var main = get_tree().current_scene
+		var original = main.get_node_or_null("UILayer/SkillTreeButton") if main else null
+		if not original:
+			return
+
+		_highlight_btn = TextureRect.new()
+		_highlight_btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		# Копируем иконку
+		var icon = original.get_node_or_null("Icon")
+		if icon and icon.texture:
+			_highlight_btn.texture = icon.texture
+		_highlight_btn.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		_highlight_btn.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		# Позиция как у оригинала
+		_highlight_btn.offset_left = original.offset_left
+		_highlight_btn.offset_top = original.offset_top
+		_highlight_btn.offset_right = original.offset_right
+		_highlight_btn.offset_bottom = original.offset_bottom
+		_highlight_btn.anchor_left = original.anchor_left
+		_highlight_btn.anchor_top = original.anchor_top
+		_highlight_btn.anchor_right = original.anchor_right
+		_highlight_btn.anchor_bottom = original.anchor_bottom
+		_highlight_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+		_highlight_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		_highlight_btn.gui_input.connect(func(event):
+			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+				var skill_tree = get_tree().current_scene.get_node_or_null("SkillTree")
+				if skill_tree:
+					skill_tree.open()
+				get_viewport().set_input_as_handled()
+		)
+		_block_layer.add_child(_highlight_btn)
+
+		# Пульсация
+		var tween = create_tween().set_loops()
+		tween.tween_property(_highlight_btn, "modulate", Color(1.5, 1.2, 1.8), 0.5)
+		tween.tween_property(_highlight_btn, "modulate", Color.WHITE, 0.5)
+		_highlight_btn.set_meta("tween", tween)
+	else:
+		if _highlight_btn and is_instance_valid(_highlight_btn):
+			if _highlight_btn.has_meta("tween"):
+				var tween = _highlight_btn.get_meta("tween")
+				if tween and tween.is_valid():
+					tween.kill()
+			_highlight_btn.queue_free()
+			_highlight_btn = null
 
 
 func _setup_throne_placement() -> void:
