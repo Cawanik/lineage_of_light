@@ -206,8 +206,16 @@ func _ready() -> void:
 	_unlock_btn.offset_bottom = -20
 	if ResourceLoader.exists("res://assets/sprites/ui/start_wave_btn.png"):
 		_unlock_btn.texture_normal = load("res://assets/sprites/ui/start_wave_btn.png")
-	_unlock_btn.mouse_entered.connect(func(): _unlock_btn.modulate = Color(1.2, 1.1, 1.3))
-	_unlock_btn.mouse_exited.connect(func(): _unlock_btn.modulate = Color.WHITE)
+	_unlock_btn.mouse_entered.connect(func():
+		if _selected_skill != "" and SkillManager.can_unlock(_selected_skill):
+			_unlock_btn.modulate = Color(1.2, 1.1, 1.3)
+	)
+	_unlock_btn.mouse_exited.connect(func():
+		if _selected_skill != "" and SkillManager.can_unlock(_selected_skill):
+			_unlock_btn.modulate = Color.WHITE
+		elif _selected_skill != "":
+			_unlock_btn.modulate = Color(0.5, 0.5, 0.5)
+	)
 	_unlock_btn.pressed.connect(_on_unlock_pressed)
 	_info_panel.add_child(_unlock_btn)
 
@@ -247,6 +255,7 @@ func _ready() -> void:
 	_offset = _calc_center_offset()
 
 	SkillManager.skill_unlocked.connect(_on_skill_unlocked)
+	GameManager.souls_changed.connect(func(_v): _update_souls_label())
 
 
 func _calc_center_offset() -> Vector2:
@@ -308,6 +317,12 @@ func _on_skill_unlocked(_skill_id: String) -> void:
 	_canvas.queue_redraw()
 
 
+func _process(_delta: float) -> void:
+	# Перерисовка для пульсации подсветки обучения
+	if visible and not SkillManager.allowed_skills.is_empty():
+		_canvas.queue_redraw()
+
+
 func _on_canvas_draw() -> void:
 	var tree = Config.skill_tree
 
@@ -366,6 +381,12 @@ func _on_canvas_draw() -> void:
 		# Подсветка выделенного
 		if id == _selected_skill:
 			_draw_circle_outline(pos, NODE_RADIUS + 4, Color.WHITE, 2.0)
+
+		# Подсветка навыков для обучения (пульсация)
+		if not SkillManager.allowed_skills.is_empty() and id in SkillManager.allowed_skills and not SkillManager.is_unlocked(id):
+			var pulse = 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.005)
+			var glow_color = Color(1.0, 0.85, 0.2, pulse * 0.6)
+			_draw_circle_outline(pos, NODE_RADIUS + 6, glow_color, 3.0)
 
 
 func _is_upgrade_node(id: String, data: Dictionary) -> bool:

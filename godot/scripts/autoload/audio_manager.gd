@@ -53,6 +53,23 @@ func _ready() -> void:
 	# Загружаем каталог звуков
 	_load_sound_catalog()
 
+	# Загружаем настройки громкости
+	_load_volume_settings()
+
+
+func _load_volume_settings() -> void:
+	var path = "user://settings.json"
+	if not FileAccess.file_exists(path):
+		return
+	var file = FileAccess.open(path, FileAccess.READ)
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		return
+	var data = json.data
+	set_master_volume(data.get("master_volume", 1.0))
+	set_music_volume(data.get("music_volume", 0.5))
+	set_sfx_volume(data.get("sfx_volume", 0.1))
+
 
 func _ensure_bus(bus_name: String) -> void:
 	if AudioServer.get_bus_index(bus_name) == -1:

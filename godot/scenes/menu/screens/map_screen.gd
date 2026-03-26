@@ -3,6 +3,8 @@ extends CenterContainer
 signal map_selected(map: Dictionary)
 signal back_pressed
 
+var skip_tutorial: bool = false
+
 @onready var title_label: Label = $VBox/Title
 @onready var maps_container: HBoxContainer = $VBox/Maps
 @onready var back_button: Button = $VBox/Back
@@ -51,6 +53,15 @@ func build_map_list(maps_data: Array, completed_maps: Array) -> void:
 			play_btn.custom_minimum_size = Vector2(80, 35)
 			play_btn.pressed.connect(func(): map_selected.emit(map))
 			card.add_child(play_btn)
+
+			# Чекбокс обучения для первой локации
+			if i == 0 and completed_maps.is_empty():
+				var tutorial_check = CheckBox.new()
+				tutorial_check.text = "Без обучения"
+				tutorial_check.add_theme_font_size_override("font_size", 9)
+				tutorial_check.add_theme_color_override("font_color", Color("#9988bb"))
+				tutorial_check.toggled.connect(func(on): skip_tutorial = on)
+				card.add_child(tutorial_check)
 		else:
 			var lock_lbl = Label.new()
 			lock_lbl.text = "Скоро" if is_coming_soon else "🔒"

@@ -124,11 +124,19 @@ func _ready() -> void:
 	# Применяем блокировку инструментов по навыкам
 	call_deferred("_set_toolbar_mode", "build")
 
-	# Туториал — запускаем если первый раз
-	if GameManager.souls == 0 and SkillManager.unlocked.size() <= SkillManager.DEFAULT_UNLOCKED.size():
+	# Туториал — запускаем если первый раз и не пройден
+	if not GameManager.skip_tutorial and not GameManager.tutorial_completed and SkillManager.unlocked.size() == 0:
 		var tutorial = Tutorial.new()
 		tutorial.name = "Tutorial"
 		add_child(tutorial)
+	elif SkillManager.unlocked.size() == 0:
+		# Без обучения — выдаём стартовые навыки
+		for skill_id in SkillManager.DEFAULT_UNLOCKED:
+			SkillManager.unlocked[skill_id] = true
+
+	# Автосохранение при изменении кристаллов/навыков
+	SkillManager.skill_unlocked.connect(_autosave)
+	GameManager.connect("souls_changed", _autosave)
 
 	# Перестраиваем меню при изменении зданий на карте
 	building_grid.buildings_changed.connect(_on_buildings_changed)
@@ -671,6 +679,32 @@ func _update_cooldown_overlays() -> void:
 			overlay.anchor_bottom = ratio
 		else:
 			overlay.visible = false
+
+
+func _autosave(_arg = null) -> void:
+	var slot = GameManager.current_save_slot
+	var save_path = "user://saves/slot_%d.json" % slot
+	# Загружаем текущие данные
+	var data: Dictionary = {}
+	if FileAccess.file_exists(save_path):
+		var file = FileAccess.open(save_path, FileAccess.READ)
+		var json = JSON.new()
+		if json.parse(file.get_as_text()) == OK:
+			data = json.data
+	# Обновляем кристаллы и навыки
+	data["souls"] = GameManager.souls
+	var skills: Array = []
+	for skill_id in SkillManager.unlocked:
+		skills.append(skill_id)
+	data["unlocked_skills"] = skills
+	data["tutorial_completed"] = GameManager.tutorial_completed
+	var now = Time.get_datetime_dict_from_system()
+	data["last_saved"] = "%04d-%02d-%02d %02d:%02d:%02d" % [now["year"], now["month"], now["day"], now["hour"], now["minute"], now["second"]]
+	# Сохраняем
+	DirAccess.make_dir_recursive_absolute("user://saves/")
+	var file = FileAccess.open(save_path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data, "\t"))
+	print("[Autosave] Slot %d: souls=%d, skills=%d at %s" % [slot, data["souls"], skills.size(), data["last_saved"]])
 
 
 func _on_buildings_changed() -> void:

@@ -92,9 +92,13 @@ func _process(_delta: float) -> void:
 	if timer_label:
 		if PhaseManager.is_build_phase():
 			_time_remaining = PhaseManager.get_build_time_remaining()
-			var mins = int(_time_remaining) / 60
-			var secs = int(_time_remaining) % 60
-			timer_label.text = "%02d:%02d" % [mins, secs]
+			if _time_remaining > 9999:
+				timer_label.text = "∞"
+				timer_label.add_theme_color_override("font_color", timer_color)
+			else:
+				var mins = int(_time_remaining) / 60
+				var secs = int(_time_remaining) % 60
+				timer_label.text = "%02d:%02d" % [mins, secs]
 			if _time_remaining <= timer_warning_threshold:
 				timer_label.add_theme_color_override("font_color", timer_warning_color)
 			else:

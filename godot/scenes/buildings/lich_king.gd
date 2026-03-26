@@ -50,6 +50,11 @@ func _load_config() -> void:
 
 
 func _ready() -> void:
+	# После обучения или при пропуске — Лич Кинг не появляется
+	if GameManager.tutorial_completed or GameManager.skip_tutorial:
+		queue_free()
+		return
+
 	_load_config()
 	_setup_animations()
 	play("idle_south")

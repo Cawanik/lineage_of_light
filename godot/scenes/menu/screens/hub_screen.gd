@@ -5,12 +5,12 @@ signal map_pressed
 signal back_pressed
 
 @onready var title_label: Label = $Title
-@onready var souls_label: Label = $Souls
+@onready var souls_label: Label = $SoulsContainer/Souls
 
 
 func update_info(map_name: String) -> void:
 	title_label.text = map_name
-	souls_label.text = "Души: %d" % GameManager.souls
+	souls_label.text = "%d" % GameManager.souls
 
 
 func _on_skill_tree_pressed() -> void:

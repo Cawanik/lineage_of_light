@@ -20,6 +20,7 @@ signal gold_changed(new_amount: int)
 signal lives_changed(new_amount: int)
 signal game_over
 signal game_won
+signal souls_changed(new_amount: int)
 
 var gold: int = 350:
 	set(value):
@@ -36,11 +37,16 @@ var lives: int = 20:
 var souls: int = 0:
 	set(value):
 		souls = value
+		souls_changed.emit(souls)
 
 var current_epoch: int = 1
 var is_game_active: bool = true
 var current_save_slot: int = 0
 var current_map: String = "island"
+var skip_tutorial: bool = false
+var tutorial_wave: bool = false
+var tutorial_completed: bool = false
+var first_death_dialogue: bool = false  # Показали ли диалог первой смерти
 var toolbar_keybinds: Array = [KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9]
 
 # Grid-based tower placement
@@ -49,7 +55,33 @@ var occupied_cells: Dictionary = {}  # Vector2i -> tower_ref
 
 
 func _ready() -> void:
-	pass
+	_load_settings()
+
+
+func _load_settings() -> void:
+	var path = "user://settings.json"
+	if not FileAccess.file_exists(path):
+		return
+	var file = FileAccess.open(path, FileAccess.READ)
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		return
+	var data = json.data
+	# Бинды
+	var binds = data.get("toolbar_keybinds", [])
+	if binds.size() == 9:
+		for i in range(9):
+			toolbar_keybinds[i] = int(binds[i])
+	# Звук (AudioManager может быть ещё не готов, defer)
+	call_deferred("_apply_audio_settings", data)
+
+
+func _apply_audio_settings(data: Dictionary) -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.set_master_volume(data.get("master_volume", 1.0))
+		am.set_music_volume(data.get("music_volume", 0.5))
+		am.set_sfx_volume(data.get("sfx_volume", 0.1))
 
 
 func can_afford(cost: int) -> bool:

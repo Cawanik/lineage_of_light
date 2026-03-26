@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://cgameover01"]
 
 [ext_resource type="Script" path="res://scenes/ui/game_over_screen.gd" id="1_gameover"]
+[ext_resource type="Shader" path="res://shaders/purple_fog.gdshader" id="2_fog"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fog"]
+shader = ExtResource("2_fog")
 
 [node name="GameOverScreen" type="Control"]
 layout_mode = 3
@@ -18,7 +22,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.8)
+color = Color(1, 1, 1, 1)
+material = SubResource("ShaderMaterial_fog")
 
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -37,14 +42,14 @@ theme_override_constants/separation = 20
 
 [node name="GameOverLabel" type="Label" parent="VBox"]
 layout_mode = 2
-text = "GAME OVER"
+text = "ПОРАЖЕНИЕ"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(1, 0.2, 0.2, 1)
 theme_override_font_sizes/font_size = 48
 
 [node name="SubLabel" type="Label" parent="VBox"]
 layout_mode = 2
-text = "The throne has been destroyed..."
+text = "Трон был уничтожен..."
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_font_sizes/font_size = 16
@@ -56,10 +61,10 @@ alignment = 1
 
 [node name="RestartButton" type="Button" parent="VBox/ButtonContainer"]
 layout_mode = 2
-custom_minimum_size = Vector2(120, 40)
-text = "Restart"
+custom_minimum_size = Vector2(150, 45)
+text = "Заново"
 
 [node name="ExitButton" type="Button" parent="VBox/ButtonContainer"]
 layout_mode = 2
-custom_minimum_size = Vector2(120, 40)
-text = "Exit"
+custom_minimum_size = Vector2(150, 45)
+text = "Главное меню"

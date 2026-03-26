@@ -1,14 +1,14 @@
-[gd_scene format=3 uid="uid://chgjko7nx4ioh"]
+[gd_scene format=3 uid="uid://dpkc7ubniy8sy"]
 
 [ext_resource type="Script" uid="uid://b2wn3ur2nr36r" path="res://scenes/menu/main_menu.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://dyxu0vefqn06w" path="res://assets/sprites/logo/logo (2).png" id="2_logo"]
 [ext_resource type="PackedScene" path="res://scenes/menu/screens/main_buttons.tscn" id="3_main"]
 [ext_resource type="PackedScene" path="res://scenes/menu/screens/slots_screen.tscn" id="4_slots"]
 [ext_resource type="PackedScene" path="res://scenes/menu/screens/hub_screen.tscn" id="5_hub"]
-[ext_resource type="PackedScene" uid="uid://cbo3k4y3afjvx" path="res://scenes/menu/screens/map_screen.tscn" id="6_map"]
+[ext_resource type="PackedScene" uid="uid://cjq4dt7usdvhv" path="res://scenes/menu/screens/map_screen.tscn" id="6_map"]
 [ext_resource type="PackedScene" path="res://scenes/menu/screens/settings_screen.tscn" id="7_settings"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=49888735]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,7 +17,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="BG" type="ColorRect" parent="."]
+[node name="BG" type="ColorRect" parent="." unique_id=1183596995]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,28 +26,33 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.02, 0.01, 0.05, 1)
 
-[node name="Logo" type="TextureRect" parent="."]
+[node name="Logo" type="TextureRect" parent="." unique_id=867741158]
 texture_filter = 1
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -200.0
-offset_top = 6.0
+offset_top = 36.0
 offset_right = 200.0
-offset_bottom = 195.0
+offset_bottom = 225.0
 grow_horizontal = 2
 mouse_filter = 2
 texture = ExtResource("2_logo")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="MainButtons" parent="." instance=ExtResource("3_main")]
+[node name="MainButtons" parent="." unique_id=756416907 instance=ExtResource("3_main")]
+layout_mode = 1
 
-[node name="SlotsScreen" parent="." instance=ExtResource("4_slots")]
+[node name="SlotsScreen" parent="." unique_id=1119504985 instance=ExtResource("4_slots")]
+layout_mode = 1
 
-[node name="HubScreen" parent="." instance=ExtResource("5_hub")]
+[node name="HubScreen" parent="." unique_id=409641407 instance=ExtResource("5_hub")]
+layout_mode = 1
 
-[node name="MapScreen" parent="." instance=ExtResource("6_map")]
+[node name="MapScreen" parent="." unique_id=67614201 instance=ExtResource("6_map")]
+layout_mode = 1
 
-[node name="SettingsScreen" parent="." instance=ExtResource("7_settings")]
+[node name="SettingsScreen" parent="." unique_id=132715312 instance=ExtResource("7_settings")]
+layout_mode = 1

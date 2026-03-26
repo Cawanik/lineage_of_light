@@ -15,7 +15,8 @@ var _alert_bg_tex: Texture2D = null
 
 
 func _ready() -> void:
-	layer = 90
+	layer = 108
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	if ResourceLoader.exists("res://assets/sprites/ui/alert_bg.png"):
 		_alert_bg_tex = load("res://assets/sprites/ui/alert_bg.png")
 
@@ -57,7 +58,6 @@ func _create_alert(text: String, color: Color) -> Control:
 	var container = Control.new()
 	container.custom_minimum_size = Vector2(200, 50)
 	container.size = Vector2(200, 50)
-	# Спрайт 200x50, растягиваем x2
 
 	# Фон — текстура
 	if _alert_bg_tex:
@@ -107,3 +107,26 @@ func alert_info(text: String) -> void:
 
 func alert_success(text: String) -> void:
 	show_alert(text, Color(0.3, 1.0, 0.4))
+
+
+# Постоянный алёрт (не исчезает)
+var _persistent_alert: Control = null
+
+func show_persistent(text: String, color: Color = Color(1.0, 0.85, 0.2)) -> void:
+	hide_persistent()
+	_persistent_alert = _create_alert(text, color)
+	var vp_size = get_viewport().get_visible_rect().size
+	_persistent_alert.position = Vector2(vp_size.x * 0.5 - _persistent_alert.size.x * 0.5, ALERT_OFFSET_Y)
+	_persistent_alert.modulate = Color(1, 1, 1, 0)
+	add_child(_persistent_alert)
+	var tween = create_tween()
+	tween.tween_property(_persistent_alert, "modulate:a", 1.0, FADE_DURATION)
+
+
+func hide_persistent() -> void:
+	if _persistent_alert and is_instance_valid(_persistent_alert):
+		var alert = _persistent_alert
+		_persistent_alert = null
+		var tween = create_tween()
+		tween.tween_property(alert, "modulate:a", 0.0, FADE_DURATION)
+		tween.tween_callback(alert.queue_free)

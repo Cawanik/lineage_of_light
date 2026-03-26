@@ -39,6 +39,18 @@ func _ready() -> void:
 		AudioManager.play("build")
 	)
 
+	# Разрешение экрана
+	$Center/VBox/WindowButtons/Res720.pressed.connect(func(): _set_resolution(1280, 720))
+	$Center/VBox/WindowButtons/Res900.pressed.connect(func(): _set_resolution(1600, 900))
+	$Center/VBox/WindowButtons/Res1080.pressed.connect(func(): _set_resolution(1920, 1080))
+	$Center/VBox/Fullscreen.button_pressed = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+	$Center/VBox/Fullscreen.toggled.connect(func(on):
+		if on:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	)
+
 	_build_toolbar_binds()
 
 
@@ -151,6 +163,13 @@ func _key_to_string(keycode: int) -> String:
 		KEY_TAB: return "Tab"
 		KEY_ENTER: return "Enter"
 		_: return OS.get_keycode_string(keycode)
+
+
+func _set_resolution(w: int, h: int) -> void:
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	DisplayServer.window_set_size(Vector2i(w, h))
+	DisplayServer.window_set_position((DisplayServer.screen_get_size() - Vector2i(w, h)) / 2)
+	$Center/VBox/Fullscreen.button_pressed = false
 
 
 func _on_back_pressed() -> void:

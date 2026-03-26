@@ -115,7 +115,8 @@
       "Bash(\"$FFMPEG\" -i /c/Users/user/WebstormProjects/lineage_of_light/main_menu.wav -af \"afade=t=out:st=0:d=0\" -c:a libvorbis -q:a 5 /tmp/main_menu_full.ogg -y)",
       "Bash(\"$FFMPEG\" -i /tmp/main_menu_full.ogg)",
       "Bash(\"$FFMPEG\" -i /c/Users/user/WebstormProjects/lineage_of_light/main_menu.wav -t 166.81 -c:a libvorbis -q:a 5 /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/music/main_menu.ogg -y)",
-      "Bash(\"$FFMPEG\" -i /c/Users/user/WebstormProjects/lineage_of_light/main_menu.wav -c:a libvorbis -q:a 5 /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/music/main_menu.ogg -y)"
+      "Bash(\"$FFMPEG\" -i /c/Users/user/WebstormProjects/lineage_of_light/main_menu.wav -c:a libvorbis -q:a 5 /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/music/main_menu.ogg -y)",
+      "WebSearch"
     ]
   }
 }

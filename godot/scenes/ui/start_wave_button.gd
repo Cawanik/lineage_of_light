@@ -14,9 +14,14 @@ func _ready() -> void:
 	_update_wave_text()
 
 
+var force_hidden: bool = false
+
 func _process(_delta: float) -> void:
 	_update_wave_text()
-	visible = PhaseManager.is_build_phase()
+	if force_hidden:
+		visible = false
+	else:
+		visible = PhaseManager.is_build_phase()
 
 
 func _update_wave_text() -> void:

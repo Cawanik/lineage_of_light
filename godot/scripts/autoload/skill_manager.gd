@@ -13,7 +13,7 @@ var unlocked: Dictionary = {}  # skill_id -> true
 var allowed_skills: Array = []
 
 
-const DEFAULT_UNLOCKED = ["build_plan", "archers", "walls", "flat_view"]
+const DEFAULT_UNLOCKED = ["build_plan", "archers", "flat_view", "magic_abilities"]
 
 
 func _ready() -> void:
@@ -165,5 +165,4 @@ func is_repair_active() -> bool:
 
 func reset() -> void:
 	unlocked.clear()
-	for skill_id in DEFAULT_UNLOCKED:
-		unlocked[skill_id] = true
+	allowed_skills = []

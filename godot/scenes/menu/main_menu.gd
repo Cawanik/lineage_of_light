@@ -44,20 +44,22 @@ func _ready() -> void:
 	_current_screen = main_buttons
 
 	# Сигналы главных кнопок
-	main_buttons.get_node("NewGame").pressed.connect(func(): _show_slots("new"))
-	main_buttons.get_node("Continue").pressed.connect(func(): _show_slots("load"))
-	main_buttons.get_node("Settings").pressed.connect(_on_settings)
-	main_buttons.get_node("Quit").pressed.connect(_on_quit)
+	main_buttons.get_node("VBox/NewGame").pressed.connect(func(): _show_slots("new"))
+	main_buttons.get_node("VBox/Continue").pressed.connect(func(): _show_slots("load"))
+	main_buttons.get_node("VBox/Settings").pressed.connect(_on_settings)
+	main_buttons.get_node("VBox/Quit").pressed.connect(_on_quit)
 
-	# Сигналы слотов
-	slots_screen.slot_selected.connect(_on_slot_selected)
-	slots_screen.slot_deleted.connect(_on_slot_deleted)
-	slots_screen.back_pressed.connect(func(): _switch_to(main_buttons, true))
+	# Сигналы слотов (скрипт на Inner)
+	var slots_inner = slots_screen.get_node("Inner")
+	slots_inner.slot_selected.connect(_on_slot_selected)
+	slots_inner.slot_deleted.connect(_on_slot_deleted)
+	slots_inner.back_pressed.connect(func(): _switch_to(main_buttons, true))
 
-	# Сигналы хаба
-	hub_screen.skill_tree_pressed.connect(_on_hub_skill_tree)
-	hub_screen.map_pressed.connect(_on_hub_map)
-	hub_screen.back_pressed.connect(func():
+	# Сигналы хаба (скрипт на Inner)
+	var hub_inner = hub_screen.get_node("Inner")
+	hub_inner.skill_tree_pressed.connect(_on_hub_skill_tree)
+	hub_inner.map_pressed.connect(_on_hub_map)
+	hub_inner.back_pressed.connect(func():
 		_save_current_slot()
 		_switch_to(main_buttons, true)
 	)
@@ -89,6 +91,9 @@ func _stylize_all_buttons() -> void:
 
 
 func _stylize_buttons_recursive(node: Node, btn_tex: Texture2D) -> void:
+	# Пропускаем кнопки разрешения
+	if node.get_parent() and node.get_parent().name == "WindowButtons":
+		return
 	if node is Button and not node is TextureButton and not node is CheckBox:
 		var btn = node as Button
 		# Создаём StyleBoxTexture
@@ -109,12 +114,18 @@ func _stylize_buttons_recursive(node: Node, btn_tex: Texture2D) -> void:
 		var style_pressed = style.duplicate()
 		style_pressed.modulate_color = Color(0.8, 0.7, 0.9)
 
+		var style_disabled = style.duplicate()
+		style_disabled.modulate_color = Color(0.5, 0.5, 0.5)
+
 		btn.add_theme_stylebox_override("normal", style)
 		btn.add_theme_stylebox_override("hover", style_hover)
 		btn.add_theme_stylebox_override("pressed", style_pressed)
+		btn.add_theme_stylebox_override("disabled", style_disabled)
+		btn.add_theme_stylebox_override("hover_pressed", style_hover)
 		btn.add_theme_stylebox_override("focus", style)
 		btn.add_theme_color_override("font_color", Color("#e8e0ff"))
 		btn.add_theme_color_override("font_hover_color", Color("#f0e8ff"))
+		btn.add_theme_color_override("font_disabled_color", Color("#666666"))
 		btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
 	for child in node.get_children():
@@ -140,11 +151,14 @@ func _switch_to(screen: Control, show_logo: bool = false) -> void:
 
 	# Logo
 	if show_logo and logo:
-		tween.tween_callback(func(): logo.visible = true)
+		tween.tween_callback(func():
+			logo.visible = true
+			logo.modulate.a = 0.0
+		)
 		tween.tween_property(logo, "modulate:a", 1.0, 0.2)
 	elif logo and logo.visible:
-		logo.modulate.a = 0.0
-		logo.visible = false
+		tween.tween_property(logo, "modulate:a", 0.0, 0.2)
+		tween.tween_callback(func(): logo.visible = false)
 
 	# Fade in нового
 	tween.tween_callback(func():
@@ -154,20 +168,29 @@ func _switch_to(screen: Control, show_logo: bool = false) -> void:
 	tween.tween_property(screen, "modulate:a", 1.0, 0.2)
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if _current_screen == slots_screen:
+			_switch_to(main_buttons, true)
+		elif _current_screen == hub_screen:
+			_save_current_slot()
+			_switch_to(main_buttons, true)
+		elif _current_screen == map_screen:
+			_switch_to(hub_screen)
+		elif _current_screen == settings_screen:
+			_save_settings()
+			_switch_to(main_buttons, true)
+		get_viewport().set_input_as_handled()
+
+
 # === Главное меню ===
 
 func _show_slots(mode: String) -> void:
-	slots_screen.show_slots(mode, _save_data)
+	slots_screen.get_node("Inner").show_slots(mode, _save_data)
 	_switch_to(slots_screen)
-	if logo:
-		var t = create_tween()
-		t.tween_property(logo, "modulate:a", 0.0, 0.2)
 
 
 func _on_settings() -> void:
-	if logo:
-		var t = create_tween()
-		t.tween_property(logo, "modulate:a", 0.0, 0.2)
 	_switch_to(settings_screen)
 
 
@@ -184,7 +207,7 @@ func _on_quit() -> void:
 
 func _on_slot_selected(slot: int, mode: String) -> void:
 	if mode == "new":
-		_save_data[slot] = {"souls": 0, "wave": 0, "unlocked_skills": SkillManager.DEFAULT_UNLOCKED.duplicate(), "completed_maps": []}
+		_save_data[slot] = {"souls": 0, "wave": 0, "unlocked_skills": [], "completed_maps": []}
 		_save_slot(slot)
 	_open_hub(slot)
 
@@ -194,7 +217,7 @@ func _on_slot_deleted(slot: int) -> void:
 	var path = SAVE_PATH + "slot_%d.json" % slot
 	if FileAccess.file_exists(path):
 		DirAccess.remove_absolute(path)
-	slots_screen.show_slots(slots_screen._mode, _save_data)
+	slots_screen.get_node("Inner").show_slots(slots_screen.get_node("Inner")._mode, _save_data)
 
 
 # === Хаб ===
@@ -204,11 +227,13 @@ func _open_hub(slot: int) -> void:
 	var data = _save_data[slot]
 	GameManager.current_save_slot = slot
 	GameManager.souls = data.get("souls", 0)
+	GameManager.tutorial_completed = data.get("tutorial_completed", false)
+	GameManager.first_death_dialogue = data.get("first_death_dialogue", false)
 	SkillManager.reset()
 	for skill_id in data.get("unlocked_skills", []):
 		SkillManager.unlocked[skill_id] = true
 
-	hub_screen.update_info("Остров")
+	hub_screen.get_node("Inner").update_info("Остров")
 	_switch_to(hub_screen)
 
 
@@ -220,7 +245,7 @@ func _on_hub_skill_tree() -> void:
 	skill_tree.visibility_changed.connect(func():
 		if not skill_tree.visible:
 			_save_current_slot()
-			hub_screen.update_info("Остров")
+			hub_screen.get_node("Inner").update_info("Остров")
 			skill_tree.queue_free()
 	)
 
@@ -241,6 +266,7 @@ func _on_map_play(map: Dictionary) -> void:
 			al.alert_error("Локация недоступна")
 		return
 	GameManager.current_map = map.get("id", "")
+	GameManager.skip_tutorial = map_screen.skip_tutorial
 	_save_current_slot()
 	var am = get_node_or_null("/root/AudioManager")
 	if am:
@@ -265,6 +291,10 @@ func _save_current_slot() -> void:
 
 func _save_slot(slot: int) -> void:
 	DirAccess.make_dir_recursive_absolute(SAVE_PATH)
+	var now = Time.get_datetime_dict_from_system()
+	var date_str = "%04d-%02d-%02d %02d:%02d:%02d" % [now["year"], now["month"], now["day"], now["hour"], now["minute"], now["second"]]
+	_save_data[slot]["last_saved"] = date_str
+	print("[Save] Slot %d saved at %s" % [slot, date_str])
 	var path = SAVE_PATH + "slot_%d.json" % slot
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(JSON.stringify(_save_data[slot], "\t"))

@@ -1,31 +1,27 @@
 [gd_scene format=3]
 
-[node name="MainButtons" type="VBoxContainer"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -120.0
-offset_right = 120.0
-offset_top = -80.0
-offset_bottom = 80.0
+[node name="MainButtons" type="CenterContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="."]
 theme_override_constants/separation = 12
 
-[node name="NewGame" type="Button" parent="."]
-custom_minimum_size = Vector2(240, 50)
-text = "Новая игра"
-
-[node name="Continue" type="Button" parent="."]
+[node name="Continue" type="Button" parent="VBox"]
 custom_minimum_size = Vector2(240, 50)
 text = "Продолжить"
 
-[node name="Settings" type="Button" parent="."]
+[node name="NewGame" type="Button" parent="VBox"]
+custom_minimum_size = Vector2(240, 50)
+text = "Новая игра"
+
+[node name="Settings" type="Button" parent="VBox"]
 custom_minimum_size = Vector2(240, 50)
 text = "Настройки"
 
-[node name="Quit" type="Button" parent="."]
+[node name="Quit" type="Button" parent="VBox"]
 custom_minimum_size = Vector2(240, 50)
 text = "Выход"

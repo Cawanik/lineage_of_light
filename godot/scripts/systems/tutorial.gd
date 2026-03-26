@@ -10,12 +10,16 @@ signal tutorial_finished
 enum Step {
 	INTRO,
 	WAIT_MOVE,
+	WAIT_ZOOM,
 	EXPLAIN_QUEST,
 	WAIT_SKILL_TREE,
 	GIVE_CRYSTALS,
 	WAIT_SKILLS_UNLOCKED,
 	BOOK_INTRO,
 	OWNER_LEAVES,
+	FLAT_VIEW_ON,
+	WAIT_FLAT_VIEW_ON,
+	WAIT_FLAT_VIEW_OFF,
 	WAIT_BUILD_ARCHERS,
 	ENEMY_ARRIVES,
 	WAIT_ENEMY_DEAD,
@@ -25,6 +29,10 @@ enum Step {
 
 var current_step: Step = Step.INTRO
 var _player_moved: bool = false
+var _player_zoomed: bool = false
+var _flat_view_entered: bool = false
+var _flat_view_dialogue_shown: bool = false
+var _initial_zoom: float = 0.0
 var _skill_tree_opened: bool = false
 var _required_skills_unlocked: bool = false
 var _archers_placed: bool = false
@@ -64,6 +72,11 @@ func _start_tutorial() -> void:
 	# Блокируем таймер строительства
 	PhaseManager._build_timer = 999999.0
 
+	# Скрываем кнопку пропуска фазы
+	var wave_btn = get_tree().current_scene.get_node_or_null("UILayer/StartWaveButton")
+	if wave_btn:
+		wave_btn.force_hidden = true
+
 	_advance(Step.INTRO)
 
 
@@ -74,7 +87,17 @@ func _process(_delta: float) -> void:
 				var player = get_tree().current_scene.get_node_or_null("YSort/Player") as Player
 				if player and player.velocity.length() > 1.0:
 					_player_moved = true
-					_advance(Step.EXPLAIN_QUEST)
+					_advance(Step.WAIT_ZOOM)
+
+		Step.WAIT_ZOOM:
+			if not _player_zoomed:
+				var player = get_tree().current_scene.get_node_or_null("YSort/Player") as Player
+				if player and player.camera:
+					if _initial_zoom == 0.0:
+						_initial_zoom = player.camera.zoom.x
+					if absf(player.camera.zoom.x - _initial_zoom) > 0.05:
+						_player_zoomed = true
+						_advance(Step.EXPLAIN_QUEST)
 
 		Step.WAIT_SKILL_TREE:
 			var st = get_tree().current_scene.get_node_or_null("SkillTree")
@@ -92,11 +115,28 @@ func _process(_delta: float) -> void:
 			if all_unlocked:
 				_required_skills_unlocked = true
 				_hide_hint()
+				if SkillManager.skill_unlocked.is_connected(_on_tutorial_skill_unlocked):
+					SkillManager.skill_unlocked.disconnect(_on_tutorial_skill_unlocked)
 				# Закрываем дерево и показываем диалог книги
 				var st = get_tree().current_scene.get_node_or_null("SkillTree")
 				if st and st.visible:
 					st.close()
 				_advance(Step.BOOK_INTRO)
+
+		Step.WAIT_FLAT_VIEW_ON:
+			var main_fv = get_tree().current_scene
+			if main_fv and main_fv.get("_flat_view") == true:
+				_flat_view_entered = true
+				_unblock_input()
+				_show_hint("Осмотритесь. Выключите смену вида для продолжения")
+				current_step = Step.WAIT_FLAT_VIEW_OFF
+
+		Step.WAIT_FLAT_VIEW_OFF:
+			var main_fv2 = get_tree().current_scene
+			if main_fv2 and _flat_view_entered and main_fv2.get("_flat_view") == false and not _flat_view_dialogue_shown:
+				_flat_view_dialogue_shown = true
+				_unhighlight_toolbar_slot()
+				_advance(Step.WAIT_BUILD_ARCHERS)
 
 		Step.WAIT_BUILD_ARCHERS:
 			if not _archers_placed:
@@ -108,6 +148,7 @@ func _process(_delta: float) -> void:
 							_archers_placed = true
 							tutorial_restrict_placement = false
 							tutorial_allowed_tiles.clear()
+							_unhighlight_toolbar_slot()
 							# Выкидываем из режима строительства
 							var main = get_tree().current_scene
 							if main:
@@ -119,6 +160,7 @@ func _process(_delta: float) -> void:
 								if bm:
 									bm.visible = false
 									bm.is_open = false
+							_restore_full_block()
 							_advance(Step.ENEMY_ARRIVES)
 							break
 
@@ -147,15 +189,20 @@ func _advance(step: Step) -> void:
 	match step:
 		Step.INTRO:
 			_block_input()
+			_show_hint("Нажмите на диалоговое окно для продолжения")
 			_show_dialogue([
 				{"name": "Владыка", "text": "Ох, слава мне... Наконец-то получилось. Знаешь, сколько я потратил маны на этот ритуал? Не знаешь. И лучше тебе не знать.", "portrait": PORTRAIT_OWNER, "voice": ""},
 				{"name": "Вы", "text": "Что?.. Кто я? Где я? Почему так темно? И почему от вас веет... смертью?", "portrait": PORTRAIT_PLAYER, "voice": ""},
 				{"name": "Владыка", "text": "Вопросы потом. Сейчас мне нужно убедиться, что ты не бракованный. Пошевелись-ка.", "portrait": PORTRAIT_OWNER, "voice": ""},
 			], func():
 				_unblock_input()
+				_show_hint("Используйте WASD для перемещения")
 				_advance(Step.WAIT_MOVE)
 			)
-			_show_hint("Используйте WASD для перемещения")
+
+		Step.WAIT_ZOOM:
+			_hide_hint()
+			_show_hint("Прокрутите колёсико мыши для изменения масштаба")
 
 		Step.EXPLAIN_QUEST:
 			_block_input()
@@ -167,7 +214,7 @@ func _advance(step: Step) -> void:
 				{"name": "Владыка", "text": "Мне нужен архитектор. Лучший. А ты, говорят, в мире людей строил что-то... как это... \"офисные центры\"? Звучит ужасающе. Идеально.", "portrait": PORTRAIT_OWNER, "voice": ""},
 				{"name": "Владыка", "text": "Я дам тебе силу, бессмертие и полное отсутствие дедлайнов. Взамен — построй мне крепость, которую эти параноики не смогут разрушить. Согласен?", "portrait": PORTRAIT_OWNER, "voice": ""},
 				{"name": "Вы", "text": "...", "portrait": PORTRAIT_PLAYER, "voice": ""},
-				{"name": "Вы", "text": "Бессмертие и никаких дедлайнов? Это всё, о чём я мечтал! Конечно!", "portrait": PORTRAIT_PLAYER, "voice": ""},
+				{"name": "Вы", "text": "Никаких дедлайнов? Это всё, о чём я мечтал! Конечно!", "portrait": PORTRAIT_PLAYER, "voice": ""},
 				{"name": "Владыка", "text": "Восхитительно. Такой энтузиазм я видел только у свежеподнятых скелетов. Это комплимент, если что.", "portrait": PORTRAIT_OWNER, "voice": ""},
 				{"name": "Владыка", "text": "Теперь загляни в омут древних знаний. Там хранятся способности, которые помогут тебе в строительстве.", "portrait": PORTRAIT_OWNER, "voice": ""},
 			], func():
@@ -180,14 +227,15 @@ func _advance(step: Step) -> void:
 		Step.GIVE_CRYSTALS:
 			_block_input()
 			_hide_hint()
-			GameManager.souls += 5
+			GameManager.souls += 4
 			SkillManager.allowed_skills = REQUIRED_SKILLS.duplicate()
 			_show_dialogue([
-				{"name": "Владыка", "text": "Держи кристаллы — всё, что осталось после твоего призыва. Не благодари, ты и так обошёлся мне в целое состояние.", "portrait": PORTRAIT_OWNER, "voice": ""},
+				{"name": "Владыка", "text": "Держи четыре кристалла — всё, что осталось после твоего призыва. Не благодари, ты и так обошёлся мне в целое состояние.", "portrait": PORTRAIT_OWNER, "voice": ""},
 				{"name": "Владыка", "text": "Вложи их с умом: Строительный план, Лучники, Смена вида и Магические способности. Остальное — потом, когда заслужишь.", "portrait": PORTRAIT_OWNER, "voice": ""},
 			], func():
 				_unblock_input()
-				_show_hint("Прокачайте: Строительный план, Лучники, Смена вида, Магические способности")
+				_update_skills_hint()
+				SkillManager.skill_unlocked.connect(_on_tutorial_skill_unlocked)
 				current_step = Step.WAIT_SKILLS_UNLOCKED
 			)
 
@@ -207,16 +255,40 @@ func _advance(step: Step) -> void:
 
 		Step.OWNER_LEAVES:
 			_block_input()
+			# Владыка уходит с поля
+			var lich = get_tree().current_scene.get_node_or_null("YSort/LichKing")
+			if lich:
+				var tween = create_tween()
+				tween.tween_property(lich, "modulate:a", 0.0, 0.5)
+				tween.tween_callback(lich.queue_free)
 			_show_dialogue([
 				{"name": "Книга", "text": "Ушёл. Наконец-то. Ладно, слушай сюда, человечек.", "portrait": PORTRAIT_BOOK, "voice": ""},
 				{"name": "Книга", "text": "Видишь этот трон? Это единственное, что стоит между нами и толпой людей, которые почему-то считают, что мы угрожаем их существованию. Мы! Которые сидим тут тише воды, ниже травы!", "portrait": PORTRAIT_BOOK, "voice": ""},
-				{"name": "Книга", "text": "Поставь лучников рядом с троном. Да-да, скелетов с луками. Не спрашивай, откуда у них глаза — просто ставь.", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "Прежде чем строить — Владыка дал тебе дар видеть суть вещей. Попробуй активировать его.", "portrait": PORTRAIT_BOOK, "voice": ""},
+			], func():
+				_unblock_input()
+				_advance(Step.FLAT_VIEW_ON)
+			)
+			_show_hint("Постройте башню лучников рядом с троном")
+
+		Step.FLAT_VIEW_ON:
+			_block_input_except_toolbar()
+			_show_hint("Нажмите кнопку смены вида")
+			_highlight_toolbar_slot(4)  # Слот 5 = flat view (индекс 4)
+			current_step = Step.WAIT_FLAT_VIEW_ON
+
+		Step.WAIT_BUILD_ARCHERS:
+			_block_input()
+			_hide_hint()
+			_show_dialogue([
+				{"name": "Книга", "text": "Видишь? Теперь ты можешь видеть истинную природу построек. Полезно, когда всё начнёт разрастаться.", "portrait": PORTRAIT_BOOK, "voice": ""},
+				{"name": "Книга", "text": "А теперь к делу. Поставь лучников рядом с троном. Да-да, скелетов с луками. Не спрашивай, откуда у них глаза — просто ставь.", "portrait": PORTRAIT_BOOK, "voice": ""},
 			], func():
 				_unblock_input()
 				_setup_throne_placement()
-				_advance(Step.WAIT_BUILD_ARCHERS)
+				_highlight_toolbar_slot(0)
+				_show_hint("Постройте башню лучников рядом с троном")
 			)
-			_show_hint("Постройте башню лучников рядом с троном")
 
 		Step.ENEMY_ARRIVES:
 			_block_input()
@@ -226,6 +298,7 @@ func _advance(step: Step) -> void:
 				{"name": "Книга", "text": "Стоп. Ты слышишь? Шаги. Кажется, к нам кто-то идёт...", "portrait": PORTRAIT_BOOK, "voice": ""},
 			], func():
 				_unblock_input()
+				GameManager.tutorial_wave = true
 				PhaseManager.current_phase = PhaseManager.Phase.COMBAT
 				PhaseManager.phase_changed.emit(PhaseManager.Phase.COMBAT)
 				PhaseManager._transition_to_day()
@@ -246,6 +319,12 @@ func _advance(step: Step) -> void:
 			_hide_hint()
 			_unblock_input()
 			SkillManager.allowed_skills = []
+			GameManager.tutorial_wave = false
+			GameManager.tutorial_completed = true
+			# Показываем кнопку пропуска фазы
+			var wave_btn = get_tree().current_scene.get_node_or_null("UILayer/StartWaveButton")
+			if wave_btn:
+				wave_btn.force_hidden = false
 			# Возвращаем фазу строительства
 			PhaseManager.current_phase = PhaseManager.Phase.BUILD
 			PhaseManager._build_timer = PhaseManager.build_time
@@ -276,7 +355,7 @@ var _hint_label: Label = null
 
 func _create_block_layer() -> void:
 	_block_layer = CanvasLayer.new()
-	_block_layer.layer = 105  # Над SkillTree (100), под DialogueBox (110) и Hint (120)
+	_block_layer.layer = 105
 	add_child(_block_layer)
 
 	_block_rect = ColorRect.new()
@@ -284,9 +363,69 @@ func _create_block_layer() -> void:
 	_block_rect.anchors_preset = Control.PRESET_FULL_RECT
 	_block_rect.anchor_right = 1.0
 	_block_rect.anchor_bottom = 1.0
-	_block_rect.mouse_filter = Control.MOUSE_FILTER_STOP  # Блокирует весь инпут под собой
+	_block_rect.mouse_filter = Control.MOUSE_FILTER_STOP
 	_block_layer.add_child(_block_rect)
 	_block_layer.visible = false
+
+
+var _toolbar_passthrough: Control = null
+
+func _block_input_except_toolbar() -> void:
+	if not _block_layer:
+		_create_block_layer()
+	_block_layer.visible = true
+	# Добавляем прозрачную дырку над тулбаром
+	if not _toolbar_passthrough:
+		_toolbar_passthrough = Control.new()
+		_toolbar_passthrough.anchors_preset = Control.PRESET_BOTTOM_RIGHT
+		_toolbar_passthrough.anchor_left = 1.0
+		_toolbar_passthrough.anchor_top = 1.0
+		_toolbar_passthrough.anchor_right = 1.0
+		_toolbar_passthrough.anchor_bottom = 1.0
+		_toolbar_passthrough.offset_left = -270.0
+		_toolbar_passthrough.offset_top = -270.0
+		_toolbar_passthrough.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_block_layer.add_child(_toolbar_passthrough)
+	# Скрываем главный блок-рект чтобы показать L-образный блок
+	_block_rect.visible = false
+	# Создаём 2 прямоугольника вокруг тулбара
+	_clear_toolbar_block_rects()
+	# Верхняя полоса (всё кроме правого нижнего угла)
+	var top = ColorRect.new()
+	top.name = "BlockTop"
+	top.color = Color(0, 0, 0, 0.5)
+	top.anchors_preset = Control.PRESET_TOP_WIDE
+	top.anchor_right = 1.0
+	top.anchor_bottom = 1.0
+	top.offset_bottom = -270.0  # Оставляем место снизу для тулбара
+	top.mouse_filter = Control.MOUSE_FILTER_STOP
+	_block_layer.add_child(top)
+	# Левая нижняя полоса (слева от тулбара)
+	var bottom_left = ColorRect.new()
+	bottom_left.name = "BlockBottomLeft"
+	bottom_left.color = Color(0, 0, 0, 0.5)
+	bottom_left.anchor_top = 1.0
+	bottom_left.anchor_bottom = 1.0
+	bottom_left.anchor_right = 1.0
+	bottom_left.offset_top = -270.0
+	bottom_left.offset_right = -270.0
+	bottom_left.mouse_filter = Control.MOUSE_FILTER_STOP
+	_block_layer.add_child(bottom_left)
+
+
+func _clear_toolbar_block_rects() -> void:
+	for child in _block_layer.get_children():
+		if child.name in ["BlockTop", "BlockBottomLeft"]:
+			child.queue_free()
+
+
+func _restore_full_block() -> void:
+	_clear_toolbar_block_rects()
+	if _toolbar_passthrough and is_instance_valid(_toolbar_passthrough):
+		_toolbar_passthrough.queue_free()
+		_toolbar_passthrough = null
+	if _block_rect:
+		_block_rect.visible = true
 
 
 func _block_input() -> void:
@@ -296,40 +435,73 @@ func _block_input() -> void:
 
 
 func _unblock_input() -> void:
+	_restore_full_block()
 	if _block_layer:
 		_block_layer.visible = false
 
 
-var _hint_layer: CanvasLayer = null
-
 func _show_hint(text: String) -> void:
-	if not _hint_label:
-		# Свой CanvasLayer чтобы подсказка была поверх всего
-		_hint_layer = CanvasLayer.new()
-		_hint_layer.layer = 120
-		add_child(_hint_layer)
-
-		_hint_label = Label.new()
-		_hint_label.anchors_preset = Control.PRESET_CENTER_TOP
-		_hint_label.anchor_left = 0.5
-		_hint_label.anchor_right = 0.5
-		_hint_label.offset_left = -200
-		_hint_label.offset_right = 200
-		_hint_label.offset_top = 50
-		_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		_hint_label.add_theme_font_size_override("font_size", 14)
-		_hint_label.add_theme_color_override("font_color", Color("#f0d060"))
-		_hint_layer.add_child(_hint_label)
-	_hint_label.text = text
-	_hint_label.visible = true
+	var al = get_node_or_null("/root/AlertSystem")
+	if al:
+		al.show_persistent(text)
 
 
 func _hide_hint() -> void:
-	if _hint_label:
-		_hint_label.visible = false
+	var al = get_node_or_null("/root/AlertSystem")
+	if al:
+		al.hide_persistent()
 
 
 var _enemy_weakened: bool = false
+var _highlighted_slot: Node = null
+var _highlight_slot_tween: Tween = null
+
+
+func _highlight_toolbar_slot(index: int) -> void:
+	_unhighlight_toolbar_slot()
+	var main = get_tree().current_scene
+	var grid = main.get_node_or_null("UILayer/Toolbar/Grid") if main else null
+	if not grid:
+		return
+	var slots = grid.get_children()
+	if index >= slots.size():
+		return
+	_highlighted_slot = slots[index]
+	_highlight_slot_tween = create_tween().set_loops()
+	_highlight_slot_tween.tween_property(_highlighted_slot, "modulate", Color(1.5, 1.2, 1.8), 0.4)
+	_highlight_slot_tween.tween_property(_highlighted_slot, "modulate", Color.WHITE, 0.4)
+
+
+func _unhighlight_toolbar_slot() -> void:
+	if _highlight_slot_tween and _highlight_slot_tween.is_valid():
+		_highlight_slot_tween.kill()
+	if _highlighted_slot and is_instance_valid(_highlighted_slot):
+		_highlighted_slot.modulate = Color.WHITE
+	_highlighted_slot = null
+	_highlight_slot_tween = null
+
+const SKILL_NAMES: Dictionary = {
+	"build_plan": "Строительный план",
+	"archers": "Лучники",
+	"flat_view": "Смена вида",
+	"magic_abilities": "Магические способности",
+}
+
+
+func _on_tutorial_skill_unlocked(_skill_id: String) -> void:
+	if current_step == Step.WAIT_SKILLS_UNLOCKED:
+		_update_skills_hint()
+
+
+func _update_skills_hint() -> void:
+	var remaining: Array[String] = []
+	for skill_id in REQUIRED_SKILLS:
+		if not SkillManager.is_unlocked(skill_id):
+			remaining.append(SKILL_NAMES.get(skill_id, skill_id))
+	if remaining.is_empty():
+		_hide_hint()
+	else:
+		_show_hint("Прокачайте: " + ", ".join(remaining))
 var _skill_tree_btn_original_parent: Node = null
 var _skill_tree_btn_original_z: int = 0
 

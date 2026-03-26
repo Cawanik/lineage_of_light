@@ -107,7 +107,8 @@ func end_combat_phase() -> void:
 	if current_phase == Phase.BUILD:
 		return
 	# Награда за волну — 1 кристалл + бонус от шпилей
-	GameManager.souls += 1 + GameManager.get_soul_bonus()
+	if not GameManager.tutorial_wave:
+		GameManager.souls += 1 + GameManager.get_soul_bonus()
 	# Отхиливаем все здания
 	_heal_all_buildings()
 	_start_build_phase()

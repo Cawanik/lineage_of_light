@@ -2,32 +2,28 @@
 
 [ext_resource type="Script" path="res://scenes/menu/screens/slots_screen.gd" id="1_script"]
 
-[node name="SlotsScreen" type="VBoxContainer"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -160.0
-offset_right = 160.0
-offset_top = -120.0
-offset_bottom = 120.0
+[node name="SlotsScreen" type="CenterContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Inner" type="VBoxContainer" parent="."]
 theme_override_constants/separation = 12
 script = ExtResource("1_script")
 
-[node name="Title" type="Label" parent="."]
+[node name="Title" type="Label" parent="Inner"]
 horizontal_alignment = 1
 text = "Новая игра"
 theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.91, 0.878, 1, 1)
 
-[node name="Slots" type="VBoxContainer" parent="."]
+[node name="Slots" type="VBoxContainer" parent="Inner"]
 theme_override_constants/separation = 8
 
-[node name="Back" type="Button" parent="."]
+[node name="Back" type="Button" parent="Inner"]
 custom_minimum_size = Vector2(280, 50)
 text = "← Назад"
 
-[connection signal="pressed" from="Back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="Inner/Back" to="Inner" method="_on_back_pressed"]

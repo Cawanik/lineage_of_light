@@ -880,7 +880,8 @@ func die() -> void:
 		return
 	is_dead = true
 	state = State.DEAD
-	GameManager.earn_gold(reward)
+	if not GameManager.tutorial_wave:
+		GameManager.earn_gold(reward)
 	WaveManager.on_enemy_died()
 
 	var tween = create_tween()
