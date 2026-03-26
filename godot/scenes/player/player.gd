@@ -296,15 +296,29 @@ func _update_animation(input: Vector2) -> void:
 func _play_cast_animation() -> void:
 	_gcd = GCD_TIME
 	_cast_direction = last_direction
+	_reset_afk()
+	_play_cast_flash()
+
+	if velocity.length() > 1.0:
+		return  # В движении — только вспышка, анимации нет
+
 	var is_se = (last_direction == "south-east")
 	var cast_dir = "south-west" if is_se else last_direction
 	var dir_key = cast_dir.replace("-", "_")
-	var anim = ("cast_walk_" if velocity.length() > 1.0 else "cast_idle_") + dir_key
+	var anim = "cast_idle_" + dir_key
 	if sprite.sprite_frames.has_animation(anim):
 		_is_casting = true
 		sprite.flip_h = is_se
 		sprite.play(anim)
 		sprite.animation_finished.connect(func(): _is_casting = false, CONNECT_ONE_SHOT)
+
+
+func _play_cast_flash() -> void:
+	sprite.modulate = Color(5.0, 4.5, 8.0, 1.0)
+	sprite.scale = Vector2(1.1, 1.1)
+	var tween = create_tween().set_parallel(true)
+	tween.tween_property(sprite, "modulate", Color.WHITE, 0.2).set_ease(Tween.EASE_OUT)
+	tween.tween_property(sprite, "scale", Vector2(1.0, 1.0), 0.2).set_ease(Tween.EASE_OUT)
 
 
 func _vec_to_direction(v: Vector2) -> String:
@@ -370,9 +384,6 @@ func _try_cast(ability_id: String) -> void:
 		return
 	if _cooldowns.get(ability_id, 0.0) > 0.0:
 		return
-	var am = get_node_or_null("/root/AudioManager")
-	if am:
-		am.play("magic_cast")
 	match ability_id:
 		"magic_bolt":    _cast_magic_bolt()
 		"magic_missile": _cast_magic_missile()
@@ -382,6 +393,9 @@ func _try_cast(ability_id: String) -> void:
 		"storm":
 			_cast_storm()
 			return  # кулдаун ставится в _place_storm()
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("magic_cast")
 	_cooldowns[ability_id] = _abilities[ability_id].get("cooldown", 1.0)
 
 
@@ -477,6 +491,9 @@ func _place_fireball() -> void:
 	if not is_instance_valid(_fireball_ghost):
 		_fireball_placing = false
 		return
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("magic_cast")
 	_play_cast_animation()
 	_fireball_ghost.activate()
 	_fireball_ghost = null
@@ -519,6 +536,9 @@ func _place_storm() -> void:
 	if bg:
 		var base = _storm_ghost.get_meta("base_tile", Vector2i(-1, -1))
 		_storm_ghost.storm_tile = base
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("magic_cast")
 	_play_cast_animation()
 	_storm_ghost.modulate = Color(1, 1, 1, 1)
 	_storm_ghost.activate()

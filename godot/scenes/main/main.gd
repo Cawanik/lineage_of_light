@@ -155,6 +155,8 @@ func _load_combat_abilities() -> void:
 	_combat_abilities.clear()
 	var abilities = Config.player.get("abilities", {})
 	for id in abilities:
+		if id == "magic_missile":
+			continue  # замена magic_bolt через таланты, не отдельный слот
 		var ab = abilities[id]
 		var key_str = ab.get("key", "").to_upper()
 		# Иконка из skill_tree через маппинг

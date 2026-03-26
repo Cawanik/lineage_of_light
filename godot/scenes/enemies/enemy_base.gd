@@ -478,16 +478,21 @@ func _calculate_path_cost(path: Array[Vector2i]) -> float:
 	return move_time + break_time
 
 
-## Ищет любое здание (не wall_block, не трон) в 8 соседних клетках
+## Ищет любое здание (не wall_block, не трон) в соседних клетках.
+## Проверяет только 4 ортогональных тайла. Пропускает тайлы где между врагом и зданием есть стена.
 func _find_adjacent_tower() -> Building:
 	if not building_grid:
 		return null
-	var adjacent_tiles = [
-		current_tile + Vector2i(-1, -1), current_tile + Vector2i(0, -1), current_tile + Vector2i(1, -1),
-		current_tile + Vector2i(-1,  0),                                  current_tile + Vector2i(1,  0),
-		current_tile + Vector2i(-1,  1), current_tile + Vector2i(0,  1), current_tile + Vector2i(1,  1),
+	var orthogonal = [
+		current_tile + Vector2i( 0, -1),
+		current_tile + Vector2i(-1,  0),
+		current_tile + Vector2i( 1,  0),
+		current_tile + Vector2i( 0,  1),
 	]
-	for tile in adjacent_tiles:
+	for tile in orthogonal:
+		# Если между врагом и тайлом есть стена — пропускаем, враг должен атаковать стену
+		if wall_system and wall_system.edges.has(_make_edge_key(current_tile, tile)):
+			continue
 		var building = building_grid.get_building(tile)
 		if building and building is Building and building.building_type != "wall_block" and building.building_type != "throne":
 			return building
