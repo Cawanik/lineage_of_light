@@ -66,9 +66,7 @@ func _process(delta: float) -> void:
 		if _voice_blip_id != "":
 			for i in range(old_count, _char_count):
 				if i % BLIP_INTERVAL == 0 and _full_text[i] != " ":
-					var am = get_node_or_null("/root/AudioManager")
-					if am:
-						am.play(_voice_blip_id)
+					VoiceBlip.blip(_voice_blip_id)
 
 	if _char_count >= _full_text.length():
 		_is_typing = false

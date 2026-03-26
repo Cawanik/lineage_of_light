@@ -95,6 +95,9 @@ func _create_alert(text: String, color: Color) -> Control:
 # Хелперы
 func alert_error(text: String) -> void:
 	show_alert(text, Color(1.0, 0.3, 0.3))
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("error")
 
 
 func alert_warning(text: String) -> void:

@@ -41,22 +41,22 @@ func _ready() -> void:
 
 func _show_first_death_dialogue() -> void:
 	DialogueBox.say([
-		{"name": "Книга", "text": "НЕЕЕТ! Трон! Мой прекрасный выходной! Всё пропало!", "portrait": PORTRAIT_BOOK, "voice": ""},
-		{"name": "Книга", "text": "Ну ты и архитектор. \"Лучший из мира людей\", значит? Страшно представить худшего.", "portrait": PORTRAIT_BOOK, "voice": ""},
-		{"name": "Владыка", "text": "...", "portrait": PORTRAIT_OWNER, "voice": ""},
-		{"name": "Книга", "text": "В-владыка?! Вы уже вернулись?! Мы всё исправим, клянусь корешком!", "portrait": PORTRAIT_BOOK, "voice": ""},
-		{"name": "Владыка", "text": "Спокойно. Я не злюсь.", "portrait": PORTRAIT_OWNER, "voice": ""},
-		{"name": "Книга", "text": "...Не злитесь?", "portrait": PORTRAIT_BOOK, "voice": ""},
-		{"name": "Владыка", "text": "Я произвожу эти троны. У меня их на складе ещё штук двадцать. Знаешь, сколько раз мои братья теряли свои? Некоторые — ежемесячно.", "portrait": PORTRAIT_OWNER, "voice": ""},
-		{"name": "Вы", "text": "То есть... я не умер?", "portrait": PORTRAIT_PLAYER, "voice": ""},
-		{"name": "Владыка", "text": "Ты бессмертный, помнишь? Я не могу тебя убить, даже если бы захотел. А я не хочу. Я не человек — у нас не принято наказывать за первую ошибку.", "portrait": PORTRAIT_OWNER, "voice": ""},
-		{"name": "Вы", "text": "...Это лучшее, что мне говорили за долгое время.", "portrait": PORTRAIT_PLAYER, "voice": ""},
-		{"name": "Владыка", "text": "Держи новый трон. Поставь его на то же место — мне нравится, как там падает лунный свет.", "portrait": PORTRAIT_OWNER, "voice": ""},
-		{"name": "Книга", "text": "Вам... нравится лунный свет?", "portrait": PORTRAIT_BOOK, "voice": ""},
-		{"name": "Владыка", "text": "Ещё одно слово — и следующий трон будет из твоих страниц.", "portrait": PORTRAIT_OWNER, "voice": ""},
-		{"name": "Книга", "text": "Молчу-молчу.", "portrait": PORTRAIT_BOOK, "voice": ""},
-		{"name": "Владыка", "text": "В этот раз строй умнее. У людей короткая память, но длинные мечи. Они вернутся.", "portrait": PORTRAIT_OWNER, "voice": ""},
-		{"name": "Книга", "text": "Ладно, слышал босса? Трон на место, стены покрепче. И на этот раз — постарайся.", "portrait": PORTRAIT_BOOK, "voice": ""},
+		{"name": "Книга", "text": "НЕЕЕТ! Трон! Мой прекрасный выходной! Всё пропало!", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": "Книга", "text": "Ну ты и архитектор. \"Лучший из мира людей\", значит? Страшно представить худшего.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": "Владыка", "text": "...", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": "Книга", "text": "В-владыка?! Вы уже вернулись?! Мы всё исправим, клянусь корешком!", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": "Владыка", "text": "Спокойно. Я не злюсь.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": "Книга", "text": "...Не злитесь?", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": "Владыка", "text": "Я произвожу эти троны. У меня их на складе ещё штук двадцать. Знаешь, сколько раз мои братья теряли свои? Некоторые — ежемесячно.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": "Вы", "text": "То есть... я не умер?", "portrait": PORTRAIT_PLAYER, "voice": "player"},
+		{"name": "Владыка", "text": "Ты бессмертный, помнишь? Я не могу тебя убить, даже если бы захотел. А я не хочу. Я не человек — у нас не принято наказывать за первую ошибку.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": "Вы", "text": "...Это лучшее, что мне говорили за долгое время.", "portrait": PORTRAIT_PLAYER, "voice": "player"},
+		{"name": "Владыка", "text": "Держи новый трон. Поставь его на то же место — мне нравится, как там падает лунный свет.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": "Книга", "text": "Вам... нравится лунный свет?", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": "Владыка", "text": "Ещё одно слово — и следующий трон будет из твоих страниц.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": "Книга", "text": "Молчу-молчу.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": "Владыка", "text": "В этот раз строй умнее. У людей короткая память, но длинные мечи. Они вернутся.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": "Книга", "text": "Ладно, слышал босса? Трон на место, стены покрепче. И на этот раз — постарайся.", "portrait": PORTRAIT_BOOK, "voice": "book"},
 	])
 
 	var db = DialogueBox.instance()

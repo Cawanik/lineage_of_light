@@ -162,6 +162,10 @@ func free_cell(grid_pos: Vector2i) -> void:
 func on_throne_destroyed() -> void:
 	print("GameManager: Throne destroyed! Game Over!")
 	is_game_active = false
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("game_over")
+		am.stop_music(2.0)
 	
 	# Clear pathfinding system
 	var ps = get_node_or_null("/root/PathfindingSystem")

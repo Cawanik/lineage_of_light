@@ -57,6 +57,9 @@ func start_next_wave() -> void:
 	_spawn_side_index = 0
 
 	wave_started.emit(current_wave)
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("wave_start")
 	is_spawning = true
 	
 	var wave_def = wave_defs[current_wave - 1]

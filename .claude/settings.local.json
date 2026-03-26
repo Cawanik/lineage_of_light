@@ -116,7 +116,11 @@
       "Bash(\"$FFMPEG\" -i /tmp/main_menu_full.ogg)",
       "Bash(\"$FFMPEG\" -i /c/Users/user/WebstormProjects/lineage_of_light/main_menu.wav -t 166.81 -c:a libvorbis -q:a 5 /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/music/main_menu.ogg -y)",
       "Bash(\"$FFMPEG\" -i /c/Users/user/WebstormProjects/lineage_of_light/main_menu.wav -c:a libvorbis -q:a 5 /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/music/main_menu.ogg -y)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(sed -i 's/\"\"name\"\": \"\"Владыка\"\", \"\"text\"\": \\\\\\(.*\\\\\\), \"\"portrait\"\": PORTRAIT_OWNER, \"\"voice\"\": \"\"\"\"/\"\"name\"\": \"\"Владыка\"\", \"\"text\"\": \\\\1, \"\"portrait\"\": PORTRAIT_OWNER, \"\"voice\"\": \"\"owner\"\"/g' scripts/systems/tutorial.gd)",
+      "Bash(sed -i 's/\"\"name\"\": \"\"Книга\"\", \"\"text\"\": \\\\\\(.*\\\\\\), \"\"portrait\"\": PORTRAIT_BOOK, \"\"voice\"\": \"\"\"\"/\"\"name\"\": \"\"Книга\"\", \"\"text\"\": \\\\1, \"\"portrait\"\": PORTRAIT_BOOK, \"\"voice\"\": \"\"book\"\"/g' scripts/systems/tutorial.gd)",
+      "Bash(sed -i 's/\"\"name\"\": \"\"Вы\"\", \"\"text\"\": \\\\\\(.*\\\\\\), \"\"portrait\"\": PORTRAIT_PLAYER, \"\"voice\"\": \"\"\"\"/\"\"name\"\": \"\"Вы\"\", \"\"text\"\": \\\\1, \"\"portrait\"\": PORTRAIT_PLAYER, \"\"voice\"\": \"\"player\"\"/g' scripts/systems/tutorial.gd)",
+      "Bash(sed -i 's/\"\"name\"\": \"\"Рыцарь\"\", \"\"text\"\": \\\\\\(.*\\\\\\), \"\"portrait\"\": PORTRAIT_KNIGHT, \"\"voice\"\": \"\"\"\"/\"\"name\"\": \"\"Рыцарь\"\", \"\"text\"\": \\\\1, \"\"portrait\"\": PORTRAIT_KNIGHT, \"\"voice\"\": \"\"knight\"\"/g' scripts/systems/tutorial.gd)"
     ]
   }
 }

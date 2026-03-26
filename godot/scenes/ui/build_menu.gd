@@ -232,6 +232,9 @@ func rebuild() -> void:
 func _on_slot_pressed(building_type: String) -> void:
 	selected_building = building_type
 	building_selected.emit(building_type)
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("ui_click")
 
 
 func toggle_menu() -> void:

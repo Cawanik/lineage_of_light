@@ -28,6 +28,7 @@ PathfindingSystem="*res://scripts/autoload/pathfinding_system.gd"
 PhaseManager="*res://scripts/autoload/phase_manager.gd"
 SkillManager="*res://scripts/autoload/skill_manager.gd"
 AlertSystem="*res://scenes/ui/alert_system.gd"
+VoiceBlipSystem="*res://scripts/systems/voice_blip.gd"
 
 [display]
 
@@ -38,10 +39,9 @@ window/stretch/aspect="expand"
 
 [gui]
 
-theme/default_font_generate_mipmaps=true
-theme/default_font_multichannel_signed_distance_field=true
-fonts/dynamic_fonts/use_oversampling=true
 timers/tooltip_delay_sec=0.0
+theme/default_font_multichannel_signed_distance_field=true
+theme/default_font_generate_mipmaps=true
 theme/custom="res://theme/default_theme.tres"
 
 [input]

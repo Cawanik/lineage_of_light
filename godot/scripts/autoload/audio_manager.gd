@@ -128,10 +128,11 @@ func play(sound_id: String, volume_override: float = -1.0) -> void:
 
 	# Обрезка по максимальной длительности
 	var max_dur = data.get("max_duration", 0.0)
+	var fade_out_dur = data.get("fade_out", 0.2)
 	if max_dur > 0:
 		var tween = create_tween()
-		tween.tween_interval(max_dur - 0.2)
-		tween.tween_property(player, "volume_db", -40.0, 0.2)
+		tween.tween_interval(maxf(max_dur - fade_out_dur, 0))
+		tween.tween_property(player, "volume_db", -40.0, fade_out_dur)
 		tween.tween_callback(player.stop)
 
 

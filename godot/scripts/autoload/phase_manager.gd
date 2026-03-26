@@ -106,6 +106,10 @@ func start_combat_phase() -> void:
 func end_combat_phase() -> void:
 	if current_phase == Phase.BUILD:
 		return
+	# Звук завершения волны
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("wave_complete")
 	# Награда за волну — 1 кристалл + бонус от шпилей
 	if not GameManager.tutorial_wave:
 		GameManager.souls += 1 + GameManager.get_soul_bonus()

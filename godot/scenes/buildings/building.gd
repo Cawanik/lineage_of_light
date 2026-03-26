@@ -412,6 +412,9 @@ func _attack(target: Node2D) -> void:
 				var curse_value = data.get("curse_value", 1.0)
 				var curse_duration = data.get("curse_duration", 5.0)
 				target.apply_curse(curse_value, curse_duration)
+				var am = get_node_or_null("/root/AudioManager")
+				if am:
+					am.play("curse_cast")
 		_:
 			_shoot(target)
 
@@ -423,6 +426,9 @@ func _shoot(target: Node2D) -> void:
 	# Статичный проджектайл — спавнится на тайле врага
 	var proj_data = Config.projectiles.get(attack_projectile, {})
 	if proj_data.get("static", false):
+		var am = get_node_or_null("/root/AudioManager")
+		if am:
+			am.play("zombie_grab")
 		var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid") as BuildingGrid
 		if bg:
 			var enemy_tile = bg.world_to_tile(target.global_position)
@@ -431,6 +437,11 @@ func _shoot(target: Node2D) -> void:
 		else:
 			Projectile.spawn(get_tree(), attack_projectile, target.global_position, target.global_position, target)
 		return
+
+	# Звук выстрела
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("arrow_shoot")
 
 	var units = _get_unit_sprites()
 	if units.is_empty():

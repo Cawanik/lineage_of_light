@@ -883,6 +883,9 @@ func die() -> void:
 	if not GameManager.tutorial_wave:
 		GameManager.earn_gold(reward)
 	WaveManager.on_enemy_died()
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("enemy_die")
 
 	var tween = create_tween()
 	tween.tween_property(self, "modulate", Color(1, 1, 1, 0), 0.3)

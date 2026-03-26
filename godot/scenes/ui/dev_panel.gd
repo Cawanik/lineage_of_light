@@ -43,6 +43,24 @@ func _ready() -> void:
 	dlg_btn.pressed.connect(_on_test_dialogue)
 	spawn_test_button.get_parent().add_child(dlg_btn)
 
+	# Кнопка тестирования звуков
+	var sfx_btn = Button.new()
+	sfx_btn.text = "Test SFX..."
+	sfx_btn.pressed.connect(_on_test_sfx_pressed)
+	spawn_test_button.get_parent().add_child(sfx_btn)
+	_build_sfx_popup()
+
+	# Кнопка настройки голосов
+	var voice_btn = Button.new()
+	voice_btn.text = "Voice Editor..."
+	voice_btn.pressed.connect(func():
+		if not voice_popup:
+			_build_voice_popup()
+		voice_popup.popup(Rect2(voice_btn.global_position + Vector2(0, voice_btn.size.y + 4), Vector2.ZERO))
+	)
+	spawn_test_button.get_parent().add_child(voice_btn)
+	spawn_test_button.get_parent().add_child(dlg_btn)
+
 	start_wave_button.pressed.connect(_on_start_wave_pressed)
 	test_path_button.text = "Unlock All Skills"
 	test_path_button.pressed.connect(_on_unlock_all_pressed)
@@ -139,6 +157,137 @@ func _spawn_enemy(enemy_type: String) -> void:
 				enemy.apply_curse(1.0, 9999.0)
 
 	print("DevPanel: Spawned %s" % enemy_type)
+
+
+var sfx_popup: PopupPanel = null
+
+func _build_sfx_popup() -> void:
+	sfx_popup = PopupPanel.new()
+	sfx_popup.title = "Test SFX"
+	add_child(sfx_popup)
+
+	var scroll = ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(200, 300)
+	sfx_popup.add_child(scroll)
+
+	var vbox = VBoxContainer.new()
+	scroll.add_child(vbox)
+
+	var label = Label.new()
+	label.text = "Звуки:"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(label)
+	vbox.add_child(HSeparator.new())
+
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		for sound_id in am.sounds:
+			var data = am.sounds[sound_id]
+			if data.get("path", "").find("music") != -1:
+				continue  # Пропускаем музыку
+			var btn = Button.new()
+			btn.text = sound_id
+			btn.pressed.connect(func(): am.play(sound_id))
+			vbox.add_child(btn)
+
+
+func _on_test_sfx_pressed() -> void:
+	var btn = spawn_test_button.get_parent().get_children()[-1]  # Последняя кнопка
+	sfx_popup.popup(Rect2(btn.global_position + Vector2(0, btn.size.y + 4), Vector2.ZERO))
+
+
+var voice_popup: PopupPanel = null
+
+func _build_voice_popup() -> void:
+	voice_popup = PopupPanel.new()
+	add_child(voice_popup)
+
+	var scroll = ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(300, 400)
+	voice_popup.add_child(scroll)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	scroll.add_child(vbox)
+
+	var vb_sys = get_node_or_null("/root/VoiceBlipSystem")
+	if not vb_sys:
+		return
+
+	for voice_id in vb_sys._voices:
+		var voice = vb_sys._voices[voice_id]
+		var section = VBoxContainer.new()
+		section.add_theme_constant_override("separation", 4)
+		vbox.add_child(section)
+
+		var title = Label.new()
+		title.text = "%s (%s)" % [voice.get("name", voice_id), voice_id]
+		title.add_theme_font_size_override("font_size", 14)
+		title.add_theme_color_override("font_color", Color("#e8e0ff"))
+		section.add_child(title)
+
+		# Frequency
+		_add_voice_slider(section, "Частота", voice.get("frequency", 200), 50, 500, func(v):
+			vb_sys._voices[voice_id]["frequency"] = v
+		)
+		# Pitch variation
+		_add_voice_slider(section, "Вариация", voice.get("pitch_variation", 0.1), 0.0, 0.3, func(v):
+			vb_sys._voices[voice_id]["pitch_variation"] = v
+		)
+		# Duration
+		_add_voice_slider(section, "Длительность", voice.get("duration", 0.06), 0.02, 0.15, func(v):
+			vb_sys._voices[voice_id]["duration"] = v
+		)
+		# Volume
+		_add_voice_slider(section, "Громкость", voice.get("volume", 0.5), 0.1, 1.0, func(v):
+			vb_sys._voices[voice_id]["volume"] = v
+		)
+
+		# Test button
+		var test_btn = Button.new()
+		test_btn.text = "Тест"
+		test_btn.pressed.connect(func(): VoiceBlip.blip(voice_id))
+		section.add_child(test_btn)
+
+		section.add_child(HSeparator.new())
+
+	# Save button
+	var save_btn = Button.new()
+	save_btn.text = "Сохранить в voices.json"
+	save_btn.pressed.connect(func():
+		var file = FileAccess.open("res://config/voices.json", FileAccess.WRITE)
+		file.store_string(JSON.stringify(vb_sys._voices, "\t"))
+		print("[DevPanel] Voices saved!")
+	)
+	vbox.add_child(save_btn)
+
+
+func _add_voice_slider(parent: Node, label_text: String, initial: float, min_val: float, max_val: float, callback: Callable) -> void:
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 4)
+	parent.add_child(hbox)
+
+	var lbl = Label.new()
+	lbl.text = label_text
+	lbl.custom_minimum_size.x = 80
+	lbl.add_theme_font_size_override("font_size", 11)
+	hbox.add_child(lbl)
+
+	var slider = HSlider.new()
+	slider.min_value = min_val
+	slider.max_value = max_val
+	slider.step = 0.01 if max_val <= 1.0 else 1.0
+	slider.value = initial
+	slider.custom_minimum_size.x = 120
+	slider.value_changed.connect(callback)
+	hbox.add_child(slider)
+
+	var val_lbl = Label.new()
+	val_lbl.text = "%.2f" % initial
+	val_lbl.custom_minimum_size.x = 40
+	val_lbl.add_theme_font_size_override("font_size", 10)
+	hbox.add_child(val_lbl)
+	slider.value_changed.connect(func(v): val_lbl.text = "%.2f" % v)
 
 
 func _on_test_dialogue() -> void:

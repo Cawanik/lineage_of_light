@@ -1,17 +1,15 @@
 {
 	"ui_click": {
-		"path": "res://assets/sounds/sfx/ui_click.wav",
-		"volume": 0.6
-	},
-	"ui_hover": {
-		"path": "res://assets/sounds/sfx/ui_hover.wav",
-		"volume": 0.3
+		"path": "res://assets/sounds/sfx/ui/click.mp3",
+		"volume": 0.6,
+		"max_duration": 0.5
 	},
 	"build": {
 		"path": "res://assets/sounds/sfx/buildings/create_building.wav",
 		"volume": 0.5,
 		"pitch_min": 0.9,
-		"pitch_max": 1.1
+		"pitch_max": 1.1,
+		"max_duration": 2.0
 	},
 	"demolish": {
 		"path": "res://assets/sounds/sfx/buildings/demolish_building.mp3",
@@ -28,64 +26,74 @@
 		"max_duration": 1.0
 	},
 	"skill_unlock": {
-		"path": "res://assets/sounds/sfx/skill_unlock.wav",
-		"volume": 0.8
+		"path": "res://assets/sounds/sfx/ui/skill_unlock.mp3",
+		"volume": 0.8,
+		"max_duration": 2.0
 	},
 	"error": {
-		"path": "res://assets/sounds/sfx/error.wav",
-		"volume": 0.5
+		"path": "res://assets/sounds/sfx/ui/error.mp3",
+		"volume": 0.5,
+		"max_duration": 1.5
 	},
 	"arrow_shoot": {
-		"path": "res://assets/sounds/sfx/arrow_shoot.wav",
-		"volume": 0.5,
+		"path": "res://assets/sounds/sfx/combat/arrow_shoot.mp3",
+		"volume": 0.3,
 		"pitch_min": 0.85,
-		"pitch_max": 1.15
+		"pitch_max": 1.15,
+		"max_duration": 1.0
 	},
 	"magic_cast": {
-		"path": "res://assets/sounds/sfx/magic_cast.wav",
+		"path": "res://assets/sounds/sfx/abilities/magic_cast.mp3",
 		"volume": 0.6,
 		"pitch_min": 0.9,
-		"pitch_max": 1.1
+		"pitch_max": 1.1,
+		"max_duration": 2.0
 	},
 	"fireball_cast": {
-		"path": "res://assets/sounds/sfx/fireball_cast.wav",
-		"volume": 0.7
+		"path": "res://assets/sounds/sfx/abilities/magic_cast.mp3",
+		"volume": 0.7,
+		"max_duration": 2.0
 	},
 	"curse_cast": {
-		"path": "res://assets/sounds/sfx/curse_cast.wav",
+		"path": "res://assets/sounds/sfx/abilities/curse_cast.mp3",
 		"volume": 0.6,
 		"pitch_min": 0.8,
-		"pitch_max": 1.0
+		"pitch_max": 1.0,
+		"max_duration": 2.0,
+		"fade_out": 1.0
 	},
 	"zombie_grab": {
-		"path": "res://assets/sounds/sfx/zombie_grab.wav",
+		"path": "res://assets/sounds/sfx/abilities/zombie_grab.mp3",
 		"volume": 0.5,
 		"pitch_min": 0.8,
-		"pitch_max": 1.2
+		"pitch_max": 1.2,
+		"max_duration": 1.0
 	},
 	"enemy_hit": {
 		"path": "res://assets/sounds/sfx/enemies/enemies_hit.wav",
 		"volume": 0.5,
 		"pitch_min": 0.9,
-		"pitch_max": 1.1
+		"pitch_max": 1.1,
+		"max_duration": 1.0
 	},
 	"enemy_die": {
-		"path": "res://assets/sounds/sfx/enemy_die.wav",
-		"volume": 0.6,
+		"path": "res://assets/sounds/sfx/combat/enemy_die.mp3",
+		"volume": 0.3,
 		"pitch_min": 0.85,
-		"pitch_max": 1.15
+		"pitch_max": 1.15,
+		"max_duration": 2.0
 	},
 	"wave_start": {
-		"path": "res://assets/sounds/sfx/wave_start.wav",
-		"volume": 0.8
+		"path": "res://assets/sounds/sfx/combat/wave_start.mp3",
+		"volume": 0.2
 	},
 	"wave_complete": {
-		"path": "res://assets/sounds/sfx/wave_complete.wav",
+		"path": "res://assets/sounds/sfx/combat/wave_complete.mp3",
 		"volume": 0.8
 	},
 	"game_over": {
-		"path": "res://assets/sounds/sfx/game_over.wav",
-		"volume": 1.0
+		"path": "res://assets/sounds/sfx/combat/game_over.mp3",
+		"volume": 0.5
 	},
 	"build_theme": {
 		"path": "res://assets/sounds/music/build_theme.ogg",

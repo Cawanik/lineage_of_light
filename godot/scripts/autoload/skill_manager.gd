@@ -66,6 +66,9 @@ func unlock(skill_id: String) -> bool:
 	GameManager.souls -= cost
 	unlocked[skill_id] = true
 	skill_unlocked.emit(skill_id)
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("skill_unlock")
 	return true
 
 

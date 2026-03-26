@@ -370,6 +370,9 @@ func _try_cast(ability_id: String) -> void:
 		return
 	if _cooldowns.get(ability_id, 0.0) > 0.0:
 		return
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("magic_cast")
 	match ability_id:
 		"magic_bolt":    _cast_magic_bolt()
 		"magic_missile": _cast_magic_missile()

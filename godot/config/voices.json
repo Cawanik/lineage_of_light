@@ -1,0 +1,34 @@
+{
+	"owner": {
+		"name": "Владыка",
+		"frequency": 110.0,
+		"pitch_variation": 0.12,
+		"duration": 0.05,
+		"volume": 0.18,
+		"waveform": "sine"
+	},
+	"book": {
+		"name": "Книга",
+		"frequency": 350.0,
+		"pitch_variation": 0.15,
+		"duration": 0.035,
+		"volume": 0.15,
+		"waveform": "square"
+	},
+	"player": {
+		"name": "Игрок",
+		"frequency": 180.0,
+		"pitch_variation": 0.15,
+		"duration": 0.04,
+		"volume": 0.15,
+		"waveform": "sine"
+	},
+	"knight": {
+		"name": "Рыцарь",
+		"frequency": 160.0,
+		"pitch_variation": 0.12,
+		"duration": 0.05,
+		"volume": 0.17,
+		"waveform": "saw"
+	}
+}
