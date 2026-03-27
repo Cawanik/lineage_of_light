@@ -406,38 +406,36 @@ func _on_occlusion_debug_pressed() -> void:
 		get_tree().current_scene.add_child(_occlusion_overlay)
 
 	_occlusion_overlay.draw.connect(func():
-		# Зона фейда игрока
-		if OcclusionFade.player:
-			var pp = OcclusionFade.player.position
-			var r = OcclusionFade.fade_radius
-			# Прямоугольник ниже игрока где здания фейдятся
-			var rect = Rect2(pp.x - r, pp.y, r * 2, r)
-			_occlusion_overlay.draw_rect(rect, Color(0.2, 0.5, 1.0, 0.15))
-			_occlusion_overlay.draw_rect(rect, Color(0.2, 0.5, 1.0, 0.5), false, 1.0)
-			# Метка
-			_occlusion_overlay.draw_circle(pp, 4.0, Color(0.2, 0.5, 1.0, 0.8))
+		# Occlusion rect каждого здания
+		var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid") as BuildingGrid
+		if bg:
+			for tile in bg.buildings:
+				var b = bg.get_building(tile)
+				if b and is_instance_valid(b):
+					var brect = OcclusionFade.get_building_rect(b)
+					if brect.size != Vector2.ZERO:
+						var fading = OcclusionFade.should_fade_building(b)
+						var col = Color(1.0, 0.3, 0.3, 0.3) if fading else Color(0.3, 1.0, 0.3, 0.15)
+						var border = Color(1.0, 0.3, 0.3, 0.7) if fading else Color(0.3, 1.0, 0.3, 0.4)
+						_occlusion_overlay.draw_rect(brect, col)
+						_occlusion_overlay.draw_rect(brect, border, false, 1.0)
 
-		# Зона фейда курсора
-		if OcclusionFade.cursor_fade_active:
-			var cp = OcclusionFade.cursor_pos
-			var cr = OcclusionFade.cursor_fade_radius
-			var crect = Rect2(cp.x - cr, cp.y, cr * 2, cr)
-			_occlusion_overlay.draw_rect(crect, Color(1.0, 0.8, 0.2, 0.1))
-			_occlusion_overlay.draw_rect(crect, Color(1.0, 0.8, 0.2, 0.4), false, 1.0)
-			# Highlight radius
-			var hr = OcclusionFade.cursor_highlight_radius
-			_occlusion_overlay.draw_rect(Rect2(cp.x - hr, cp.y - hr, hr * 2, hr * 2), Color(0.2, 1.0, 0.2, 0.3), false, 1.0)
+		# Игрок — точка (синяя)
+		if OcclusionFade.player and is_instance_valid(OcclusionFade.player):
+			var pp = OcclusionFade.player.global_position
+			_occlusion_overlay.draw_circle(pp, 5.0, Color(0.2, 0.5, 1.0, 0.9))
 
-		# Зоны фейда от врагов
+		# Курсор — круг (жёлтый)
+		var cp = OcclusionFade.cursor_pos
+		var cr = OcclusionFade.cursor_radius
+		_occlusion_overlay.draw_arc(cp, cr, 0, TAU, 32, Color(1.0, 0.8, 0.2, 0.6), 1.5)
+		_occlusion_overlay.draw_circle(cp, 3.0, Color(1.0, 0.8, 0.2, 0.8))
+
+		# Враги — точки (красные)
 		var enemies = _occlusion_overlay.get_tree().get_nodes_in_group("enemies")
 		for enemy in enemies:
-			if not is_instance_valid(enemy):
-				continue
-			var ep = enemy.global_position
-			var er = OcclusionFade.fade_radius
-			var erect = Rect2(ep.x - er, ep.y, er * 2, er)
-			_occlusion_overlay.draw_rect(erect, Color(1.0, 0.2, 0.2, 0.1))
-			_occlusion_overlay.draw_rect(erect, Color(1.0, 0.2, 0.2, 0.4), false, 1.0)
+			if is_instance_valid(enemy):
+				_occlusion_overlay.draw_circle(enemy.global_position, 4.0, Color(1.0, 0.2, 0.2, 0.8))
 	)
 
 	# Перерисовка каждый кадр
