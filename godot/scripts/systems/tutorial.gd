@@ -19,6 +19,7 @@ enum Step {
 	OWNER_LEAVES,
 	FLAT_VIEW_ON,
 	WAIT_FLAT_VIEW_ON,
+	FLAT_VIEW_DIALOGUE,
 	WAIT_FLAT_VIEW_OFF,
 	WAIT_BUILD_ARCHERS,
 	ENEMY_ARRIVES,
@@ -127,9 +128,8 @@ func _process(_delta: float) -> void:
 			var main_fv = get_tree().current_scene
 			if main_fv and main_fv.get("_flat_view") == true:
 				_flat_view_entered = true
-				_unblock_input()
-				_show_hint("Осмотритесь. Выключите смену вида для продолжения")
-				current_step = Step.WAIT_FLAT_VIEW_OFF
+				_unhighlight_toolbar_slot()
+				_advance(Step.FLAT_VIEW_DIALOGUE)
 
 		Step.WAIT_FLAT_VIEW_OFF:
 			var main_fv2 = get_tree().current_scene
@@ -276,6 +276,18 @@ func _advance(step: Step) -> void:
 			_show_hint("Нажмите кнопку смены вида")
 			_highlight_toolbar_slot(4)  # Слот 5 = flat view (индекс 4)
 			current_step = Step.WAIT_FLAT_VIEW_ON
+
+		Step.FLAT_VIEW_DIALOGUE:
+			_block_input()
+			_hide_hint()
+			_show_dialogue([
+				{"name": "Книга", "text": "Ага! Теперь ты видишь мир как есть — без этой изометрической мишуры. Каждая клетка как на ладони.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": "Книга", "text": "В этом режиме удобнее строить и планировать оборону. Осмотрись, а потом выключи — нам нужно двигаться дальше.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+			], func():
+				_unblock_input()
+				_show_hint("Осмотритесь. Выключите смену вида для продолжения")
+				current_step = Step.WAIT_FLAT_VIEW_OFF
+			)
 
 		Step.WAIT_BUILD_ARCHERS:
 			_block_input()
@@ -507,6 +519,7 @@ var _skill_tree_btn_original_z: int = 0
 
 
 var _highlight_btn: TextureRect = null
+var _arrow_label: Label = null
 
 func _highlight_skill_tree_button(enable: bool) -> void:
 	if enable:
@@ -553,6 +566,27 @@ func _highlight_skill_tree_button(enable: bool) -> void:
 		tween.tween_property(_highlight_btn, "modulate", Color(1.5, 1.2, 1.8), 0.5)
 		tween.tween_property(_highlight_btn, "modulate", Color.WHITE, 0.5)
 		_highlight_btn.set_meta("tween", tween)
+
+		# Стрелка с подписью — снизу от кнопки
+		var btn_rect = original.get_global_rect()
+		var arrow_x = btn_rect.position.x + btn_rect.size.x * 0.5 - 30
+		var arrow_y = btn_rect.end.y + 5
+
+		_arrow_label = Label.new()
+		_arrow_label.text = "▲  Древо талантов"
+		_arrow_label.add_theme_font_size_override("font_size", 16)
+		_arrow_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+		_arrow_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_arrow_label.position = Vector2(arrow_x, arrow_y)
+		_arrow_label.size = Vector2(200, 30)
+		_arrow_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_block_layer.add_child(_arrow_label)
+
+		# Анимация стрелки — покачивание вверх-вниз
+		var arrow_tween = create_tween().set_loops()
+		arrow_tween.tween_property(_arrow_label, "position:y", arrow_y - 4.0, 0.4).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		arrow_tween.tween_property(_arrow_label, "position:y", arrow_y + 4.0, 0.4).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		_arrow_label.set_meta("tween", arrow_tween)
 	else:
 		if _highlight_btn and is_instance_valid(_highlight_btn):
 			if _highlight_btn.has_meta("tween"):
@@ -561,6 +595,13 @@ func _highlight_skill_tree_button(enable: bool) -> void:
 					tween.kill()
 			_highlight_btn.queue_free()
 			_highlight_btn = null
+		if _arrow_label and is_instance_valid(_arrow_label):
+			if _arrow_label.has_meta("tween"):
+				var tween = _arrow_label.get_meta("tween")
+				if tween and tween.is_valid():
+					tween.kill()
+			_arrow_label.queue_free()
+			_arrow_label = null
 
 
 func _setup_throne_placement() -> void:

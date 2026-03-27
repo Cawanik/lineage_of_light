@@ -112,18 +112,55 @@ func alert_success(text: String) -> void:
 	show_alert(text, Color(0.3, 1.0, 0.4))
 
 
-# Постоянный алёрт (не исчезает)
+# Постоянный алёрт (не исчезает) — крупный, для обучения
 var _persistent_alert: Control = null
 
 func show_persistent(text: String, color: Color = Color(1.0, 0.85, 0.2)) -> void:
 	hide_persistent()
-	_persistent_alert = _create_alert(text, color)
+	_persistent_alert = _create_persistent(text, color)
 	var vp_size = get_viewport().get_visible_rect().size
-	_persistent_alert.position = Vector2(vp_size.x * 0.5 - _persistent_alert.size.x * 0.5, ALERT_OFFSET_Y)
+	_persistent_alert.position = Vector2(vp_size.x * 0.5 - _persistent_alert.size.x * 0.5, 5)
 	_persistent_alert.modulate = Color(1, 1, 1, 0)
 	add_child(_persistent_alert)
 	var tween = create_tween()
 	tween.tween_property(_persistent_alert, "modulate:a", 1.0, FADE_DURATION)
+
+
+func _create_persistent(text: String, color: Color) -> Control:
+	var container = Control.new()
+	container.custom_minimum_size = Vector2(410, 80)
+	container.size = Vector2(410, 80)
+
+	if _alert_bg_tex:
+		var bg = TextureRect.new()
+		bg.texture = _alert_bg_tex
+		bg.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		bg.stretch_mode = TextureRect.STRETCH_SCALE
+		bg.anchors_preset = Control.PRESET_FULL_RECT
+		bg.anchor_right = 1.0
+		bg.anchor_bottom = 1.0
+		bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		container.add_child(bg)
+
+	var label = Label.new()
+	label.text = text
+	label.add_theme_color_override("font_color", color)
+	label.add_theme_font_size_override("font_size", 15)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	label.anchors_preset = Control.PRESET_FULL_RECT
+	label.anchor_right = 1.0
+	label.anchor_bottom = 1.0
+	label.offset_left = 20
+	label.offset_right = -20
+	label.offset_top = 6
+	label.offset_bottom = -6
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	container.add_child(label)
+
+	return container
 
 
 func hide_persistent() -> void:

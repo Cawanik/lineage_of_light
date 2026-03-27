@@ -236,7 +236,22 @@ func toggle_menu() -> void:
 	visible = is_open
 
 
+func close_menu() -> void:
+	if is_open:
+		is_open = false
+		visible = false
+
+
 func _input(event: InputEvent) -> void:
+	if not is_open:
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_B:
 			toggle_menu()
+			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_ESCAPE:
+			close_menu()
+			get_viewport().set_input_as_handled()
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		close_menu()
+		get_viewport().set_input_as_handled()

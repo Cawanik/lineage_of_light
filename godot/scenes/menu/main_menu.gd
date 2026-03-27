@@ -276,7 +276,7 @@ func _on_map_play(map: Dictionary) -> void:
 			al.alert_error("Локация недоступна")
 		return
 	GameManager.current_map = map.get("id", "")
-	GameManager.skip_tutorial = map_screen.skip_tutorial
+	GameManager.skip_tutorial = false
 	_save_current_slot()
 	var am = get_node_or_null("/root/AudioManager")
 	if am:

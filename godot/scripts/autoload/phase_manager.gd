@@ -110,9 +110,9 @@ func end_combat_phase() -> void:
 	var am = get_node_or_null("/root/AudioManager")
 	if am:
 		am.play("wave_complete")
-	# Награда за волну — 1 кристалл + бонус от шпилей
+	# Награда за волну — кристаллы = номер волны + бонус от шпилей
 	if not GameManager.tutorial_wave:
-		GameManager.souls += 1 + GameManager.get_soul_bonus()
+		GameManager.souls += WaveManager.current_wave + GameManager.get_soul_bonus()
 	# Отхиливаем все здания
 	_heal_all_buildings()
 	_start_build_phase()

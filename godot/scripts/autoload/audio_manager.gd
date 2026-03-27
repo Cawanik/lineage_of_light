@@ -360,6 +360,12 @@ func _start_music_trim_timer(play_duration: float) -> void:
 	)
 
 
+func stop_all_sfx() -> void:
+	for player in _sfx_players:
+		if player.playing:
+			player.stop()
+
+
 func stop_music(fade_out: float = 1.0, ease_type: Ease = Ease.EASE_OUT) -> void:
 	if _music_trim_tween and _music_trim_tween.is_valid():
 		_music_trim_tween.kill()

@@ -323,15 +323,45 @@ func _update_souls_label() -> void:
 	_souls_label.text = "%d" % GameManager.souls
 
 
-func _on_skill_unlocked(_skill_id: String) -> void:
+const PORTRAIT_BOOK = "res://assets/sprites/ui/skills/icon_grimoire.png"
+
+# Подсказки книги при изучении навыков (показываются один раз)
+var _shown_hints: Dictionary = {}
+var _highlight_skills: Array[String] = []
+
+const UPGRADE_BRANCH_SKILLS: Array[String] = ["archer_up1", "wall_up1", "archer_up2", "wall_up2", "repair_up1", "repair_up2"]
+
+var SKILL_HINTS: Dictionary = {
+	"upgrade_tool": [
+		{"name": "Книга", "text": "Ага, инструмент улучшений! Но не спеши радоваться — одного инструмента мало. Тебе ещё нужно изучить улучшения для конкретных зданий.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": "Книга", "text": "Видишь ветки улучшений рядом? Без них твой молоток — просто палка. Прокачай хотя бы одну, и тогда поговорим.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+	],
+	"magic_shot": [
+		{"name": "Книга", "text": "О-хо-хо! Магический выстрел! Наконец-то ты не будешь просто стоять и смотреть, как крушат твои стены.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": "Книга", "text": "Когда начнётся бой, способности появятся на панели инструментов в правом нижнем углу. Эта бьёт автоматически — просто стой и наслаждайся.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+	],
+	"epoch_gate": [
+		{"name": "Книга", "text": "Врата Эпохи! Это не просто здание — это портал в новую эру. Построй его на поле, и откроются постройки второго тира.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": "Книга", "text": "Второй тир — это совсем другой уровень. Новые башни, новые возможности. Поверь, они тебе понадобятся.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+	],
+}
+
+func _on_skill_unlocked(skill_id: String) -> void:
 	_update_souls_label()
 	_update_info_panel()
 	_canvas.queue_redraw()
+	# Подсказка книги
+	if skill_id in SKILL_HINTS and skill_id not in _shown_hints:
+		_shown_hints[skill_id] = true
+		if skill_id == "upgrade_tool":
+			_highlight_skills = UPGRADE_BRANCH_SKILLS.duplicate()
+			_pan_to_skill("wall_up1")
+		_show_book_hint(skill_id)
 
 
 func _process(_delta: float) -> void:
-	# Перерисовка для пульсации подсветки обучения
-	if visible and not SkillManager.allowed_skills.is_empty():
+	# Перерисовка для пульсации подсветки и пан-анимации
+	if visible and (not SkillManager.allowed_skills.is_empty() or not _highlight_skills.is_empty() or _panning):
 		_canvas.queue_redraw()
 
 
@@ -400,6 +430,12 @@ func _on_canvas_draw() -> void:
 			var pulse = 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.005)
 			var glow_color = Color(1.0, 0.85, 0.2, pulse * 0.6)
 			_draw_circle_outline(pos, r + 6 * _zoom, glow_color, 3.0 * _zoom)
+
+		# Подсветка навыков-подсказок книги (пульсация голубая)
+		if id in _highlight_skills:
+			var pulse_h = 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.006)
+			var hint_color = Color(0.4, 0.8, 1.0, pulse_h * 0.7)
+			_draw_circle_outline(pos, r + 6 * _zoom, hint_color, 3.0 * _zoom)
 
 
 func _is_upgrade_node(id: String, data: Dictionary) -> bool:
@@ -509,12 +545,18 @@ func _update_info_panel() -> void:
 		_info_panel.visible = false
 		return
 
-	_info_panel.visible = true
-	_info_category.text = data.get("category", "").to_upper()
-	_info_name.text = data.get("name", "")
-	_info_desc.text = data.get("desc", "")
-
 	var state = SkillManager.get_state(_selected_skill)
+
+	_info_panel.visible = true
+	if state == "unlocked" or state == "available":
+		_info_category.text = data.get("category", "").to_upper()
+		_info_name.text = data.get("name", "")
+		_info_desc.text = data.get("desc", "")
+	else:
+		_info_category.text = "???"
+		_info_name.text = "???"
+		_info_desc.text = ""
+
 	var cost = int(data.get("cost", 1))
 
 	match state:
@@ -528,7 +570,7 @@ func _update_info_panel() -> void:
 			var can = SkillManager.can_unlock(_selected_skill)
 			_unlock_btn.modulate = Color.WHITE if can else Color(0.5, 0.5, 0.5)
 		_:
-			_info_cost.text = "???"
+			_info_cost.text = ""
 			_unlock_btn.visible = false
 
 
@@ -538,6 +580,34 @@ func _on_unlock_pressed() -> void:
 			var as_node = get_node_or_null("/root/AlertSystem")
 			if as_node:
 				as_node.alert_error("Недостаточно душ!")
+
+
+var _panning: bool = false
+
+func _pan_to_skill(skill_id: String) -> void:
+	var data = Config.skill_tree.get(skill_id, {})
+	if data.is_empty():
+		return
+	var target = Vector2(data["position"][0], data["position"][1]) * _zoom
+	var vp = get_viewport().get_visible_rect().size
+	var new_offset = vp * 0.5 - target
+	_panning = true
+	var tween = create_tween()
+	tween.tween_property(self, "_offset", new_offset, 0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	tween.tween_callback(func(): _panning = false)
+
+
+func _show_book_hint(skill_id: String) -> void:
+	var lines: Array[Dictionary] = []
+	for l in SKILL_HINTS[skill_id]:
+		lines.append(l)
+	DialogueBox.say(lines)
+	var db = DialogueBox.instance()
+	if db:
+		db.dialogue_finished.connect(func():
+			_highlight_skills.clear()
+			_canvas.queue_redraw()
+		, CONNECT_ONE_SHOT)
 
 
 func _unhandled_input(event: InputEvent) -> void:

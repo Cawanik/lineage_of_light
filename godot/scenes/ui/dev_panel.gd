@@ -69,6 +69,11 @@ func _ready() -> void:
 	add_gold_button.pressed.connect(_on_add_gold_pressed)
 	add_souls_button.pressed.connect(_on_add_souls_pressed)
 	toggle_button.pressed.connect(_on_toggle_pressed)
+
+	var victory_btn = Button.new()
+	victory_btn.text = "Show Victory Screen"
+	victory_btn.pressed.connect(_on_victory_pressed)
+	add_souls_button.get_parent().add_child(victory_btn)
 	
 	# Connect to game signals for live updates
 	if GameManager:
@@ -370,6 +375,11 @@ func _on_add_gold_pressed() -> void:
 
 func _on_add_souls_pressed() -> void:
 	GameManager.souls += 111
+
+
+func _on_victory_pressed() -> void:
+	var victory = load("res://scenes/ui/victory_screen.gd").new()
+	get_tree().current_scene.add_child(victory)
 
 
 func _on_toggle_pressed() -> void:

@@ -225,4 +225,36 @@ func reset_game() -> void:
 	lives = 20
 	current_epoch = 1
 	is_game_active = true
+	is_paused = false
+	tutorial_wave = false
 	occupied_cells.clear()
+
+	# WaveManager
+	WaveManager.current_wave = 0
+	WaveManager.enemies_alive = 0
+	WaveManager.is_spawning = false
+	WaveManager._current_spawn_sides = []
+	WaveManager._spawn_side_index = 0
+
+	# PhaseManager
+	PhaseManager.current_phase = PhaseManager.Phase.BUILD
+	PhaseManager._build_timer = 0.0
+	PhaseManager._initialized = false
+	PhaseManager.director = null
+	PhaseManager._canvas_modulate = null
+
+	# PathfindingSystem
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if ps:
+		ps.throne_tile = Vector2i(-1, -1)
+
+	# AlertSystem
+	var al = get_node_or_null("/root/AlertSystem")
+	if al:
+		al.hide_persistent()
+
+	# Audio
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.stop_music(0.0)
+		am.stop_all_sfx()

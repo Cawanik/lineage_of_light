@@ -269,6 +269,8 @@ func _handle_toolbar_hotkey(key_index: int) -> void:
 		if key_index >= BUILD_HOTKEYS.size():
 			return
 		var action = BUILD_HOTKEYS[key_index]["action"]
+		if action == "" or not SkillManager.is_tool_unlocked(action):
+			return
 		match action:
 			"build":
 				_on_build_button_pressed()
@@ -432,20 +434,23 @@ func _unhandled_input(event: InputEvent) -> void:
 			if active_tool and active_tool.has_method("on_release"):
 				active_tool.on_release()
 
-	# ПКМ — снять активный инструмент
+	# ПКМ — снять активный инструмент или закрыть меню строительства
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		if active_tool:
 			active_tool.deactivate()
 			active_tool = null
 			active_tool_name = ""
 			_update_slot_highlights()
-			# Закрываем меню строительства если открыто
 			if build_menu.is_open:
 				build_menu.toggle_menu()
 			get_viewport().set_input_as_handled()
 			return
+		elif build_menu.is_open:
+			build_menu.toggle_menu()
+			get_viewport().set_input_as_handled()
+			return
 
-	# ESC — снять инструмент или открыть меню паузы
+	# ESC — снять инструмент, закрыть меню строительства или открыть меню паузы
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		if active_tool:
 			active_tool.deactivate()
@@ -454,6 +459,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			_update_slot_highlights()
 			if build_menu.is_open:
 				build_menu.toggle_menu()
+			get_viewport().set_input_as_handled()
+			return
+		elif build_menu.is_open:
+			build_menu.toggle_menu()
 			get_viewport().set_input_as_handled()
 			return
 		else:
@@ -843,6 +852,12 @@ func _on_wave_completed(wave_number: int) -> void:
 
 func _on_all_waves_completed() -> void:
 	print("All waves completed! Victory!")
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.stop_music(2.0)
+	await get_tree().create_timer(2.0).timeout
+	var victory = load("res://scenes/ui/victory_screen.gd").new()
+	add_child(victory)
 
 
 func _find_free_tile_near(center: Vector2i) -> Vector2i:

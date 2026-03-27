@@ -10,7 +10,7 @@ var _main_vbox: Control = null
 
 
 func _ready() -> void:
-	layer = 90
+	layer = 109
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 
@@ -96,13 +96,7 @@ func _refresh_toolbar_labels() -> void:
 
 func _on_main_menu() -> void:
 	close()
-	PhaseManager._initialized = false
-	var am = get_node_or_null("/root/AudioManager")
-	if am:
-		am.stop_music(1.0)
-	var al = get_node_or_null("/root/AlertSystem")
-	if al:
-		al.hide_persistent()
+	GameManager.reset_game()
 	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")
 
 
