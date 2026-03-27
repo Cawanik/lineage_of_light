@@ -220,24 +220,24 @@
 		"unlocks": ["building:shadow_forge"]
 	},
 	"repair_up1": {
-		"name": "Улучшение ремонта",
-		"desc": "Ремонтирует до 10 построек.",
+		"name": "Улучшение кузни",
+		"desc": "Кузня чинит до 10 построек после боя.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/buildings/production/shadow_forge.png",
 		"cost": 2,
 		"requires": ["shadow_forge", "upgrade_tool"],
 		"position": [680, 360],
-		"unlocks": []
+		"unlocks": ["upgrade:shadow_forge:1"]
 	},
 	"repair_up2": {
-		"name": "Ремонт всех построек",
-		"desc": "Ремонтирует все постройки.",
+		"name": "Полный ремонт",
+		"desc": "Кузня чинит все постройки после боя.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/buildings/production/shadow_forge.png",
 		"cost": 3,
 		"requires": ["repair_up1"],
 		"position": [680, 460],
-		"unlocks": []
+		"unlocks": ["upgrade:shadow_forge:2"]
 	},
 	"epoch_gate": {
 		"name": "Врата Эпохи",

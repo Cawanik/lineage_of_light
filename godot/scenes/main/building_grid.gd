@@ -192,30 +192,8 @@ func find_nearest_building(world_pos: Vector2, max_dist: float = 30.0) -> Vector
 var grid_offset: Vector2 = Vector2.ZERO
 
 
-func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == KEY_G:
-		show_grid = not show_grid
-		queue_redraw()
-		return
-
-	if show_grid and event is InputEventKey and event.pressed:
-		var s = 1.0 if not event.shift_pressed else 5.0
-		match event.keycode:
-			KEY_UP:
-				grid_offset.y -= s
-			KEY_DOWN:
-				grid_offset.y += s
-			KEY_LEFT:
-				grid_offset.x -= s
-			KEY_RIGHT:
-				grid_offset.x += s
-			KEY_ENTER:
-				print("[BuildingGrid] offset: ", grid_offset)
-				return
-			_:
-				return
-		queue_redraw()
-		print("[BuildingGrid] offset: ", grid_offset)
+func _input(_event: InputEvent) -> void:
+	pass
 
 
 func _draw() -> void:

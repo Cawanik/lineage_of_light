@@ -43,6 +43,9 @@ func _ready() -> void:
 	settings_screen.visible = false
 	_current_screen = main_buttons
 
+	# Intro fade — только при первом запуске
+	_play_intro()
+
 	# Сигналы главных кнопок
 	main_buttons.get_node("VBox/NewGame").pressed.connect(func(): _show_slots("new"))
 	main_buttons.get_node("VBox/Continue").pressed.connect(func(): _show_slots("load"))
@@ -74,10 +77,56 @@ func _ready() -> void:
 		_switch_to(main_buttons, true)
 	)
 
-	# Музыка
-	var am = get_node_or_null("/root/AudioManager")
-	if am:
-		am.play_music("main_menu_theme", 2.0)
+	# Музыка — отложена до конца intro
+	if not _is_intro:
+		var am = get_node_or_null("/root/AudioManager")
+		if am:
+			am.play_music("main_menu_theme", 2.0)
+
+
+var _is_intro: bool = false
+
+func _play_intro() -> void:
+	_is_intro = true
+
+	# Чёрный оверлей поверх всего
+	var overlay = ColorRect.new()
+	overlay.name = "IntroOverlay"
+	overlay.color = Color.BLACK
+	overlay.anchors_preset = Control.PRESET_FULL_RECT
+	overlay.anchor_right = 1.0
+	overlay.anchor_bottom = 1.0
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(overlay)
+
+	# Прячем UI до конца intro
+	main_buttons.modulate.a = 0.0
+	if logo:
+		logo.modulate.a = 0.0
+
+	var tween = create_tween()
+	# Пауза на чёрном
+	tween.tween_interval(0.5)
+	# Fade in лого
+	tween.tween_callback(func():
+		if logo:
+			logo.visible = true
+	)
+	tween.tween_property(logo, "modulate:a", 1.0, 1.0).set_ease(Tween.EASE_OUT)
+	# Убираем чёрный оверлей — показываем фон
+	tween.tween_property(overlay, "color:a", 0.0, 1.0).set_ease(Tween.EASE_IN_OUT)
+	# Пауза с лого на фоне
+	tween.tween_interval(0.5)
+	# Fade in кнопок
+	tween.tween_property(main_buttons, "modulate:a", 1.0, 0.8).set_ease(Tween.EASE_OUT)
+	# Убираем оверлей и запускаем музыку
+	tween.tween_callback(func():
+		overlay.queue_free()
+		_is_intro = false
+		var am = get_node_or_null("/root/AudioManager")
+		if am:
+			am.play_music("main_menu_theme", 2.0)
+	)
 
 
 # === Стилизация ===

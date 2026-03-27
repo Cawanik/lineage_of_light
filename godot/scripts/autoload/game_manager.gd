@@ -123,7 +123,7 @@ func _count_buildings(type: String) -> int:
 		return 0
 	var count = 0
 	for tile in bg.buildings:
-		var b = bg.get_building(tile)
+		var b = bg.get_building(tile) 
 		if b and b is Building and b.building_type == type:
 			count += 1
 	return count

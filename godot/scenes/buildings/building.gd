@@ -42,6 +42,8 @@ var _anim_sprite: AnimatedSprite2D = null  # Ссылка на IdleAnim если
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var hp_bar_bg: ColorRect = $HPBarBG
 @onready var hp_bar: ColorRect = $HPBar
+var _hp_icon: Sprite2D = null
+var _hp_icon_bg: Node2D = null
 
 const CELL_SIZE = 64
 const ISO_RATIO = 0.5
@@ -83,6 +85,31 @@ func setup(type: String) -> void:
 	var sprite_path = data.get("sprite", "")
 	if sprite_path != "" and ResourceLoader.exists(sprite_path):
 		sprite.texture = load(sprite_path)
+		# Круглая подложка + маленькая иконка рядом с HP bar
+		var icon_pos = Vector2(25, -58)
+		var circle_radius = 8.0
+
+		var circle_bg = Node2D.new()
+		circle_bg.name = "HPIconBG"
+		circle_bg.z_index = 100
+		circle_bg.position = icon_pos
+		circle_bg.visible = false
+		circle_bg.draw.connect(func():
+			circle_bg.draw_circle(Vector2.ZERO, circle_radius, Color(0, 0, 0, 0.8))
+		)
+		add_child(circle_bg)
+		_hp_icon_bg = circle_bg
+
+		_hp_icon = Sprite2D.new()
+		_hp_icon.texture = sprite.texture
+		_hp_icon.z_index = 101
+		_hp_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		var tex_size = _hp_icon.texture.get_size()
+		var icon_scale = 10.0 / max(tex_size.x, tex_size.y)
+		_hp_icon.scale = Vector2(icon_scale, icon_scale)
+		_hp_icon.position = icon_pos
+		_hp_icon.visible = false
+		add_child(_hp_icon)
 
 	var offset = data.get("sprite_offset", [0.0, 0.0])
 	sprite.position = Vector2(offset[0], offset[1])
@@ -492,8 +519,13 @@ func _update_hp_bar() -> void:
 	else:
 		hp_bar.color = Color(1.0, 0.15, 0.15)
 
-	hp_bar_bg.visible = ratio < 1.0
-	hp_bar.visible = ratio < 1.0
+	var show = ratio < 1.0
+	hp_bar_bg.visible = show
+	hp_bar.visible = show
+	if _hp_icon:
+		_hp_icon.visible = show
+	if _hp_icon_bg:
+		_hp_icon_bg.visible = show
 
 
 func _on_destroyed() -> void:

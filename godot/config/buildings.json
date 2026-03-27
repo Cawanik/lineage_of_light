@@ -150,7 +150,11 @@
 		"move_cost": 60,
 		"unlock_upgrades": true,
 		"idle_anim": "res://assets/sprites/buildings/production/shadow_forge",
-		"idle_anim_fps": 4.0
+		"idle_anim_fps": 4.0,
+		"upgrades": [
+			{"name": "Мастер-ремонт", "cost": 80, "desc": "Чинит до 10 построек после боя"},
+			{"name": "Полный ремонт", "cost": 120, "desc": "Чинит все постройки после боя"}
+		]
 	},
 	"dark_workshop": {
 		"name": "Тёмная Мастерская",

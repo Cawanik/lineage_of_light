@@ -127,7 +127,9 @@
       "Bash(cp \"$SRC/static_storm.mp3\" /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/sfx/abilities/lightning_loop.mp3)",
       "Bash(cp \"$SRC/walking_player.mp3\" /c/Users/user/WebstormProjects/lineage_of_light/godot/assets/sounds/sfx/footstep_grass.mp3)",
       "Bash(git merge:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(python:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }

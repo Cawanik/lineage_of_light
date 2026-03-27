@@ -403,23 +403,10 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and event.keycode == KEY_F1:
 		_unfocus_camera()
 		return
-	if event is InputEventKey and event.pressed and event.keycode == KEY_F9:
-		_print_matrix()
-		return
-	if event is InputEventKey and event.pressed and event.keycode == KEY_F7:
-		MapExporter.export_map(building_grid, wall_system)
-		return
-	if event is InputEventKey and event.pressed and event.keycode == KEY_F5:
-		wall_system.toggle_adjust()
-		return
-	if event is InputEventKey and event.pressed and event.keycode == KEY_F6:
-		# Adjust ближайшего здания к мыши
-		var mouse_pos = get_global_mouse_position()
-		var tile = building_grid.find_nearest_building(mouse_pos, 60.0)
-		if tile != Vector2i(-9999, -9999):
-			var b = building_grid.get_building(tile)
-			if b and b.has_method("toggle_adjust"):
-				b.toggle_adjust()
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F12:
+		var dev = get_node_or_null("UILayer/DevPanel")
+		if dev:
+			dev.visible = not dev.visible
 		return
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -469,10 +456,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			_toggle_pause_menu()
 			get_viewport().set_input_as_handled()
 			return
-
-	# N key — start next wave (quick hotkey)
-	if event is InputEventKey and event.pressed and event.keycode == KEY_N:
-		WaveManager.start_next_wave()
 
 
 func _try_focus_building() -> void:

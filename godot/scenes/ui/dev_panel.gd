@@ -14,7 +14,7 @@ extends Control
 @onready var add_souls_button = $Background/VBoxContainer/ControlsSection/AddSoulsButton
 @onready var toggle_button = $Background/VBoxContainer/ToggleButton
 
-var is_panel_visible: bool = true
+var is_panel_visible: bool = false
 var debug_enabled: bool = true
 var collapsed_size: Vector2
 var full_size: Vector2
@@ -25,6 +25,7 @@ var spawn_popup: PopupPanel = null
 func _ready() -> void:
 	full_size = size
 	collapsed_size = Vector2(full_size.x, 50)
+	visible = false
 
 	spawn_test_button.text = "Spawn Enemy..."
 	_build_spawn_popup()
@@ -74,6 +75,11 @@ func _ready() -> void:
 	victory_btn.text = "Show Victory Screen"
 	victory_btn.pressed.connect(_on_victory_pressed)
 	add_souls_button.get_parent().add_child(victory_btn)
+
+	var occlusion_btn = Button.new()
+	occlusion_btn.text = "Toggle Occlusion Debug"
+	occlusion_btn.pressed.connect(_on_occlusion_debug_pressed)
+	add_souls_button.get_parent().add_child(occlusion_btn)
 	
 	# Connect to game signals for live updates
 	if GameManager:
@@ -380,6 +386,71 @@ func _on_add_souls_pressed() -> void:
 func _on_victory_pressed() -> void:
 	var victory = load("res://scenes/ui/victory_screen.gd").new()
 	get_tree().current_scene.add_child(victory)
+
+
+var _occlusion_overlay: Node2D = null
+
+func _on_occlusion_debug_pressed() -> void:
+	if _occlusion_overlay and is_instance_valid(_occlusion_overlay):
+		_occlusion_overlay.queue_free()
+		_occlusion_overlay = null
+		return
+
+	_occlusion_overlay = Node2D.new()
+	_occlusion_overlay.name = "OcclusionDebug"
+	_occlusion_overlay.z_index = 50
+	var ysort = get_tree().current_scene.get_node_or_null("YSort")
+	if ysort:
+		ysort.add_child(_occlusion_overlay)
+	else:
+		get_tree().current_scene.add_child(_occlusion_overlay)
+
+	_occlusion_overlay.draw.connect(func():
+		# Зона фейда игрока
+		if OcclusionFade.player:
+			var pp = OcclusionFade.player.position
+			var r = OcclusionFade.fade_radius
+			# Прямоугольник ниже игрока где здания фейдятся
+			var rect = Rect2(pp.x - r, pp.y, r * 2, r)
+			_occlusion_overlay.draw_rect(rect, Color(0.2, 0.5, 1.0, 0.15))
+			_occlusion_overlay.draw_rect(rect, Color(0.2, 0.5, 1.0, 0.5), false, 1.0)
+			# Метка
+			_occlusion_overlay.draw_circle(pp, 4.0, Color(0.2, 0.5, 1.0, 0.8))
+
+		# Зона фейда курсора
+		if OcclusionFade.cursor_fade_active:
+			var cp = OcclusionFade.cursor_pos
+			var cr = OcclusionFade.cursor_fade_radius
+			var crect = Rect2(cp.x - cr, cp.y, cr * 2, cr)
+			_occlusion_overlay.draw_rect(crect, Color(1.0, 0.8, 0.2, 0.1))
+			_occlusion_overlay.draw_rect(crect, Color(1.0, 0.8, 0.2, 0.4), false, 1.0)
+			# Highlight radius
+			var hr = OcclusionFade.cursor_highlight_radius
+			_occlusion_overlay.draw_rect(Rect2(cp.x - hr, cp.y - hr, hr * 2, hr * 2), Color(0.2, 1.0, 0.2, 0.3), false, 1.0)
+
+		# Зоны фейда от врагов
+		var enemies = _occlusion_overlay.get_tree().get_nodes_in_group("enemies")
+		for enemy in enemies:
+			if not is_instance_valid(enemy):
+				continue
+			var ep = enemy.global_position
+			var er = OcclusionFade.fade_radius
+			var erect = Rect2(ep.x - er, ep.y, er * 2, er)
+			_occlusion_overlay.draw_rect(erect, Color(1.0, 0.2, 0.2, 0.1))
+			_occlusion_overlay.draw_rect(erect, Color(1.0, 0.2, 0.2, 0.4), false, 1.0)
+	)
+
+	# Перерисовка каждый кадр
+	var timer = Timer.new()
+	timer.wait_time = 0.05
+	timer.autostart = true
+	timer.timeout.connect(func():
+		if _occlusion_overlay and is_instance_valid(_occlusion_overlay):
+			_occlusion_overlay.queue_redraw()
+		else:
+			timer.queue_free()
+	)
+	_occlusion_overlay.add_child(timer)
 
 
 func _on_toggle_pressed() -> void:

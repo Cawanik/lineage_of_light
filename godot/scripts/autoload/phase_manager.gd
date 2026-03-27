@@ -127,6 +127,13 @@ func _heal_all_buildings() -> void:
 	if not bg:
 		return
 
+	# Находим уровень кузни на карте
+	var forge_level = 0
+	for tile in bg.buildings:
+		var b = bg.get_building(tile)
+		if b and is_instance_valid(b) and b is Building and b.building_type == "shadow_forge":
+			forge_level = maxi(forge_level, b.upgrade_level)
+
 	# Собираем повреждённые постройки
 	var damaged: Array[Dictionary] = []
 	for tile in bg.buildings:
@@ -140,11 +147,11 @@ func _heal_all_buildings() -> void:
 	# Сортируем по урону — самые повреждённые первые
 	damaged.sort_custom(func(a, d): return a["damage"] > d["damage"])
 
-	# Количество построек зависит от апгрейдов ремонта
+	# Количество построек зависит от уровня кузни
 	var repair_count = 3  # Базовое: 3 постройки
-	if sm and sm.is_unlocked("repair_up1"):
+	if forge_level >= 1:
 		repair_count = 10
-	if sm and sm.is_unlocked("repair_up2"):
+	if forge_level >= 2:
 		repair_count = damaged.size()  # Все
 
 	for i in range(mini(repair_count, damaged.size())):
