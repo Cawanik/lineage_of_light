@@ -4,6 +4,11 @@
 		"volume": 0.6,
 		"max_duration": 0.5
 	},
+	"ui_hover": {
+		"path": "res://assets/sounds/sfx/ui/hover.mp3",
+		"volume": 0.3,
+		"max_duration": 0.3
+	},
 	"build": {
 		"path": "res://assets/sounds/sfx/buildings/create_building.wav",
 		"volume": 0.5,
@@ -61,6 +66,31 @@
 		"pitch_max": 1.0,
 		"max_duration": 2.0,
 		"fade_out": 1.0
+	},
+	"explosion": {
+		"path": "res://assets/sounds/sfx/abilities/explosion.mp3",
+		"volume": 0.7,
+		"max_duration": 2.0
+	},
+	"lightning_loop": {
+		"path": "res://assets/sounds/sfx/abilities/lightning_loop.mp3",
+		"volume": 0.4,
+		"max_duration": 2.0,
+		"fade_out": 0.5
+	},
+	"footstep_grass": {
+		"path": "res://assets/sounds/sfx/footstep_grass.mp3",
+		"volume": 0.2,
+		"pitch_min": 0.85,
+		"pitch_max": 1.15,
+		"max_duration": 0.4
+	},
+	"footstep_enemy": {
+		"path": "res://assets/sounds/sfx/enemies/footstep_enemy.mp3",
+		"volume": 0.15,
+		"pitch_min": 0.85,
+		"pitch_max": 1.15,
+		"max_duration": 0.4
 	},
 	"zombie_grab": {
 		"path": "res://assets/sounds/sfx/abilities/zombie_grab.mp3",

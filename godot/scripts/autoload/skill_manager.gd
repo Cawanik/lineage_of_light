@@ -126,20 +126,13 @@ func get_ability_replacement(ability_id: String) -> String:
 
 
 func get_max_upgrade_level(building_type: String) -> int:
-	# Апгрейды работают только если Тёмная мастерская стоит на карте
-	if not _building_exists_on_map("dark_workshop"):
-		return 0
-	# Уровень мастерской на карте определяет тир доступных апгрейдов
-	var workshop_level = _get_building_upgrade_level("dark_workshop")
+	# Апгрейды определяются только деревом навыков
 	var max_level = 0
 	var prefix = "upgrade:" + building_type + ":"
 	for skill_id in unlocked:
 		for entry in _get_unlocks(skill_id):
 			if entry.begins_with(prefix):
 				var lvl = int(entry.split(":")[2])
-				# Тир 2 апгрейды требуют улучшенную мастерскую
-				if lvl >= 2 and workshop_level < 1:
-					continue
 				max_level = maxi(max_level, lvl)
 	return max_level
 

@@ -138,4 +138,7 @@ func _on_exit_pressed() -> void:
 	var am = get_node_or_null("/root/AudioManager")
 	if am:
 		am.stop_music(1.0)
+	var al = get_node_or_null("/root/AlertSystem")
+	if al:
+		al.hide_persistent()
 	get_tree().change_scene_to_file("res://scenes/menu/main_menu.tscn")

@@ -30,10 +30,13 @@ func _rebuild_tile_data() -> void:
 			_tile_local_offsets.append(world - Vector2(0.0, center_y))
 
 
+var _lightning_player: AudioStreamPlayer = null
+
 func activate() -> void:
 	is_preview = false
 	_age = 0.0
 	_tick_timer = 0.0
+	_start_lightning_sound()
 
 
 func _process(delta: float) -> void:
@@ -51,7 +54,31 @@ func _process(delta: float) -> void:
 		_do_damage()
 
 	if _age >= duration:
+		_stop_lightning_sound()
 		queue_free()
+
+
+func _start_lightning_sound() -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if not am:
+		return
+	var data = am.sounds.get("lightning_loop", {})
+	var sound_path = data.get("path", "")
+	if sound_path == "" or not ResourceLoader.exists(sound_path):
+		return
+	_lightning_player = AudioStreamPlayer.new()
+	_lightning_player.stream = load(sound_path)
+	_lightning_player.volume_db = linear_to_db(data.get("volume", 0.4) * am.sfx_volume * am.master_volume)
+	_lightning_player.bus = "SFX"
+	add_child(_lightning_player)
+	_lightning_player.play()
+
+
+func _stop_lightning_sound() -> void:
+	if _lightning_player and is_instance_valid(_lightning_player):
+		var tween = create_tween()
+		tween.tween_property(_lightning_player, "volume_db", -40.0, 0.5)
+		tween.tween_callback(_lightning_player.queue_free)
 
 
 func _do_damage() -> void:

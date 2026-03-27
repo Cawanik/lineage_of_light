@@ -44,14 +44,6 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	# Кулдаун на пропуск — всегда тикает
-	if _advance_cooldown > 0:
-		_advance_cooldown -= delta
-		if _advance_cooldown <= 0:
-			_can_advance = true
-			if _skip_label:
-				_skip_label.visible = true
-
 	if not _is_typing:
 		return
 
@@ -69,28 +61,28 @@ func _process(delta: float) -> void:
 					VoiceBlip.blip(_voice_blip_id)
 
 	if _char_count >= _full_text.length():
-		_is_typing = false
-		_can_advance = false
-		_advance_cooldown = 1.0
-		line_finished.emit()
+		_finish_typing()
+
+
+func _finish_typing() -> void:
+	_is_typing = false
+	_can_advance = true
+	if _skip_label:
+		_skip_label.visible = true
+	line_finished.emit()
 
 
 func _on_input(event: InputEvent) -> void:
 	if not _active:
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		print("[DialogueBox] Click! typing=%s can_advance=%s cooldown=%.2f" % [_is_typing, _can_advance, _advance_cooldown])
 		if _is_typing:
-			# Допечатать мгновенно, но НЕ переходить дальше
+			# Допечатать мгновенно
 			_visible_chars = _full_text.length()
 			_char_count = _full_text.length()
 			_text_label.visible_characters = -1
-			_is_typing = false
-			_can_advance = false
-			_advance_cooldown = 1.0
-			line_finished.emit()
+			_finish_typing()
 		elif _can_advance:
-			# Переход к следующей реплике
 			_can_advance = false
 			if _skip_label:
 				_skip_label.visible = false

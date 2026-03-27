@@ -28,6 +28,10 @@ var _selected_skill: String = ""
 
 # Камера/скролл
 var _offset: Vector2 = Vector2.ZERO
+var _zoom: float = 1.0
+const ZOOM_MIN = 0.5
+const ZOOM_MAX = 2.0
+const ZOOM_STEP = 0.1
 var _drag: bool = false
 var _drag_start: Vector2 = Vector2.ZERO
 
@@ -259,7 +263,15 @@ func _ready() -> void:
 
 
 func _calc_center_offset() -> Vector2:
-	# Находим центр всех навыков
+	# Центрируем на magic_abilities
+	var ma = Config.skill_tree.get("magic_abilities", {})
+	var pos_arr = ma.get("position", [0, 0])
+	var center = Vector2(pos_arr[0], pos_arr[1]) * _zoom
+	var vp = get_viewport().get_visible_rect().size
+	return vp * 0.5 - center
+
+
+func _calc_center_offset_old() -> Vector2:
 	var min_pos = Vector2(99999, 99999)
 	var max_pos = Vector2(-99999, -99999)
 	for id in Config.skill_tree:
@@ -325,25 +337,26 @@ func _process(_delta: float) -> void:
 
 func _on_canvas_draw() -> void:
 	var tree = Config.skill_tree
+	var r = NODE_RADIUS * _zoom
 
 	# Рисуем линии связей
 	for id in tree:
 		var data = tree[id]
-		var pos = Vector2(data["position"][0], data["position"][1]) + _offset
+		var pos = Vector2(data["position"][0], data["position"][1]) * _zoom + _offset
 		var requires = data.get("requires", [])
 		for req_id in requires:
 			if not tree.has(req_id):
 				continue
 			var req_data = tree[req_id]
-			var req_pos = Vector2(req_data["position"][0], req_data["position"][1]) + _offset
+			var req_pos = Vector2(req_data["position"][0], req_data["position"][1]) * _zoom + _offset
 			var both_unlocked = SkillManager.is_unlocked(id) and SkillManager.is_unlocked(req_id)
 			var col = LINE_COLOR_ACTIVE if both_unlocked else LINE_COLOR
-			_canvas.draw_line(req_pos, pos, col, 2.0)
+			_canvas.draw_line(req_pos, pos, col, 2.0 * _zoom)
 
 	# Рисуем узлы
 	for id in tree:
 		var data = tree[id]
-		var pos = Vector2(data["position"][0], data["position"][1]) + _offset
+		var pos = Vector2(data["position"][0], data["position"][1]) * _zoom + _offset
 		var state = SkillManager.get_state(id)
 
 		var fill_color: Color
@@ -360,33 +373,33 @@ func _on_canvas_draw() -> void:
 				outline_color = COLOR_HIDDEN
 
 		# Круг заливка
-		_canvas.draw_circle(pos, NODE_RADIUS, fill_color)
+		_canvas.draw_circle(pos, r, fill_color)
 		# Круг обводка
-		_draw_circle_outline(pos, NODE_RADIUS, outline_color, 2.0)
+		_draw_circle_outline(pos, r, outline_color, 2.0 * _zoom)
 
 		# Иконка
 		var icon_path = data.get("icon", "")
 		var has_icon = icon_path != "" and ResourceLoader.exists(icon_path)
 
 		if has_icon and state != "hidden":
-			_draw_icon(pos, icon_path, NODE_RADIUS * 1.4)
+			_draw_icon(pos, icon_path, r * 1.4)
 			# Бейдж улучшения — если иконка совпадает с родительской
 			if _is_upgrade_node(id, data) and _upgrade_icon:
-				var badge_pos = pos + Vector2(-NODE_RADIUS * 0.45, -NODE_RADIUS * 0.45)
-				var badge_size = Vector2(16, 16)
+				var badge_pos = pos + Vector2(-r * 0.45, -r * 0.45)
+				var badge_size = Vector2(16, 16) * _zoom
 				_canvas.draw_texture_rect(_upgrade_icon, Rect2(badge_pos - badge_size * 0.5, badge_size), false)
 		else:
-			_draw_icon(pos, UNKNOWN_ICON_PATH, NODE_RADIUS * 1.2)
+			_draw_icon(pos, UNKNOWN_ICON_PATH, r * 1.2)
 
 		# Подсветка выделенного
 		if id == _selected_skill:
-			_draw_circle_outline(pos, NODE_RADIUS + 4, Color.WHITE, 2.0)
+			_draw_circle_outline(pos, r + 4 * _zoom, Color.WHITE, 2.0 * _zoom)
 
 		# Подсветка навыков для обучения (пульсация)
 		if not SkillManager.allowed_skills.is_empty() and id in SkillManager.allowed_skills and not SkillManager.is_unlocked(id):
 			var pulse = 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.005)
 			var glow_color = Color(1.0, 0.85, 0.2, pulse * 0.6)
-			_draw_circle_outline(pos, NODE_RADIUS + 6, glow_color, 3.0)
+			_draw_circle_outline(pos, r + 6 * _zoom, glow_color, 3.0 * _zoom)
 
 
 func _is_upgrade_node(id: String, data: Dictionary) -> bool:
@@ -459,6 +472,16 @@ func _on_canvas_input(event: InputEvent) -> void:
 			_selected_skill = ""
 			_info_panel.visible = false
 			_canvas.queue_redraw()
+		elif event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
+			var mouse_before = (event.position - _offset) / _zoom
+			_zoom = clampf(_zoom + ZOOM_STEP, ZOOM_MIN, ZOOM_MAX)
+			_offset = event.position - mouse_before * _zoom
+			_canvas.queue_redraw()
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
+			var mouse_before = (event.position - _offset) / _zoom
+			_zoom = clampf(_zoom - ZOOM_STEP, ZOOM_MIN, ZOOM_MAX)
+			_offset = event.position - mouse_before * _zoom
+			_canvas.queue_redraw()
 
 	elif event is InputEventMouseMotion and _drag:
 		_offset += event.relative
@@ -467,10 +490,11 @@ func _on_canvas_input(event: InputEvent) -> void:
 
 func _get_skill_at(pos: Vector2) -> String:
 	var tree = Config.skill_tree
+	var r = NODE_RADIUS * _zoom
 	for id in tree:
 		var data = tree[id]
-		var node_pos = Vector2(data["position"][0], data["position"][1]) + _offset
-		if pos.distance_to(node_pos) <= NODE_RADIUS:
+		var node_pos = Vector2(data["position"][0], data["position"][1]) * _zoom + _offset
+		if pos.distance_to(node_pos) <= r:
 			return id
 	return ""
 

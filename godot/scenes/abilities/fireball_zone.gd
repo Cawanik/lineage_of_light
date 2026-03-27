@@ -48,6 +48,10 @@ func activate() -> void:
 
 
 func _on_land() -> void:
+	# Звук взрыва
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("explosion")
 	# Считаем центры 4 тайлов в мировых координатах (без ссылки на bg)
 	var tile_centers: Array = []
 	for offset in _tile_offsets:

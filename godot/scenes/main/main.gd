@@ -80,9 +80,51 @@ func _ready() -> void:
 	flat_view_button.tooltip_text = "Плоский вид\nПоказывает подписи построек\nМожно совмещать с другими инструментами"
 
 	for btn in [build_button, demolish_button, move_button, upgrade_button, flat_view_button]:
-		btn.mouse_entered.connect(func(): btn.modulate = Color(1.3, 1.1, 1.4, 1.0))
+		btn.focus_mode = Control.FOCUS_NONE
+		btn.mouse_entered.connect(func():
+			btn.modulate = Color(1.3, 1.1, 1.4, 1.0)
+			var am = get_node_or_null("/root/AudioManager")
+			if am and am.sounds.has("ui_hover"):
+				am.play("ui_hover")
+		)
 		btn.mouse_exited.connect(func(): btn.modulate = Color.WHITE)
 		btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		btn.pressed.connect(func():
+			var am = get_node_or_null("/root/AudioManager")
+			if am:
+				am.play("ui_click")
+		)
+
+	# Кнопка паузы в правом верхнем углу с подложкой slot_bg
+	var pause_container = TextureRect.new()
+	pause_container.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	if ResourceLoader.exists("res://assets/sprites/ui/slot_bg.png"):
+		pause_container.texture = load("res://assets/sprites/ui/slot_bg.png")
+	pause_container.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	pause_container.stretch_mode = TextureRect.STRETCH_SCALE
+	pause_container.anchors_preset = Control.PRESET_TOP_RIGHT
+	pause_container.anchor_left = 1.0
+	pause_container.anchor_right = 1.0
+	pause_container.offset_left = -42
+	pause_container.offset_top = 5
+	pause_container.offset_right = -5
+	pause_container.offset_bottom = 42
+	pause_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$UILayer.add_child(pause_container)
+
+	var pause_btn = Button.new()
+	pause_btn.text = "☰"
+	pause_btn.add_theme_font_size_override("font_size", 18)
+	pause_btn.flat = true
+	pause_btn.add_theme_color_override("font_color", Color("#e8e0ff"))
+	pause_btn.add_theme_color_override("font_hover_color", Color.WHITE)
+	pause_btn.anchors_preset = Control.PRESET_FULL_RECT
+	pause_btn.anchor_right = 1.0
+	pause_btn.anchor_bottom = 1.0
+	pause_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	pause_btn.focus_mode = Control.FOCUS_NONE
+	pause_btn.pressed.connect(_toggle_pause_menu)
+	pause_container.add_child(pause_btn)
 
 	# Загружаем абилки из player.json
 	_load_combat_abilities()
@@ -173,6 +215,16 @@ func _load_combat_abilities() -> void:
 		})
 
 
+func _key_label(keycode: int) -> String:
+	if keycode == 0:
+		return ""
+	if keycode >= KEY_0 and keycode <= KEY_9:
+		return str(keycode - KEY_0)
+	if keycode >= KEY_A and keycode <= KEY_Z:
+		return char(keycode)
+	return OS.get_keycode_string(keycode)
+
+
 func _add_hotkey_labels() -> void:
 	var toolbar_grid = get_node_or_null("UILayer/Toolbar/Grid")
 	if not toolbar_grid:
@@ -182,18 +234,14 @@ func _add_hotkey_labels() -> void:
 		var slot = slots[i]
 		var lbl = Label.new()
 		lbl.name = "HotkeyLabel"
-		lbl.text = str(i + 1)
-		lbl.add_theme_font_size_override("font_size", 9)
-		lbl.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 0.6))
-		lbl.anchors_preset = Control.PRESET_BOTTOM_RIGHT
-		lbl.anchor_left = 1.0
-		lbl.anchor_top = 1.0
-		lbl.anchor_right = 1.0
-		lbl.anchor_bottom = 1.0
-		lbl.offset_left = -12
-		lbl.offset_top = -14
+		lbl.text = _key_label(GameManager.toolbar_keybinds[i])
+		lbl.add_theme_font_size_override("font_size", 7)
+		lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+		lbl.offset_left = 4
+		lbl.offset_top = 3
 		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.add_child(lbl)
+		# Добавляем отложенно чтобы лейбл был поверх иконки
+		slot.call_deferred("add_child", lbl)
 
 
 func _update_hotkey_labels(mode: String) -> void:
@@ -207,12 +255,12 @@ func _update_hotkey_labels(mode: String) -> void:
 			continue
 		if mode == "combat":
 			if i < _combat_abilities.size():
-				lbl.text = _combat_abilities[i].get("key", str(i + 1))
+				lbl.text = _key_label(GameManager.toolbar_keybinds[i])
 				lbl.visible = true
 			else:
 				lbl.visible = false
 		else:
-			lbl.text = str(i + 1)
+			lbl.text = _key_label(GameManager.toolbar_keybinds[i])
 			lbl.visible = true
 
 
@@ -383,6 +431,35 @@ func _unhandled_input(event: InputEvent) -> void:
 			# Отпускание ЛКМ — завершаем драг
 			if active_tool and active_tool.has_method("on_release"):
 				active_tool.on_release()
+
+	# ПКМ — снять активный инструмент
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		if active_tool:
+			active_tool.deactivate()
+			active_tool = null
+			active_tool_name = ""
+			_update_slot_highlights()
+			# Закрываем меню строительства если открыто
+			if build_menu.is_open:
+				build_menu.toggle_menu()
+			get_viewport().set_input_as_handled()
+			return
+
+	# ESC — снять инструмент или открыть меню паузы
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if active_tool:
+			active_tool.deactivate()
+			active_tool = null
+			active_tool_name = ""
+			_update_slot_highlights()
+			if build_menu.is_open:
+				build_menu.toggle_menu()
+			get_viewport().set_input_as_handled()
+			return
+		else:
+			_toggle_pause_menu()
+			get_viewport().set_input_as_handled()
+			return
 
 	# N key — start next wave (quick hotkey)
 	if event is InputEventKey and event.pressed and event.keycode == KEY_N:
@@ -724,6 +801,16 @@ func _autosave(_arg = null) -> void:
 	print("[Autosave] Slot %d: souls=%d, skills=%d at %s" % [slot, data["souls"], skills.size(), data["last_saved"]])
 
 
+func _toggle_pause_menu() -> void:
+	var pm = get_node_or_null("PauseMenu")
+	if not pm:
+		return
+	if pm._is_open:
+		pm.close()
+	else:
+		pm.open()
+
+
 func _on_buildings_changed() -> void:
 	if PhaseManager.is_build_phase():
 		# Отложенный rebuild чтобы не ломать UI в процессе размещения
@@ -839,7 +926,7 @@ func _draw_flat_labels() -> void:
 			draw_n.draw_string(ThemeDB.fallback_font, Vector2(-12, 3), display_text, HORIZONTAL_ALIGNMENT_CENTER, 24, 10, Color.WHITE)
 			# Тир (цифра снизу)
 			if tier_text != "":
-				draw_n.draw_string(ThemeDB.fallback_font, Vector2(-4, 13), tier_text, HORIZONTAL_ALIGNMENT_CENTER, 8, 8, Color(1.0, 0.85, 0.2))
+				draw_n.draw_string(ThemeDB.fallback_font, Vector2(-5, 14), tier_text, HORIZONTAL_ALIGNMENT_CENTER, 10, 11, Color.WHITE)
 		)
 		ysort.add_child(label_node)
 		label_node.queue_redraw()

@@ -6,7 +6,7 @@
 		"icon": "res://assets/sprites/ui/build_icon.png",
 		"cost": 1,
 		"requires": [],
-		"position": [80, 60],
+		"position": [80, -60],
 		"unlocks": ["tool:build"]
 	},
 	"archers": {
@@ -15,8 +15,8 @@
 		"category": "Здание",
 		"icon": "res://assets/sprites/buildings/skeleton_archer_tower.png",
 		"cost": 1,
-		"requires": ["build_plan"],
-		"position": [370, 60],
+		"requires": [],
+		"position": [180, 0],
 		"unlocks": ["building:archer_tower"]
 	},
 	"walls": {
@@ -25,7 +25,7 @@
 		"category": "Здание",
 		"icon": "res://assets/sprites/buildings/wall/wall_segment_0001.png",
 		"cost": 1,
-		"requires": ["archers"],
+		"requires": ["magic_abilities"],
 		"position": [530, 60],
 		"unlocks": ["building:wall_block"]
 	},
@@ -35,8 +35,8 @@
 		"category": "Инструмент",
 		"icon": "res://assets/sprites/ui/icon_flat_view_0001.png",
 		"cost": 1,
-		"requires": ["build_plan"],
-		"position": [-10, 240],
+		"requires": [],
+		"position": [-20, 0],
 		"unlocks": ["tool:flat_view"]
 	},
 	"demolish_tool": {
@@ -45,7 +45,7 @@
 		"category": "Инструмент",
 		"icon": "res://assets/sprites/ui/demolish_icon.png",
 		"cost": 1,
-		"requires": ["build_plan"],
+		"requires": ["magic_abilities"],
 		"position": [80, 330],
 		"unlocks": ["tool:demolish"]
 	},
@@ -55,7 +55,7 @@
 		"category": "Инструмент",
 		"icon": "res://assets/sprites/ui/upgrade_arrow.png",
 		"cost": 1,
-		"requires": ["build_plan"],
+		"requires": ["magic_abilities"],
 		"position": [160, 240],
 		"unlocks": ["tool:upgrade"]
 	},
@@ -71,12 +71,12 @@
 	},
 	"magic_abilities": {
 		"name": "Магические способности",
-		"desc": "Промежуточный навык магии.",
+		"desc": "Открывает ветку магии.",
 		"category": "Майлстоун",
 		"icon": "res://assets/sprites/ui/skills/icon_grimoire.png",
 		"cost": 1,
-		"requires": ["flat_view"],
-		"position": [-240, 60],
+		"requires": ["build_plan", "archers", "flat_view"],
+		"position": [80, 60],
 		"unlocks": []
 	},
 	"magic_shot": {
@@ -94,7 +94,7 @@
 		"desc": "Усиливает магический выстрел (+15 урона).",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_magic_shot.png",
-		"cost": 1,
+		"cost": 2,
 		"requires": ["magic_shot"],
 		"position": [-400, 170],
 		"unlocks": ["bonus:magic_bolt:damage:15"]
@@ -104,7 +104,7 @@
 		"desc": "Заменяет выстрел на Магические Ракеты (3 снаряда).",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_magic_shot.png",
-		"cost": 1,
+		"cost": 3,
 		"requires": ["magic_shot_up1"],
 		"position": [-570, 170],
 		"unlocks": ["replace:magic_bolt:magic_missile"]
@@ -124,7 +124,7 @@
 		"desc": "Усиливает огненный шар (+30 урона).",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_fireball.png",
-		"cost": 1,
+		"cost": 2,
 		"requires": ["fireball"],
 		"position": [-400, 280],
 		"unlocks": ["bonus:fireball:damage:30"]
@@ -134,7 +134,7 @@
 		"desc": "Увеличивает область огненного шара до 9 клеток (3x3).",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_fireball.png",
-		"cost": 1,
+		"cost": 3,
 		"requires": ["fireball_up1"],
 		"position": [-570, 280],
 		"unlocks": ["bonus:fireball:grid_size:1"]
@@ -154,7 +154,7 @@
 		"desc": "Уменьшает кулдаун шторма на 2 секунды.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_ball_lightning.png",
-		"cost": 1,
+		"cost": 2,
 		"requires": ["ball_lightning"],
 		"position": [-400, 390],
 		"unlocks": ["bonus:storm:cooldown_reduction:2"]
@@ -164,28 +164,18 @@
 		"desc": "Увеличивает область шторма до 2x2 клетки.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/ui/skills/icon_ball_lightning.png",
-		"cost": 1,
+		"cost": 3,
 		"requires": ["ball_lightning_up1"],
 		"position": [-570, 390],
 		"unlocks": ["bonus:storm:grid_size:1"]
-	},
-	"workshop_t1": {
-		"name": "Улучшение зданий 1-го уровня",
-		"desc": "Тёмная мастерская. Открывает улучшения зданий.",
-		"category": "Здание",
-		"icon": "res://assets/sprites/buildings/production/dark_workshop.png",
-		"cost": 1,
-		"requires": ["upgrade_tool"],
-		"position": [230, 360],
-		"unlocks": ["building:dark_workshop"]
 	},
 	"archer_up1": {
 		"name": "Улучшение лучников",
 		"desc": "Первое улучшение лучников.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/buildings/skeleton_archer_tower.png",
-		"cost": 1,
-		"requires": ["archers", "workshop_t1"],
+		"cost": 2,
+		"requires": ["upgrade_tool"],
 		"position": [370, 360],
 		"unlocks": ["upgrade:archer_tower:1"]
 	},
@@ -194,28 +184,18 @@
 		"desc": "Первое улучшение стен.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/buildings/wall/wall_segment_0002.png",
-		"cost": 1,
-		"requires": ["walls", "workshop_t1"],
+		"cost": 2,
+		"requires": ["walls", "upgrade_tool"],
 		"position": [530, 360],
 		"unlocks": ["upgrade:wall_block:1"]
-	},
-	"workshop_t2": {
-		"name": "2-е улучшение зданий 1-го уровня",
-		"desc": "Тёмная мастерская, апгрейд.",
-		"category": "Улучшение",
-		"icon": "res://assets/sprites/buildings/production/dark_workshop.png",
-		"cost": 1,
-		"requires": ["workshop_t1"],
-		"position": [230, 460],
-		"unlocks": ["upgrade:dark_workshop:1"]
 	},
 	"archer_up2": {
 		"name": "2-е улучшение лучников",
 		"desc": "Второе улучшение лучников.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/buildings/skeleton_archer_tower.png",
-		"cost": 1,
-		"requires": ["archer_up1", "workshop_t2"],
+		"cost": 3,
+		"requires": ["archer_up1"],
 		"position": [370, 460],
 		"unlocks": ["upgrade:archer_tower:2"]
 	},
@@ -224,8 +204,8 @@
 		"desc": "Второе улучшение стен.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/buildings/wall/wall_segment_0003.png",
-		"cost": 1,
-		"requires": ["wall_up1", "workshop_t2"],
+		"cost": 3,
+		"requires": ["wall_up1"],
 		"position": [530, 460],
 		"unlocks": ["upgrade:wall_block:2"]
 	},
@@ -244,8 +224,8 @@
 		"desc": "Ремонтирует до 10 построек.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/buildings/production/shadow_forge.png",
-		"cost": 1,
-		"requires": ["shadow_forge", "workshop_t1"],
+		"cost": 2,
+		"requires": ["shadow_forge", "upgrade_tool"],
 		"position": [680, 360],
 		"unlocks": []
 	},
@@ -254,8 +234,8 @@
 		"desc": "Ремонтирует все постройки.",
 		"category": "Улучшение",
 		"icon": "res://assets/sprites/buildings/production/shadow_forge.png",
-		"cost": 1,
-		"requires": ["repair_up1", "workshop_t2"],
+		"cost": 3,
+		"requires": ["repair_up1"],
 		"position": [680, 460],
 		"unlocks": []
 	},

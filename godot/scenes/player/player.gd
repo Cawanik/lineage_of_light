@@ -33,6 +33,7 @@ var _zoom_smooth_speed: float = 8.0
 var using_mouse_move: bool = false
 var afk_timer: float = 0.0
 var is_afk: bool = false
+var _footstep_timer: float = 0.0
 
 var move_marker_scene: PackedScene = preload("res://scenes/ui/move_marker.tscn")
 var current_marker: Node2D = null
@@ -259,6 +260,22 @@ func _physics_process(delta: float) -> void:
 
 	_update_animation(input)
 
+	# Звуки шагов — рандомная часть дорожки
+	if velocity.length() > 1.0:
+		_footstep_timer -= delta
+		if _footstep_timer <= 0:
+			_footstep_timer = 0.35
+			var am = get_node_or_null("/root/AudioManager")
+			if am:
+				var data = am.sounds.get("footstep_grass", {})
+				var stream = am._get_stream(data.get("path", ""))
+				if stream:
+					var total = stream.get_length()
+					var start = randf_range(0.0, maxf(total - 0.4, 0.0))
+					am.play_range("footstep_grass", start, start + 0.35)
+	else:
+		_footstep_timer = 0.0
+
 	# Обновляем позицию курсора для occlusion
 	OcclusionFade.cursor_pos = get_global_mouse_position()
 
@@ -303,6 +320,12 @@ func _update_animation(input: Vector2) -> void:
 		var anim = "idle_" + dir_key
 		if sprite.sprite_frames.has_animation(anim) and sprite.animation != anim:
 			sprite.play(anim)
+
+
+func _play_cast_sound() -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am:
+		am.play("magic_cast")
 
 
 func _play_cast_animation() -> void:
@@ -443,19 +466,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			move_target = get_global_mouse_position()
-			using_mouse_move = true
-			_spawn_marker(move_target)
-			_reset_afk()
-		elif event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
 			_target_zoom = clampf(_target_zoom + zoom_speed, zoom_min, zoom_max)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
 			_target_zoom = clampf(_target_zoom - zoom_speed, zoom_min, zoom_max)
-	elif event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		move_target = get_global_mouse_position()
-		using_mouse_move = true
-		_reset_afk()
 
 
 func _try_cast(ability_id: String) -> void:
@@ -464,8 +478,12 @@ func _try_cast(ability_id: String) -> void:
 	if _cooldowns.get(ability_id, 0.0) > 0.0:
 		return
 	match ability_id:
-		"magic_bolt":    _cast_magic_bolt()
-		"magic_missile": _cast_magic_missile()
+		"magic_bolt":
+			_play_cast_sound()
+			_cast_magic_bolt()
+		"magic_missile":
+			_play_cast_sound()
+			_cast_magic_missile()
 		"fireball":
 			_cast_fireball()
 			return  # кулдаун ставится в _place_fireball()
@@ -588,6 +606,7 @@ func _place_fireball() -> void:
 	if am:
 		am.play("magic_cast")
 	_play_cast_animation()
+	_play_cast_sound()
 	_fireball_ghost.activate()
 	_fireball_ghost = null
 	_fireball_placing = false
@@ -638,6 +657,7 @@ func _place_storm() -> void:
 	if am:
 		am.play("magic_cast")
 	_play_cast_animation()
+	_play_cast_sound()
 	_storm_ghost.modulate = Color(1, 1, 1, 1)
 	_storm_ghost.activate()
 	_storm_ghost = null

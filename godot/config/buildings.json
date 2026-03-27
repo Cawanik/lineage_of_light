@@ -157,20 +157,14 @@
 		"short_name": "МСТ",
 		"type": "production",
 		"cost": 130,
-		"desc": "Тёмная мастерская. Открывает улучшения зданий.",
+		"desc": "Тёмная мастерская. Отключена.",
 		"hp": 150,
 		"sprite": "res://assets/sprites/buildings/production/dark_workshop.png",
 		"sprite_offset": [0.0, -25.0],
-		"hotkey": "6",
-		"can_build": true,
+		"can_build": false,
 		"can_demolish": true,
-		"can_move": true,
-		"move_cost": 65,
-		"idle_anim": "res://assets/sprites/buildings/production/dark_workshop",
-		"idle_anim_fps": 4.0,
-		"upgrades": [
-			{"name": "Улучшенная Мастерская", "cost": 100, "hp_bonus": 50, "desc": "Открывает апгрейды 2-го уровня"}
-		]
+		"can_move": false,
+		"move_cost": 65
 	},
 	"epoch_gate": {
 		"name": "Врата Эпох",

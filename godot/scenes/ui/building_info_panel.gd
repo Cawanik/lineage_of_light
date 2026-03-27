@@ -263,6 +263,11 @@ func _apply_upgrade(upgrade: Dictionary, level: int) -> void:
 	if am:
 		am.play("upgrade")
 
+	# Обновляем flat view если активен
+	var main = get_tree().current_scene
+	if main and main.has_method("refresh_flat_view") and main.get("_flat_view"):
+		main.refresh_flat_view()
+
 	# Переоткрываем панель чтобы обновить кнопки
 	var b = _building
 	var tree = get_tree()
