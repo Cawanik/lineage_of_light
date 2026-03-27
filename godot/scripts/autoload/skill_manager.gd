@@ -98,6 +98,10 @@ func is_ability_unlocked(ability_id: String) -> bool:
 	return _has_unlock("ability:" + ability_id)
 
 
+func is_autocast_unlocked(ability_id: String) -> bool:
+	return _has_unlock("autocast:" + ability_id)
+
+
 ## Суммирует бонусы к стату абилки из всех открытых талантов
 ## Формат unlock: "bonus:ability_id:stat:value"
 func get_ability_bonus(ability_id: String, stat: String) -> float:

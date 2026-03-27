@@ -13,15 +13,16 @@
 		"magic_bolt": {
 			"key": "",
 			"cooldown": 0.8,
+			"autocast_cooldown": 2.0,
 			"damage": 15.0,
-			"range": 400.0,
+			"range": 256.0,
 			"projectile": "magic_bolt"
 		},
 		"magic_missile": {
 			"key": "",
 			"cooldown": 1.0,
 			"damage": 30.0,
-			"range": 400.0,
+			"range": 256.0,
 			"projectile": "magic_bolt",
 			"count": 3,
 			"shot_delay": 0.15
@@ -30,7 +31,7 @@
 			"key": "",
 			"cooldown": 3.0,
 			"damage": 60.0,
-			"range": 500.0,
+			"range": 256.0,
 			"aoe_radius": 256.0,
 			"projectile": "fireball"
 		},
@@ -41,7 +42,7 @@
 			"duration": 5.0,
 			"tick_interval": 0.5,
 			"aoe_radius": 96.0,
-			"range": 500.0
+			"range": 256.0
 		}
 	}
 }

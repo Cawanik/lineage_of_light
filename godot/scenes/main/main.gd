@@ -603,6 +603,21 @@ func _set_toolbar_mode(mode: String) -> void:
 			tex_btn.visible = true
 			_ability_nodes.append(tex_btn)
 
+			# Индикатор авто-каста для magic_bolt
+			if ability_id == "magic_bolt" or ability_id == "magic_missile":
+				var sm_ac = get_node_or_null("/root/SkillManager")
+				if sm_ac and sm_ac.is_autocast_unlocked(ability_id):
+					var indicator_script = load("res://scenes/ui/autocast_indicator.gd")
+					var indicator = Control.new()
+					indicator.set_script(indicator_script)
+					indicator.name = "AutocastIndicator"
+					indicator.set("ability_id", ability_id)
+					indicator.anchors_preset = Control.PRESET_FULL_RECT
+					indicator.anchor_right = 1.0
+					indicator.anchor_bottom = 1.0
+					indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
+					slot.add_child(indicator)
+
 			# Оверлей кулдауна — чёрный прямоугольник сверху вниз
 			var cd_overlay = ColorRect.new()
 			cd_overlay.name = "CooldownOverlay"

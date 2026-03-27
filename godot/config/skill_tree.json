@@ -81,13 +81,13 @@
 	},
 	"magic_shot": {
 		"name": "Магический выстрел",
-		"desc": "Базовый магический выстрел Лича.",
+		"desc": "Базовый магический выстрел Лича. Стреляет автоматически.",
 		"category": "Способность",
 		"icon": "res://assets/sprites/ui/skills/icon_magic_shot.png",
 		"cost": 1,
 		"requires": ["magic_abilities"],
 		"position": [-240, 170],
-		"unlocks": ["ability:magic_bolt"]
+		"unlocks": ["ability:magic_bolt", "autocast:magic_bolt"]
 	},
 	"magic_shot_up1": {
 		"name": "Улучшение магического выстрела",

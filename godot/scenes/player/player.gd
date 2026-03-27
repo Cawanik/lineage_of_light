@@ -50,6 +50,11 @@ const _DIR_VECTORS: Dictionary = {
 	"west": Vector2(-1, 0), "south-west": Vector2(-1, 1),
 }
 const GCD_TIME: float = 0.8
+var _range_timer: float = 0.0
+var _range_radius: float = 0.0
+const RANGE_SHOW_DURATION: float = 0.25
+var _autocast_timer: float = 0.0
+
 var _storm_placing: bool = false
 var _storm_ghost: Node2D = null
 var _fireball_placing: bool = false
@@ -183,6 +188,13 @@ func _process(delta: float) -> void:
 	for id in _cooldowns:
 		if _cooldowns[id] > 0.0:
 			_cooldowns[id] -= delta
+	if _range_timer > 0.0:
+		_range_timer -= delta
+		queue_redraw()
+
+	if _autocast_timer > 0.0:
+		_autocast_timer -= delta
+	_process_autocast()
 
 	if _storm_placing and is_instance_valid(_storm_ghost):
 		var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid")
@@ -321,6 +333,73 @@ func _play_cast_flash() -> void:
 	tween.tween_property(sprite, "scale", Vector2(1.0, 1.0), 0.2).set_ease(Tween.EASE_OUT)
 
 
+func _process_autocast() -> void:
+	if not PhaseManager.is_combat_phase():
+		return
+	var sm = get_node_or_null("/root/SkillManager")
+	if not sm or not sm.is_autocast_unlocked("magic_bolt"):
+		return
+	if _autocast_timer > 0.0 or _cooldowns.get("magic_bolt", 0.0) > 0.0:
+		return
+	var ability = _abilities.get("magic_bolt", {})
+	var ac_cd = ability.get("autocast_cooldown", 2.0)
+	# Проверяем замену (magic_missile)
+	var replacement = sm.get_ability_replacement("magic_bolt")
+	if replacement != "":
+		var mm_ability = _abilities.get(replacement, {})
+		var count = mm_ability.get("count", 3)
+		var enemies = _get_nearest_enemies(mm_ability.get("range", 256.0), count)
+		if enemies.is_empty():
+			return
+		_autocast_timer = ac_cd
+		_cooldowns["magic_bolt"] = ability.get("cooldown", 0.8)
+		_play_cast_flash()
+		var proj_type = mm_ability.get("projectile", "magic_bolt")
+		var bonus = sm.get_ability_bonus("magic_bolt", "damage")
+		for i in range(count):
+			enemies = enemies.filter(func(e): return is_instance_valid(e))
+			if enemies.is_empty():
+				break
+			var target = enemies[i % enemies.size()]
+			var proj = Projectile.spawn(get_tree(), proj_type, global_position, target.global_position, target)
+			if proj and bonus > 0.0:
+				proj.damage = mm_ability.get("damage", 30.0) + bonus
+			if i < count - 1:
+				await get_tree().create_timer(mm_ability.get("shot_delay", 0.15)).timeout
+		return
+	# Обычный magic_bolt
+	var enemy = _get_nearest_enemy(ability.get("range", 256.0))
+	if enemy == null:
+		return
+	_autocast_timer = ac_cd
+	_cooldowns["magic_bolt"] = ability.get("cooldown", 0.8)
+	_play_cast_flash()
+	var base_damage = ability.get("damage", 15.0)
+	var bonus = sm.get_ability_bonus("magic_bolt", "damage")
+	var proj_type = ability.get("projectile", "magic_bolt")
+	var proj = Projectile.spawn(get_tree(), proj_type, global_position, enemy.global_position, enemy)
+	if proj and bonus > 0.0:
+		proj.damage = base_damage + bonus
+
+
+func _show_range_indicator(radius: float) -> void:
+	_range_radius = radius
+	_range_timer = RANGE_SHOW_DURATION
+	queue_redraw()
+
+
+func _draw() -> void:
+	if _range_timer <= 0.0:
+		return
+	var alpha = (_range_timer / RANGE_SHOW_DURATION) * 0.5
+	var points = PackedVector2Array()
+	var steps = 64
+	for i in range(steps + 1):
+		var angle = (float(i) / steps) * TAU
+		points.append(Vector2(cos(angle) * _range_radius, sin(angle) * _range_radius * 0.5))
+	draw_polyline(points, Color(1.0, 0.25, 0.25, alpha), 2.5)
+
+
 func _vec_to_direction(v: Vector2) -> String:
 	var angle = v.angle()
 	if angle < 0:
@@ -399,13 +478,20 @@ func _try_cast(ability_id: String) -> void:
 	_cooldowns[ability_id] = _abilities[ability_id].get("cooldown", 1.0)
 
 
+## Изометрическое расстояние в квадрате: Y сжат вдвое в экранных координатах
+func _iso_dist_sq(a: Vector2, b: Vector2) -> float:
+	var dx = b.x - a.x
+	var dy = (b.y - a.y) * 2.0
+	return dx * dx + dy * dy
+
+
 func _get_nearest_enemies(max_range: float, count: int) -> Array:
 	var candidates: Array = []
 	var max_dist_sq = max_range * max_range
 	for e in get_tree().get_nodes_in_group("enemies"):
 		if not is_instance_valid(e):
 			continue
-		var d = global_position.distance_squared_to(e.global_position)
+		var d = _iso_dist_sq(global_position, e.global_position)
 		if d < max_dist_sq:
 			candidates.append({"node": e, "dist": d})
 	candidates.sort_custom(func(a, b): return a.dist < b.dist)
@@ -421,7 +507,7 @@ func _get_nearest_enemy(max_range: float) -> Node2D:
 	for e in get_tree().get_nodes_in_group("enemies"):
 		if not is_instance_valid(e):
 			continue
-		var d = global_position.distance_squared_to(e.global_position)
+		var d = _iso_dist_sq(global_position, e.global_position)
 		if d < best_dist:
 			best_dist = d
 			best = e
@@ -430,16 +516,18 @@ func _get_nearest_enemy(max_range: float) -> Node2D:
 
 func _cast_magic_bolt() -> void:
 	var sm = get_node_or_null("/root/SkillManager")
+	var ability = _abilities.get("magic_bolt", {})
+	_autocast_timer = ability.get("autocast_cooldown", 2.0)  # всегда сбрасываем первым
 	if sm:
 		var replacement = sm.get_ability_replacement("magic_bolt")
 		if replacement != "":
 			_cast_magic_missile()
 			return
-	var ability = _abilities.get("magic_bolt", {})
-	var enemy = _get_nearest_enemy(ability.get("range", 400.0))
+	var enemy = _get_nearest_enemy(ability.get("range", 256.0))
+	_play_cast_animation()  # кд и анимация всегда, даже без цели
 	if enemy == null:
+		_show_range_indicator(ability.get("range", 256.0))
 		return
-	_play_cast_animation()
 	var base_damage = ability.get("damage", 15.0)
 	var bonus = sm.get_ability_bonus("magic_bolt", "damage") if sm else 0.0
 	var proj_type = ability.get("projectile", "magic_bolt")
@@ -453,10 +541,11 @@ func _cast_magic_missile() -> void:
 	var count = ability.get("count", 3)
 	var proj_type = ability.get("projectile", "magic_bolt")
 	var delay = ability.get("shot_delay", 0.15)
-	var enemies = _get_nearest_enemies(ability.get("range", 400.0), count)
+	var enemies = _get_nearest_enemies(ability.get("range", 256.0), count)
+	_play_cast_animation()  # анимация всегда, снаряды только если есть цели
 	if enemies.is_empty():
+		_show_range_indicator(ability.get("range", 256.0))
 		return
-	_play_cast_animation()
 	for i in range(count):
 		# Фильтруем мёртвых после await
 		enemies = enemies.filter(func(e): return is_instance_valid(e))
@@ -474,7 +563,6 @@ func _cast_fireball() -> void:
 	if _storm_placing:
 		_cancel_storm()
 	_fireball_placing = true
-
 	var ability = _abilities.get("fireball", {})
 	var sm = get_node_or_null("/root/SkillManager")
 	var ghost = _FireballZone.new()
@@ -491,6 +579,11 @@ func _place_fireball() -> void:
 	if not is_instance_valid(_fireball_ghost):
 		_fireball_placing = false
 		return
+	var ability = _abilities.get("fireball", {})
+	var cast_range = ability.get("range", 256.0)
+	if _iso_dist_sq(global_position, _fireball_ghost.global_position) > cast_range * cast_range:
+		_show_range_indicator(cast_range)
+		return  # слишком далеко — не кастуем, призрак остаётся
 	var am = get_node_or_null("/root/AudioManager")
 	if am:
 		am.play("magic_cast")
@@ -532,6 +625,11 @@ func _place_storm() -> void:
 	if not is_instance_valid(_storm_ghost):
 		_storm_placing = false
 		return
+	var ability = _abilities.get("storm", {})
+	var cast_range = ability.get("range", 256.0)
+	if _iso_dist_sq(global_position, _storm_ghost.global_position) > cast_range * cast_range:
+		_show_range_indicator(cast_range)
+		return  # слишком далеко — не кастуем, призрак остаётся
 	var bg = get_tree().current_scene.get_node_or_null("YSort/BuildingGrid")
 	if bg:
 		var base = _storm_ghost.get_meta("base_tile", Vector2i(-1, -1))
