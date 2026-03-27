@@ -132,6 +132,23 @@ func is_occupied(tile: Vector2i) -> bool:
 		return true
 	if wall_system and wall_system.nodes.has(tile):
 		return true
+	# Нельзя строить на тайле где стоит игрок
+	if _is_player_on_tile(tile):
+		return true
+	return false
+
+
+func _is_player_on_tile(tile: Vector2i) -> bool:
+	var player = get_tree().current_scene.get_node_or_null("YSort/Player")
+	if not player:
+		return false
+	# Центр коллизии игрока смещён на (0, 12) от позиции
+	var col_center = player.global_position + Vector2(0, 12)
+	# Проверяем тайл под центром коллизии и соседние (капсула 24x16)
+	var offsets = [Vector2(0, 0), Vector2(-12, 0), Vector2(12, 0), Vector2(0, -8), Vector2(0, 8)]
+	for off in offsets:
+		if world_to_tile(col_center + off) == tile:
+			return true
 	return false
 
 

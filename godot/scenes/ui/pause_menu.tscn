@@ -1,0 +1,53 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/pause_menu.gd" id="1_script"]
+[ext_resource type="Shader" path="res://shaders/purple_fog.gdshader" id="2_fog"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fog"]
+shader = ExtResource("2_fog")
+
+[node name="PauseMenu" type="CanvasLayer"]
+layer = 90
+process_mode = 3
+script = ExtResource("1_script")
+
+[node name="BG" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 1)
+material = SubResource("ShaderMaterial_fog")
+
+[node name="Center" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center"]
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Center/VBox"]
+horizontal_alignment = 1
+text = "ПАУЗА"
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.91, 0.878, 1, 1)
+
+[node name="Resume" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(240, 50)
+text = "Продолжить"
+
+[node name="Settings" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(240, 50)
+text = "Настройки"
+
+[node name="MainMenu" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(240, 50)
+text = "Главное меню"
+
+[node name="Quit" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(240, 50)
+text = "Выход"

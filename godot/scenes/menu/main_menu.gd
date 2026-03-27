@@ -127,6 +127,16 @@ func _stylize_buttons_recursive(node: Node, btn_tex: Texture2D) -> void:
 		btn.add_theme_color_override("font_hover_color", Color("#f0e8ff"))
 		btn.add_theme_color_override("font_disabled_color", Color("#666666"))
 		btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		btn.pressed.connect(func():
+			var am = get_node_or_null("/root/AudioManager")
+			if am:
+				am.play("ui_click")
+		)
+		btn.mouse_entered.connect(func():
+			var am = get_node_or_null("/root/AudioManager")
+			if am and am.sounds.has("ui_hover"):
+				am.play("ui_hover")
+		)
 
 	for child in node.get_children():
 		_stylize_buttons_recursive(child, btn_tex)

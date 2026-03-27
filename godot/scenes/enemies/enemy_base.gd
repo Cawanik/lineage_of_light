@@ -33,6 +33,7 @@ var path_progress: float = 0.0
 # Slow effect
 var slow_timer: float = 0.0
 var slow_factor: float = 1.0
+var _footstep_timer: float = 0.0
 
 # Дебаффы
 var debuffs: Dictionary = {}  # "slow" -> {timer, value}, "curse" -> {timer, value}
@@ -388,6 +389,19 @@ func _process_movement(delta: float) -> void:
 		move_progress = 1.0
 	else:
 		move_progress += (current_speed * delta) / tile_distance
+
+	# Звуки шагов
+	_footstep_timer -= delta
+	if _footstep_timer <= 0:
+		_footstep_timer = 0.45
+		var am = get_node_or_null("/root/AudioManager")
+		if am:
+			var data = am.sounds.get("footstep_enemy", {})
+			var stream = am._get_stream(data.get("path", ""))
+			if stream:
+				var total = stream.get_length()
+				var start = randf_range(0.0, maxf(total - 0.4, 0.0))
+				am.play_range("footstep_enemy", start, start + 0.35)
 
 	var target_pos = from_world.lerp(to_world, clampf(move_progress, 0.0, 1.0))
 

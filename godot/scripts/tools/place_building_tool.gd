@@ -131,6 +131,30 @@ func on_release() -> void:
 				_clear_line_previews()
 				return
 
+	# Проверяем что игрок не окажется заперт (проверяем все тайлы игрока)
+	var player = wall_system.get_tree().current_scene.get_node_or_null("YSort/Player")
+	if player:
+		var pos = player.global_position + Vector2(0, 12)  # Центр коллизии
+		var player_tiles: Array[Vector2i] = []
+		for off in [Vector2(0, 0), Vector2(-12, 0), Vector2(12, 0), Vector2(0, -8), Vector2(0, 8)]:
+			var t = bg.world_to_tile(pos + off)
+			if t not in player_tiles:
+				player_tiles.append(t)
+		var border_tiles = PathChecker._get_border_tiles()
+		if not border_tiles.is_empty():
+			var player_blocked = true
+			for pt in player_tiles:
+				if PathChecker._bfs(pt, border_tiles, bg, extra_blocked):
+					player_blocked = false
+					break
+			if player_blocked:
+				flash_blocked_path()
+				var as_node = wall_system.get_node_or_null("/root/AlertSystem")
+				if as_node:
+					as_node.alert_error("Вы заблокируете себе выход!")
+				_clear_line_previews()
+				return
+
 	# Строим всё
 	for t in valid_tiles:
 		if not GameManager.spend_gold(cost_per):
@@ -155,6 +179,7 @@ func on_release() -> void:
 		main.refresh_flat_view()
 
 	_clear_line_previews()
+
 
 
 func _get_line_tiles(from: Vector2i, to: Vector2i) -> Array[Vector2i]:

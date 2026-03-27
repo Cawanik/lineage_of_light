@@ -32,6 +32,9 @@ func _update_wave_text() -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if PhaseManager.is_build_phase():
+			var am = get_node_or_null("/root/AudioManager")
+			if am:
+				am.play("ui_click")
 			PhaseManager.skip_build_phase()
 			modulate = Color(0.8, 0.7, 1.0)
 			var tween = create_tween()

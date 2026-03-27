@@ -16,7 +16,7 @@ var music_volume: float = 0.5
 var master_volume: float = 1.0
 
 # Пул SFX плееров (чтобы звуки не обрезали друг друга)
-const SFX_POOL_SIZE = 8
+const SFX_POOL_SIZE = 64
 var _sfx_players: Array[AudioStreamPlayer] = []
 var _sfx_index: int = 0
 

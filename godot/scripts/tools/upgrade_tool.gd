@@ -75,6 +75,12 @@ func on_release() -> void:
 		if am:
 			am.play("upgrade")
 
+	# Обновляем flat view если активен
+	if upgraded_count > 0:
+		var main = wall_system.get_tree().current_scene
+		if main and main.has_method("refresh_flat_view") and main.get("_flat_view"):
+			main.refresh_flat_view()
+
 	_clear_line_highlights()
 	_hovered_building_tile = Vector2i(-9999, -9999)
 

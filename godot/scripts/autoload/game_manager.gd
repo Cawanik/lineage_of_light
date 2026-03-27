@@ -166,15 +166,16 @@ func on_throne_destroyed() -> void:
 	if am:
 		am.play("game_over")
 		am.stop_music(2.0)
-	
+
 	# Clear pathfinding system
 	var ps = get_node_or_null("/root/PathfindingSystem")
 	if ps and ps.has_method("clear_throne"):
 		ps.clear_throne()
-	
-	# Stop all enemy AI immediately
+
+	# Враги становятся бессмертными и празднуют
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	for enemy in enemies:
+		enemy.invincible_timer = 9999.0
 		if enemy.has_method("set_victory_state"):
 			enemy.set_victory_state()
 	
@@ -183,6 +184,7 @@ func on_throne_destroyed() -> void:
 	
 	# Show game over screen after a short delay
 	await get_tree().create_timer(1.5).timeout
+	get_tree().paused = true
 	_show_game_over_screen()
 
 func _show_game_over_screen() -> void:

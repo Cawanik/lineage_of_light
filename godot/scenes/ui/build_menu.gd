@@ -119,14 +119,8 @@ func _add_building_row(key: String, data: Dictionary) -> void:
 	bottom_row.add_theme_constant_override("separation", 4)
 	bottom_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	var hotkey_label = Label.new()
-	hotkey_label.text = "[%s]" % hotkey
-	hotkey_label.add_theme_color_override("font_color", Color("#9988bb"))
-	hotkey_label.add_theme_font_size_override("font_size", hotkey_font_size)
-	bottom_row.add_child(hotkey_label)
-
 	var cost_label = Label.new()
-	cost_label.text = "%d g" % data.get("cost", 0)
+	cost_label.text = "%d" % data.get("cost", 0)
 	cost_label.add_theme_color_override("font_color", Color("#f0d060"))
 	cost_label.add_theme_font_size_override("font_size", cost_font_size)
 	bottom_row.add_child(cost_label)
