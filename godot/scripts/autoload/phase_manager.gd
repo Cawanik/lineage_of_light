@@ -97,10 +97,11 @@ func start_combat_phase() -> void:
 	phase_changed.emit(Phase.COMBAT)
 	_transition_to_day()
 	WaveManager.start_next_wave()
-	# Стопаем музыку строительства
+	# Переключаем музыку на боевую тему
 	var am = get_node_or_null("/root/AudioManager")
 	if am:
 		am.stop_music(1.5)
+		am.play_music("battle_theme", 2.0)
 
 
 func end_combat_phase() -> void:

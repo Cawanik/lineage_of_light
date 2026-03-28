@@ -59,7 +59,12 @@ func start_next_wave() -> void:
 	wave_started.emit(current_wave)
 	var am = get_node_or_null("/root/AudioManager")
 	if am:
-		am.play("wave_start")
+		var stream = am._get_stream(am.sounds.get("wave_start", {}).get("path", ""))
+		var duration = stream.get_length() if stream else 5.0
+		var play_len = 4.0
+		var max_start = maxf(duration - play_len, 0.0)
+		var start = randf_range(0.0, max_start)
+		am.play_range("wave_start", start, start + play_len, -1.0, 0.8, 1.0)
 	is_spawning = true
 	
 	var wave_def = wave_defs[current_wave - 1]

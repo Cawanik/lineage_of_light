@@ -114,7 +114,7 @@
 		"max_duration": 2.0
 	},
 	"wave_start": {
-		"path": "res://assets/sounds/sfx/combat/wave_start.mp3",
+		"path": "res://assets/sounds/sfx/combat/wave_start.ogg",
 		"volume": 0.2
 	},
 	"wave_complete": {
@@ -124,6 +124,11 @@
 	"game_over": {
 		"path": "res://assets/sounds/sfx/combat/game_over.mp3",
 		"volume": 0.5
+	},
+	"battle_theme": {
+		"path": "res://assets/sounds/music/battle_theme.ogg",
+		"volume": 0.3,
+		"trim_end": 5.0
 	},
 	"build_theme": {
 		"path": "res://assets/sounds/music/build_theme.ogg",
