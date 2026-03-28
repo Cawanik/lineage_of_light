@@ -10,8 +10,8 @@ class_name OcclusionFade
 extends RefCounted
 
 static var player: Node2D = null
-static var fade_alpha: float = 0.2
-static var cursor_fade_alpha: float = 0.4
+static var fade_alpha: float = 0.35
+static var cursor_fade_alpha: float = 0.5
 static var cursor_pos: Vector2 = Vector2.ZERO
 static var cursor_radius: float = 40.0
 static var focus_mode: bool = false

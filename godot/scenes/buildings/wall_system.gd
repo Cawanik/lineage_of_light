@@ -701,18 +701,20 @@ func _apply_adjust(delta: Vector2) -> void:
 func _update_transparency() -> void:
 	OcclusionFade.find_player(get_tree())
 
-	# Find which nodes are close to player
+	# Find which nodes are close to player/enemies
 	var fade_nodes: Dictionary = {}
 	for node_pos in nodes:
 		var wpos = grid_to_world(node_pos)
 		if OcclusionFade.should_fade(wpos):
 			fade_nodes[node_pos] = true
 
+	var alpha = OcclusionFade.fade_alpha
+
 	# Apply transparency to pillars
 	for node_pos in pillar_visuals:
 		var wdn: WallDrawNode = pillar_visuals[node_pos]
 		if is_instance_valid(wdn):
-			wdn.modulate.a = OcclusionFade.fade_alpha if fade_nodes.has(node_pos) else 1.0
+			wdn.modulate.a = alpha if fade_nodes.has(node_pos) else 1.0
 
 	# Apply transparency to walls: fade if either endpoint is faded
 	for key in wall_visuals:
@@ -724,8 +726,8 @@ func _update_transparency() -> void:
 		var b_parts = parts[1].split(",")
 		var a = Vector2i(int(a_parts[0]), int(a_parts[1]))
 		var b = Vector2i(int(b_parts[0]), int(b_parts[1]))
-		var should_fade = fade_nodes.has(a) or fade_nodes.has(b)
-		wdn.modulate.a = OcclusionFade.fade_alpha if should_fade else 1.0
+		var fading = fade_nodes.has(a) or fade_nodes.has(b)
+		wdn.modulate.a = alpha if fading else 1.0
 
 
 func _rebuild_visuals() -> void:
