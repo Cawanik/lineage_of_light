@@ -40,6 +40,20 @@
 		"volume": 0.5,
 		"max_duration": 1.5
 	},
+	"fireball_hit": {
+		"path": "res://assets/sounds/sfx/combat/fireball_hit.wav",
+		"volume": 0.6,
+		"pitch_min": 0.9,
+		"pitch_max": 1.1,
+		"max_duration": 2.0
+	},
+	"flask_break": {
+		"path": "res://assets/sounds/sfx/combat/flask_break.wav",
+		"volume": 0.6,
+		"pitch_min": 0.85,
+		"pitch_max": 1.15,
+		"max_duration": 1.5
+	},
 	"arrow_shoot": {
 		"path": "res://assets/sounds/sfx/combat/arrow_shoot.mp3",
 		"volume": 0.3,

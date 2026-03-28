@@ -1,4 +1,4 @@
-# ==========================================
+﻿# ==========================================
 # main.gd — Главная сцена, тут всё начинается, ёб твою мать
 # ==========================================
 # _ready() — инициализирует инструменты (build/demolish/move/place), подключает сигналы, ставит трон и Лича
@@ -699,6 +699,17 @@ func _set_toolbar_mode(mode: String) -> void:
 			slot.add_child(cd_overlay)
 			_ability_nodes.append(cd_overlay)
 
+			# Оверлей ГКД — показывается когда нет личного кд, но активен глобальный кулдаун
+			var gcd_overlay = ColorRect.new()
+			gcd_overlay.name = "GCDOverlay"
+			gcd_overlay.color = Color(0, 0, 0, 0.6)
+			gcd_overlay.anchors_preset = Control.PRESET_FULL_RECT
+			gcd_overlay.anchor_right = 1.0
+			gcd_overlay.anchor_bottom = 1.0
+			gcd_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			gcd_overlay.visible = false
+			slot.add_child(gcd_overlay)
+
 			slot.mouse_filter = Control.MOUSE_FILTER_STOP
 
 		# Обновляем лейблы хоткеев для абилок
@@ -756,6 +767,7 @@ func _update_cooldown_overlays() -> void:
 			ability_id = btn.get_meta("ability_id")
 		if ability_id == "":
 			continue
+		var gcd_overlay = slot.get_node_or_null("GCDOverlay")
 		var cd = player._cooldowns.get(ability_id, 0.0)
 		var max_cd = player._abilities.get(ability_id, {}).get("cooldown", 1.0)
 		if cd > 0:
@@ -763,8 +775,19 @@ func _update_cooldown_overlays() -> void:
 			var ratio = clampf(cd / max_cd, 0.0, 1.0)
 			overlay.anchor_top = 0.0
 			overlay.anchor_bottom = ratio
+			if gcd_overlay:
+				gcd_overlay.visible = false
+		elif player._gcd > 0.0:
+			overlay.visible = false
+			if gcd_overlay:
+				gcd_overlay.visible = true
+				var gcd_ratio = clampf(player._gcd / 0.8, 0.0, 1.0)
+				gcd_overlay.anchor_top = 0.0
+				gcd_overlay.anchor_bottom = gcd_ratio
 		else:
 			overlay.visible = false
+			if gcd_overlay:
+				gcd_overlay.visible = false
 
 
 func _autosave(_arg = null) -> void:

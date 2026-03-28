@@ -13,7 +13,8 @@
 		"lifetime": 4.0,
 		"trail": true,
 		"trail_length": 16,
-		"trail_color": "#aa33ffcc"
+		"trail_color": "#aa33ffcc",
+		"hit_sound": "fireball_hit"
 	},
 	"poison_flask": {
 		"name": "Колба с ядом",
@@ -29,7 +30,8 @@
 		"lifetime": 4.0,
 		"trail": true,
 		"trail_length": 12,
-		"trail_color": "#44cc4499"
+		"trail_color": "#44cc4499",
+		"hit_sound": "flask_break"
 	},
 	"arrow": {
 		"name": "Стрела",

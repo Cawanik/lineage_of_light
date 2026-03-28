@@ -1,4 +1,4 @@
-class_name EnemyBase
+﻿class_name EnemyBase
 extends Node2D
 
 ## Grid-based enemy with AStarGrid2D pathfinding and wall attack FSM.
@@ -423,6 +423,15 @@ func _process_movement(delta: float) -> void:
 
 			# Здание прямо на следующем тайле пути — атакуем
 			if building_blocks:
+				var dx = target_tile.x - current_tile.x
+				var dy = target_tile.y - current_tile.y
+				# Если шаг диагональный — сначала проверяем ортогональные углы
+				if dx != 0 and dy != 0:
+					for ortho in [current_tile + Vector2i(dx, 0), current_tile + Vector2i(0, dy)]:
+						var ortho_bld = building_grid.get_building(ortho)
+						if ortho_bld and ortho_bld is Building:
+							_start_building_attack(ortho_bld)
+							return
 				var blocking_building = building_grid.get_building(target_tile)
 				if blocking_building and blocking_building is Building:
 					_start_building_attack(blocking_building)

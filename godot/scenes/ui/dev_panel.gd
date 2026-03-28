@@ -60,7 +60,6 @@ func _ready() -> void:
 		voice_popup.popup(Rect2(voice_btn.global_position + Vector2(0, voice_btn.size.y + 4), Vector2.ZERO))
 	)
 	spawn_test_button.get_parent().add_child(voice_btn)
-	spawn_test_button.get_parent().add_child(dlg_btn)
 
 	start_wave_button.pressed.connect(_on_start_wave_pressed)
 	test_path_button.text = "Unlock All Skills"

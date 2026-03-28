@@ -261,8 +261,11 @@ func _on_miss() -> void:
 
 
 func _spawn_hit_effect() -> void:
-	# Можно потом добавить партиклы
-	pass
+	var hit_sound = _get_config().get("hit_sound", "")
+	if hit_sound != "":
+		var am = get_node_or_null("/root/AudioManager")
+		if am:
+			am.play(hit_sound)
 
 
 func _draw() -> void:

@@ -173,6 +173,7 @@ func _ready() -> void:
 
 	# Контент — название и описание
 	var content = VBoxContainer.new()
+	content.anchor_right = 1.0
 	content.add_theme_constant_override("separation", 6)
 	content.anchor_right = 1.0
 	content.offset_left = 30
@@ -183,6 +184,8 @@ func _ready() -> void:
 	_info_name = Label.new()
 	_info_name.add_theme_font_size_override("font_size", 16)
 	_info_name.add_theme_color_override("font_color", Color("#e8e0ff"))
+	_info_name.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_info_name.size_flags_horizontal = Control.SIZE_FILL
 	content.add_child(_info_name)
 
 	_info_desc = Label.new()

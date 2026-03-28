@@ -376,7 +376,11 @@ func _process_autocast() -> void:
 			return
 		_autocast_timer = ac_cd
 		_cooldowns["magic_bolt"] = ability.get("cooldown", 0.8)
+		_reset_afk()
 		_play_cast_flash()
+		var am_ac = get_node_or_null("/root/AudioManager")
+		if am_ac:
+			am_ac.play("magic_cast")
 		var proj_type = mm_ability.get("projectile", "magic_bolt")
 		var bonus = sm.get_ability_bonus("magic_bolt", "damage")
 		for i in range(count):
@@ -396,7 +400,11 @@ func _process_autocast() -> void:
 		return
 	_autocast_timer = ac_cd
 	_cooldowns["magic_bolt"] = ability.get("cooldown", 0.8)
+	_reset_afk()
 	_play_cast_flash()
+	var am_ac = get_node_or_null("/root/AudioManager")
+	if am_ac:
+		am_ac.play("magic_cast")
 	var base_damage = ability.get("damage", 15.0)
 	var bonus = sm.get_ability_bonus("magic_bolt", "damage")
 	var proj_type = ability.get("projectile", "magic_bolt")

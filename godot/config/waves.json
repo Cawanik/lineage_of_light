@@ -38,7 +38,7 @@
     "wave": 5,
     "epoch": 2,
     "comment": "Рыцари усиливаются",
-    "budget": 36,
+    "budget": 37,
     "delay": 1.0,
     "weights": {
       "hero_barbarian": 25,
@@ -49,7 +49,7 @@
     "wave": 6,
     "epoch": 2,
     "comment": "Армия рыцарей",
-    "budget": 43,
+    "budget": 44,
     "delay": 0.9,
     "weights": {
       "hero_barbarian": 20,
@@ -60,7 +60,7 @@
     "wave": 7,
     "epoch": 3,
     "comment": "Маги появляются",
-    "budget": 52,
+    "budget": 53,
     "delay": 1.0,
     "weights": {
       "hero_barbarian": 10,
@@ -72,7 +72,7 @@
     "wave": 8,
     "epoch": 3,
     "comment": "Маги усиливаются",
-    "budget": 62,
+    "budget": 63,
     "delay": 0.9,
     "weights": {
       "hero_barbarian": 10,
@@ -84,7 +84,7 @@
     "wave": 9,
     "epoch": 3,
     "comment": "Натиск магов",
-    "budget": 74,
+    "budget": 75,
     "delay": 0.8,
     "weights": {
       "hero_barbarian": 5,

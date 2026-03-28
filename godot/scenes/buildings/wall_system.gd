@@ -182,14 +182,12 @@ func place_wall_between(a: Vector2i, b: Vector2i) -> void:
 	nodes[a] = true
 	nodes[b] = true
 	_create_collision(key, a, b)
-	
-	print("WallSystem: Created wall edge %s between %s and %s" % [key, a, b])
-	
-	if Engine.has_singleton("PathfindingSystem") or get_node_or_null("/root/PathfindingSystem"):
-		var ps = get_node_or_null("/root/PathfindingSystem")
-		if ps:
-			ps.disable_edge(a, b)
-			print("WallSystem: Disabled pathfinding edge %s" % key)
+
+	var ps = get_node_or_null("/root/PathfindingSystem")
+	if ps:
+		ps.set_tile_solid(a, true)
+		ps.set_tile_solid(b, true)
+		ps.disable_edge(a, b)
 	
 	_needs_rebuild = true
 	print("WallSystem: Total edges now: %d" % edges.size())
@@ -245,8 +243,12 @@ func remove_wall_between(a: Vector2i, b: Vector2i) -> void:
 	# Clean up orphan nodes
 	if not _node_has_edges(a):
 		nodes.erase(a)
+		if ps:
+			ps.set_tile_solid(a, false)
 	if not _node_has_edges(b):
 		nodes.erase(b)
+		if ps:
+			ps.set_tile_solid(b, false)
 	_needs_rebuild = true
 
 
@@ -360,6 +362,9 @@ func demolish_hovered() -> void:
 
 	# Remove only this node, keep neighbors
 	nodes.erase(target)
+	var ps_d = get_node_or_null("/root/PathfindingSystem")
+	if ps_d:
+		ps_d.set_tile_solid(target, false)
 
 	_needs_rebuild = true
 
@@ -441,6 +446,9 @@ func place_at_preview() -> void:
 
 	# Add node
 	nodes[pos] = true
+	var ps_p = get_node_or_null("/root/PathfindingSystem")
+	if ps_p:
+		ps_p.set_tile_solid(pos, true)
 
 	# Connect to adjacent existing nodes (4 cardinal directions)
 	var cardinal = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
@@ -561,6 +569,7 @@ func move_place() -> void:
 			old_neighbors.append(neighbor)
 
 	# Remove old node and edges
+	var ps_mv = get_node_or_null("/root/PathfindingSystem")
 	for neighbor in old_neighbors:
 		var key = _make_edge_key(old_pos, neighbor)
 		edges.erase(key)
@@ -568,9 +577,13 @@ func move_place() -> void:
 			collision_bodies[key].queue_free()
 			collision_bodies.erase(key)
 	nodes.erase(old_pos)
+	if ps_mv:
+		ps_mv.set_tile_solid(old_pos, false)
 
 	# Place new node
 	nodes[new_pos] = true
+	if ps_mv:
+		ps_mv.set_tile_solid(new_pos, true)
 
 	# Connect to adjacent existing nodes at new position
 	var cardinal = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
