@@ -98,7 +98,7 @@ func should_abandon_wall_attack(detour_cost: float, remaining_time: float) -> bo
 
 
 func get_projectile_type() -> String:
-	return "magic_bolt"
+	return "mage_bolt"
 
 
 func get_priority_attack_target(building_grid: Node, current_tile: Vector2i, attack_range: int) -> Building:

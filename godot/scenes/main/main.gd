@@ -709,6 +709,7 @@ func _set_toolbar_mode(mode: String) -> void:
 			gcd_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			gcd_overlay.visible = false
 			slot.add_child(gcd_overlay)
+			_ability_nodes.append(gcd_overlay)
 
 			slot.mouse_filter = Control.MOUSE_FILTER_STOP
 

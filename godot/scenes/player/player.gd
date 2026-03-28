@@ -96,6 +96,8 @@ func _ready() -> void:
 	for id in _abilities:
 		_cooldowns[id] = 0.0
 
+	PhaseManager.phase_changed.connect(_on_phase_changed)
+
 
 func _setup_animations() -> void:
 	var frames = SpriteFrames.new()
@@ -611,9 +613,6 @@ func _place_fireball() -> void:
 	if _iso_dist_sq(global_position, _fireball_ghost.global_position) > cast_range * cast_range:
 		_show_range_indicator(cast_range)
 		return  # слишком далеко — не кастуем, призрак остаётся
-	var am = get_node_or_null("/root/AudioManager")
-	if am:
-		am.play("magic_cast")
 	_play_cast_animation()
 	_play_cast_sound()
 	_fireball_ghost.activate()
@@ -627,6 +626,14 @@ func _cancel_fireball() -> void:
 		_fireball_ghost.queue_free()
 	_fireball_ghost = null
 	_fireball_placing = false
+
+
+func _on_phase_changed(phase: PhaseManager.Phase) -> void:
+	if phase == PhaseManager.Phase.BUILD:
+		if _fireball_placing:
+			_cancel_fireball()
+		if _storm_placing:
+			_cancel_storm()
 
 
 func _cast_storm() -> void:
