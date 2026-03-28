@@ -91,16 +91,14 @@ func _ready() -> void:
 	title.add_theme_font_size_override("font_size", 20)
 	bg.add_child(title)
 
-	# Souls counter top-right с иконкой
+	# Souls counter top-left с иконкой
 	var souls_hbox = HBoxContainer.new()
-	souls_hbox.anchors_preset = Control.PRESET_TOP_RIGHT
-	souls_hbox.anchor_left = 1.0
-	souls_hbox.anchor_right = 1.0
-	souls_hbox.offset_left = -140
-	souls_hbox.offset_right = -60
+	souls_hbox.anchors_preset = Control.PRESET_TOP_LEFT
+	souls_hbox.offset_left = 16
+	souls_hbox.offset_right = 120
 	souls_hbox.offset_top = 12
 	souls_hbox.add_theme_constant_override("separation", 4)
-	souls_hbox.alignment = BoxContainer.ALIGNMENT_END
+	souls_hbox.alignment = BoxContainer.ALIGNMENT_BEGIN
 	bg.add_child(souls_hbox)
 
 	var soul_icon = TextureRect.new()

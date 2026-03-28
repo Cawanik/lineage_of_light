@@ -153,8 +153,8 @@ func _create_persistent(text: String, color: Color) -> Control:
 	label.anchors_preset = Control.PRESET_FULL_RECT
 	label.anchor_right = 1.0
 	label.anchor_bottom = 1.0
-	label.offset_left = 20
-	label.offset_right = -20
+	label.offset_left = 40
+	label.offset_right = -40
 	label.offset_top = 6
 	label.offset_bottom = -6
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE

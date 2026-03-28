@@ -17,6 +17,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Lineage of Light"
 run/main_scene="res://scenes/menu/main_menu.tscn"
 config/features=PackedStringArray("4.6")
+config/icon="res://assets/sprites/buildings/wall/wall_segment_0001.png"
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/image="uid://dyxu0vefqn06w"
 

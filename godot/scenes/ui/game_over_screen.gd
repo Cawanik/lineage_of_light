@@ -57,6 +57,7 @@ func _show_first_death_dialogue() -> void:
 		{"name": "Книга", "text": "Молчу-молчу.", "portrait": PORTRAIT_BOOK, "voice": "book"},
 		{"name": "Владыка", "text": "В этот раз строй умнее. У людей короткая память, но длинные мечи. Они вернутся.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
 		{"name": "Книга", "text": "Ладно, слышал босса? Трон на место, стены покрепче. И на этот раз — постарайся.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": "Владыка", "text": "Твои навыки и кристаллы сохранились. Сделай так, чтобы не было вопросов к твоей профпригодности.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
 	])
 
 	var db = DialogueBox.instance()
