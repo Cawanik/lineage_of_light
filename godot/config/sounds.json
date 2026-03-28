@@ -10,7 +10,7 @@
 		"max_duration": 0.3
 	},
 	"build": {
-		"path": "res://assets/sounds/sfx/buildings/create_building.wav",
+		"path": "res://assets/sounds/sfx/buildings/create_building.mp3",
 		"volume": 0.5,
 		"pitch_min": 0.9,
 		"pitch_max": 1.1,
@@ -25,7 +25,7 @@
 		"max_duration": 1.0
 	},
 	"upgrade": {
-		"path": "res://assets/sounds/sfx/buildings/upgrade.wav",
+		"path": "res://assets/sounds/sfx/buildings/upgrade.mp3",
 		"start_from": 1.0,
 		"volume": 0.5,
 		"max_duration": 1.0
@@ -41,14 +41,14 @@
 		"max_duration": 1.5
 	},
 	"fireball_hit": {
-		"path": "res://assets/sounds/sfx/combat/fireball_hit.wav",
+		"path": "res://assets/sounds/sfx/combat/fireball_hit.mp3",
 		"volume": 0.6,
 		"pitch_min": 0.9,
 		"pitch_max": 1.1,
 		"max_duration": 2.0
 	},
 	"flask_break": {
-		"path": "res://assets/sounds/sfx/combat/flask_break.wav",
+		"path": "res://assets/sounds/sfx/combat/flask_break.mp3",
 		"volume": 0.6,
 		"pitch_min": 0.85,
 		"pitch_max": 1.15,
@@ -114,7 +114,7 @@
 		"max_duration": 1.0
 	},
 	"enemy_hit": {
-		"path": "res://assets/sounds/sfx/enemies/enemies_hit.wav",
+		"path": "res://assets/sounds/sfx/enemies/enemies_hit.mp3",
 		"volume": 0.5,
 		"pitch_min": 0.9,
 		"pitch_max": 1.1,
@@ -128,7 +128,7 @@
 		"max_duration": 2.0
 	},
 	"wave_start": {
-		"path": "res://assets/sounds/sfx/combat/wave_start.ogg",
+		"path": "res://assets/sounds/sfx/combat/wave_start.mp3",
 		"volume": 0.2
 	},
 	"wave_complete": {
@@ -140,22 +140,22 @@
 		"volume": 0.5
 	},
 	"battle_theme": {
-		"path": "res://assets/sounds/music/battle_theme.ogg",
+		"path": "res://assets/sounds/music/battle_theme.mp3",
 		"volume": 0.3,
 		"trim_end": 5.0
 	},
 	"build_theme": {
-		"path": "res://assets/sounds/music/build_theme.ogg",
+		"path": "res://assets/sounds/music/build_theme.mp3",
 		"volume": 0.3,
 		"trim_end": 7.0
 	},
 	"main_menu_theme": {
-		"path": "res://assets/sounds/music/main_menu.ogg",
+		"path": "res://assets/sounds/music/main_menu.mp3",
 		"volume": 0.3,
 		"trim_end": 7.0
 	},
 	"combat_theme": {
-		"path": "res://assets/sounds/music/combat_theme.ogg",
+		"path": "res://assets/sounds/music/combat_theme.mp3",
 		"volume": 0.5
 	}
 }

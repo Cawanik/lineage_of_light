@@ -130,7 +130,10 @@
       "Bash(git stash:*)",
       "Bash(python:*)",
       "Bash(git checkout:*)",
-      "Bash(ffmpeg:*)"
+      "Bash(ffmpeg:*)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //PID 7180 //F)",
+      "Bash(taskkill //PID 48836 //F)"
     ]
   }
 }
