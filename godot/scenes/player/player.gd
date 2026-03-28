@@ -278,6 +278,7 @@ func _physics_process(delta: float) -> void:
 
 	# Обновляем позицию курсора для occlusion
 	OcclusionFade.cursor_pos = get_global_mouse_position()
+	OcclusionFade.update_cursor_focus(get_tree())
 
 	# Плавный зум
 	_target_zoom = clampf(_target_zoom, zoom_min, zoom_max)

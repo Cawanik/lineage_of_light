@@ -10,10 +10,12 @@ class_name OcclusionFade
 extends RefCounted
 
 static var player: Node2D = null
-static var fade_alpha: float = 0.1
+static var fade_alpha: float = 0.2
+static var cursor_fade_alpha: float = 0.4
 static var cursor_pos: Vector2 = Vector2.ZERO
 static var cursor_radius: float = 40.0
 static var focus_mode: bool = false
+static var cursor_focused_building: Node2D = null
 
 
 static func find_player(tree: SceneTree) -> void:
@@ -55,20 +57,12 @@ static func _circle_intersects_rect(center: Vector2, radius: float, rect: Rect2)
 	return (dx * dx + dy * dy) <= (radius * radius)
 
 
-# Для стен — проверяет точку стены против игрока/курсора/врагов
+# Для процедурных стен — только игрок/враги, без курсора
 static func should_fade(wall_world_pos: Vector2) -> bool:
-	# Курсор точно на стене — не фейдим
-	if cursor_pos.distance_to(wall_world_pos) < 15.0:
-		return false
-
 	# Игрок — точка рядом, только если выше стены
 	if player and is_instance_valid(player):
 		if player.global_position.y < wall_world_pos.y and player.global_position.distance_to(wall_world_pos) < 60.0:
 			return true
-
-	# Курсор — круг, только если центр выше стены
-	if cursor_pos.y < wall_world_pos.y and cursor_pos.distance_to(wall_world_pos) < cursor_radius:
-		return true
 
 	# Враги — точки рядом, только если выше стены
 	if player and player.get_tree():
@@ -80,41 +74,57 @@ static func should_fade(wall_world_pos: Vector2) -> bool:
 	return false
 
 
-static func should_fade_building(building: Node2D) -> bool:
+# Определяет здание на тайле под курсором
+static func update_cursor_focus(tree: SceneTree) -> void:
+	cursor_focused_building = null
+	var bg = tree.current_scene.get_node_or_null("YSort/BuildingGrid")
+	if not bg:
+		return
+	var tile = bg.world_to_tile(cursor_pos)
+	var b = bg.get_building(tile)
+	if b and is_instance_valid(b):
+		cursor_focused_building = b
+
+
+# Возвращает: 0 = не фейдить, 1 = курсор (мягкий), 2 = игрок/враг (сильный)
+static func get_fade_reason(building: Node2D) -> int:
 	var rect = get_building_rect(building)
 	if rect.size == Vector2.ZERO:
-		return false
+		return 0
 	var building_y = building.global_position.y
 
-	# Курсор точно на здании — не фейдим (игрок целится в него)
-	if rect.has_point(cursor_pos):
-		return false
+	# Здание под курсором — не фейдим
+	if building == cursor_focused_building:
+		return 0
+
+	var reason = 0
 
 	# Игрок — точка, только если выше здания (за ним)
 	if player and is_instance_valid(player):
 		if player.global_position.y < building_y and _point_in_rect(player.global_position, rect):
-			return true
-
-	# Курсор — круг, только если центр выше здания
-	if cursor_pos.y < building_y and _circle_intersects_rect(cursor_pos, cursor_radius, rect):
-		return true
+			return 2
 
 	# Враги — точки, только если выше здания
 	if player and player.get_tree():
 		var enemies = player.get_tree().get_nodes_in_group("enemies")
 		for enemy in enemies:
 			if is_instance_valid(enemy) and enemy.global_position.y < building_y and _point_in_rect(enemy.global_position, rect):
-				return true
+				return 2
 
-	return false
+	# Курсор — круг, фейдим все здания в радиусе
+	if _circle_intersects_rect(cursor_pos, cursor_radius, rect):
+		return 1
+
+	return 0
 
 
 static func update_node_fade(node: Node2D) -> void:
 	if focus_mode:
 		return
-	if should_fade_building(node):
-		if node.modulate.a != fade_alpha:
-			node.modulate.a = fade_alpha
-	else:
-		if node.modulate.a != 1.0:
-			node.modulate.a = 1.0
+	var reason = get_fade_reason(node)
+	var target_alpha = 1.0
+	if reason == 2:
+		target_alpha = fade_alpha
+	elif reason == 1:
+		target_alpha = cursor_fade_alpha
+	node.modulate.a = target_alpha

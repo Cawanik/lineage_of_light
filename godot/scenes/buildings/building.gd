@@ -52,6 +52,22 @@ const ISO_RATIO = 0.5
 func _process(_delta: float) -> void:
 	OcclusionFade.find_player(get_tree())
 	OcclusionFade.update_node_fade(self)
+	# Компенсируем прозрачность для HP bars и иконки
+	if modulate.a > 0.0 and modulate.a < 1.0:
+		var inv = 1.0 / modulate.a
+		hp_bar_bg.modulate.a = inv
+		hp_bar.modulate.a = inv
+		if _hp_icon:
+			_hp_icon.modulate.a = inv
+		if _hp_icon_bg:
+			_hp_icon_bg.modulate.a = inv
+	else:
+		hp_bar_bg.modulate.a = 1.0
+		hp_bar.modulate.a = 1.0
+		if _hp_icon:
+			_hp_icon.modulate.a = 1.0
+		if _hp_icon_bg:
+			_hp_icon_bg.modulate.a = 1.0
 
 	# Анимация атаки — играть пока есть враги в радиусе
 	if _has_attack_anim and _anim_sprite:

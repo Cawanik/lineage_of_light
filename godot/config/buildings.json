@@ -26,7 +26,7 @@
 		"can_move": true,
 		"move_cost": 25,
 		"unit_idle": "res://assets/sprites/buildings/skeleton_archer/animations/breathing-idle/south",
-		"unit_offset": [0.0, -85.0],
+		"unit_offset": [0.0, -90.0],
 		"unit_offset_jitter": 5,
 		"unit_attack": "res://assets/sprites/buildings/skeleton_archer/animations/bow-shot/south",
 		"attack_range_cardinal": 3,
@@ -85,7 +85,6 @@
 		"brick_color_variation": 0.06,
 		"fade_radius": 50.0,
 		"demolish_snap_radius": 16.0,
-		"transparency_alpha": 0.5,
 		"wall_offset": [0.0, -5.0],
 		"pillar_offset": [0.0, -5.0],
 		"colors": {

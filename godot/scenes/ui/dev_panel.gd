@@ -361,7 +361,7 @@ func _on_reset_game_pressed() -> void:
 		var ysort = main.get_node_or_null("YSort")
 		if ysort:
 			for child in ysort.get_children():
-				if child.has_method("die"):  # Enemy nodes
+				if child.has_method("die"):  # Enemy nodesффффф
 					child.queue_free()
 	WaveManager.current_wave = 0
 	WaveManager.enemies_alive = 0
@@ -413,7 +413,7 @@ func _on_occlusion_debug_pressed() -> void:
 				if b and is_instance_valid(b):
 					var brect = OcclusionFade.get_building_rect(b)
 					if brect.size != Vector2.ZERO:
-						var fading = OcclusionFade.should_fade_building(b)
+						var fading = OcclusionFade.get_fade_reason(b) > 0
 						var col = Color(1.0, 0.3, 0.3, 0.3) if fading else Color(0.3, 1.0, 0.3, 0.15)
 						var border = Color(1.0, 0.3, 0.3, 0.7) if fading else Color(0.3, 1.0, 0.3, 0.4)
 						_occlusion_overlay.draw_rect(brect, col)

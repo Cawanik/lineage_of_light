@@ -37,6 +37,9 @@ var wall_system: WallSystem = null
 var show_grid: bool = false
 
 
+var _cursor_overlay: Node2D = null
+var _last_hover_tile: Vector2i = Vector2i(-9999, -9999)
+
 func _ready() -> void:
 	var iso = Config.game.get("iso", {})
 	CELL_SIZE = iso.get("cell_size", 64)
@@ -45,6 +48,13 @@ func _ready() -> void:
 	var parent = get_parent()
 	if parent:
 		wall_system = parent.get_node_or_null("WallSystem")
+
+	# Курсорный оверлей тайла
+	_cursor_overlay = Node2D.new()
+	_cursor_overlay.name = "CursorTileOverlay"
+	_cursor_overlay.z_index = 10
+	add_child(_cursor_overlay)
+	_cursor_overlay.draw.connect(_draw_cursor_tile)
 
 
 func tile_to_world(tile: Vector2i) -> Vector2:
@@ -192,8 +202,28 @@ func find_nearest_building(world_pos: Vector2, max_dist: float = 30.0) -> Vector
 var grid_offset: Vector2 = Vector2.ZERO
 
 
-func _input(_event: InputEvent) -> void:
-	pass
+func _process(_delta: float) -> void:
+	var mouse_pos = get_global_mouse_position()
+	var tile = world_to_tile(mouse_pos)
+	if tile != _last_hover_tile:
+		_last_hover_tile = tile
+		if _cursor_overlay:
+			_cursor_overlay.queue_redraw()
+
+
+func _draw_cursor_tile() -> void:
+	var tile = _last_hover_tile
+	var center = tile_to_world(tile)
+	var hw = CELL_SIZE * 0.5
+	var hh = CELL_SIZE * ISO_RATIO * 0.5
+	var points = PackedVector2Array([
+		center + Vector2(0, -hh),
+		center + Vector2(hw, 0),
+		center + Vector2(0, hh),
+		center + Vector2(-hw, 0),
+		center + Vector2(0, -hh),
+	])
+	_cursor_overlay.draw_polyline(points, Color(0, 0, 0, 0.4), 1.5)
 
 
 func _draw() -> void:

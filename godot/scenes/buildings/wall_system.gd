@@ -132,7 +132,6 @@ func _load_config() -> void:
 	WALL_THICK = w.get("thickness", 6.0)
 	WALL_SEGMENT_HP = w.get("hp", 100.0)
 	FADE_RADIUS = w.get("fade_radius", 50.0)
-	OcclusionFade.fade_alpha = w.get("transparency_alpha", 0.5)
 	DEMOLISH_SNAP_RADIUS = w.get("demolish_snap_radius", 16.0)
 	var wo = w.get("wall_offset", [0.0, 0.0])
 	wall_offset = Vector2(wo[0], wo[1])
