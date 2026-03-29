@@ -12,16 +12,20 @@ theme_override_constants/separation = 12
 
 [node name="Continue" type="Button" parent="VBox"]
 custom_minimum_size = Vector2(240, 50)
-text = "Продолжить"
+auto_translate_mode = 1
+text = "MENU_CONTINUE"
 
 [node name="NewGame" type="Button" parent="VBox"]
 custom_minimum_size = Vector2(240, 50)
-text = "Новая игра"
+auto_translate_mode = 1
+text = "MENU_NEW_GAME"
 
 [node name="Settings" type="Button" parent="VBox"]
 custom_minimum_size = Vector2(240, 50)
-text = "Настройки"
+auto_translate_mode = 1
+text = "MENU_SETTINGS"
 
 [node name="Quit" type="Button" parent="VBox"]
 custom_minimum_size = Vector2(240, 50)
-text = "Выход"
+auto_translate_mode = 1
+text = "MENU_QUIT"

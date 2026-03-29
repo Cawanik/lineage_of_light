@@ -12,7 +12,7 @@ var _mode: String = "new"
 
 func show_slots(mode: String, save_data: Array) -> void:
 	_mode = mode
-	title_label.text = "Новая игра" if mode == "new" else "Продолжить"
+	title_label.text = tr("MENU_NEW_GAME") if mode == "new" else tr("MENU_CONTINUE")
 
 	for child in slot_container.get_children():
 		slot_container.remove_child(child)
@@ -28,7 +28,7 @@ func show_slots(mode: String, save_data: Array) -> void:
 		btn.custom_minimum_size = Vector2(280, 50)
 
 		if save_data[i].is_empty():
-			btn.text = "Слот %d — Пусто" % (i + 1)
+			btn.text = tr("MENU_SLOT_EMPTY") % [i + 1]
 			if mode == "load":
 				btn.disabled = true
 		else:
@@ -38,7 +38,7 @@ func show_slots(mode: String, save_data: Array) -> void:
 			var skill_pct = (float(skills.size()) / max(total_skills, 1)) * 50.0
 			var map_pct = (float(maps.size()) / 5.0) * 50.0
 			var pct = int(clampf(skill_pct + map_pct, 0, 100))
-			btn.text = "Слот %d — %d%%" % [i + 1, pct]
+			btn.text = tr("MENU_SLOT_PROGRESS") % [i + 1, pct]
 
 		btn.pressed.connect(func(): slot_selected.emit(i, _mode))
 		hbox.add_child(btn)

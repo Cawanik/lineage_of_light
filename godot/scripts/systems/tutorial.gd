@@ -189,40 +189,40 @@ func _advance(step: Step) -> void:
 	match step:
 		Step.INTRO:
 			_block_input()
-			_show_hint("Нажмите на диалоговое окно для продолжения")
+			_show_hint(tr("HINT_CLICK_DIALOGUE"))
 			_show_dialogue([
-				{"name": "Владыка", "text": "Ох, слава мне... Наконец-то получилось. Знаешь, сколько я потратил маны на этот ритуал? Не знаешь. И лучше тебе не знать.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-				{"name": "Вы", "text": "Что?.. Кто я? Где я? Почему так темно? И почему от вас веет... смертью?", "portrait": PORTRAIT_PLAYER, "voice": "player"},
-				{"name": "Владыка", "text": "Вопросы потом. Сейчас мне нужно убедиться, что ты не бракованный. Пошевелись-ка.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_INTRO_1"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_PLAYER"), "text": tr("DLG_TUTORIAL_INTRO_2"), "portrait": PORTRAIT_PLAYER, "voice": "player"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_INTRO_3"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
 			], func():
 				_unblock_input()
-				_show_hint("Используйте WASD для перемещения")
+				_show_hint(tr("HINT_WASD"))
 				_advance(Step.WAIT_MOVE)
 			)
 
 		Step.WAIT_ZOOM:
 			_hide_hint()
-			_show_hint("Прокрутите колёсико мыши для изменения масштаба")
+			_show_hint(tr("HINT_ZOOM"))
 
 		Step.EXPLAIN_QUEST:
 			_block_input()
 			_hide_hint()
 			_show_dialogue([
-				{"name": "Владыка", "text": "О, двигается! Чудесно. Последний, кого я призвал, просто стоял и плакал. Три часа. Пришлось развоплощать.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-				{"name": "Владыка", "text": "Слушай внимательно. Люди — эти суетливые создания — уничтожили троны моих братьев. Всех до одного. Мы их не трогали, заметь. Ни одного набега, ни одной войны.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-				{"name": "Владыка", "text": "Мы просто... существуем. Тихо. Мирно. В своих тёмных замках. Но им этого мало — видите ли, мы \"угроза\". Какая угроза? Я за последние триста лет даже с территории не выходил!", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-				{"name": "Владыка", "text": "Мне нужен архитектор. Лучший. А ты, говорят, в мире людей строил что-то... как это... \"офисные центры\"? Звучит ужасающе. Идеально.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-				{"name": "Владыка", "text": "Я дам тебе силу, бессмертие и полное отсутствие дедлайнов. Взамен — построй мне крепость, которую эти параноики не смогут разрушить. Согласен?", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-				{"name": "Вы", "text": "...", "portrait": PORTRAIT_PLAYER, "voice": "player"},
-				{"name": "Вы", "text": "Никаких дедлайнов? Это всё, о чём я мечтал! Конечно!", "portrait": PORTRAIT_PLAYER, "voice": "player"},
-				{"name": "Владыка", "text": "Восхитительно. Такой энтузиазм я видел только у свежеподнятых скелетов. Это комплимент, если что.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-				{"name": "Владыка", "text": "Теперь загляни в омут древних знаний. Там хранятся способности, которые помогут тебе в строительстве.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_QUEST_1"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_QUEST_2"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_QUEST_3"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_QUEST_4"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_QUEST_5"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_PLAYER"), "text": tr("DLG_TUTORIAL_QUEST_6"), "portrait": PORTRAIT_PLAYER, "voice": "player"},
+				{"name": tr("CHAR_PLAYER"), "text": tr("DLG_TUTORIAL_QUEST_7"), "portrait": PORTRAIT_PLAYER, "voice": "player"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_QUEST_8"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_QUEST_9"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
 			], func():
 				_block_input()
 				_highlight_skill_tree_button(true)
 				_advance(Step.WAIT_SKILL_TREE)
 			)
-			_show_hint("Откройте древо навыков")
+			_show_hint(tr("HINT_OPEN_SKILL_TREE"))
 
 		Step.GIVE_CRYSTALS:
 			_block_input()
@@ -230,8 +230,8 @@ func _advance(step: Step) -> void:
 			GameManager.souls += 4
 			SkillManager.allowed_skills = REQUIRED_SKILLS.duplicate()
 			_show_dialogue([
-				{"name": "Владыка", "text": "Держи четыре кристалла — всё, что осталось после твоего призыва. Не благодари, ты и так обошёлся мне в целое состояние.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-				{"name": "Владыка", "text": "Вложи их с умом: Строительный план, Лучники, Смена вида и Магические способности. Остальное — потом, когда заслужишь.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_CRYSTALS_1"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_CRYSTALS_2"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
 			], func():
 				_unblock_input()
 				_update_skills_hint()
@@ -244,13 +244,13 @@ func _advance(step: Step) -> void:
 			_hide_hint()
 			SkillManager.allowed_skills = []
 			_show_dialogue([
-				{"name": "Книга", "text": "ПЯТЬСОТ. ЛЕТ. Пятьсот лет я лежал на этой полке! И ни одного \"как дела\", ни одного \"спасибо за службу\"!", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Книга", "text": "А стоит понадобиться — сразу \"о, Книга, помоги, Книга, подскажи\". Вы хоть пыль с меня стряхнули? НЕТ.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Владыка", "text": "О, ты нашёл моего старого фамильяра! Эта книга учила меня, когда я был ещё маленьким принцем тьмы. Ностальгия...", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-				{"name": "Книга", "text": "Ага, помню. Рисовал чертей на моих страницах. До сих пор на 347-й странице какой-то монстр с подписью \"папа\".", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Владыка", "text": "...Ещё одно слово, и я найду тебе применение поинтереснее. Например, растопка камина.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-				{"name": "Книга", "text": "...", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Владыка", "text": "Вот и славно. Я вас оставляю. Книга подскажет, что к чему. А мне пора — дела тёмные, сами понимаете.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_BOOK_1"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_BOOK_2"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_BOOK_3"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_BOOK_4"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_BOOK_5"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_BOOK_6"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_OWNER"), "text": tr("DLG_TUTORIAL_BOOK_7"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
 			], func(): _advance(Step.OWNER_LEAVES))
 
 		Step.OWNER_LEAVES:
@@ -262,18 +262,18 @@ func _advance(step: Step) -> void:
 				tween.tween_property(lich, "modulate:a", 0.0, 0.5)
 				tween.tween_callback(lich.queue_free)
 			_show_dialogue([
-				{"name": "Книга", "text": "Ушёл. Наконец-то. Ладно, слушай сюда, человечек.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Книга", "text": "Видишь этот трон? Это единственное, что стоит между нами и толпой людей, которые почему-то считают, что мы угрожаем их существованию. Мы! Которые сидим тут тише воды, ниже травы!", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Книга", "text": "Прежде чем строить — Владыка дал тебе дар видеть суть вещей. Попробуй активировать его.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_LEAVES_1"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_LEAVES_2"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_LEAVES_3"), "portrait": PORTRAIT_BOOK, "voice": "book"},
 			], func():
 				_unblock_input()
 				_advance(Step.FLAT_VIEW_ON)
 			)
-			_show_hint("Постройте башню лучников рядом с троном")
+			_show_hint(tr("HINT_BUILD_ARCHERS"))
 
 		Step.FLAT_VIEW_ON:
 			_block_input_except_toolbar()
-			_show_hint("Нажмите кнопку смены вида")
+			_show_hint(tr("HINT_FLAT_VIEW"))
 			_highlight_toolbar_slot(4)  # Слот 5 = flat view (индекс 4)
 			current_step = Step.WAIT_FLAT_VIEW_ON
 
@@ -281,11 +281,11 @@ func _advance(step: Step) -> void:
 			_block_input()
 			_hide_hint()
 			_show_dialogue([
-				{"name": "Книга", "text": "Ага! Теперь ты видишь мир как есть — без этой изометрической мишуры. Каждая клетка как на ладони.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Книга", "text": "В этом режиме удобнее строить и планировать оборону. Осмотрись, а потом выключи — нам нужно двигаться дальше.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_FLAT_1"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_FLAT_2"), "portrait": PORTRAIT_BOOK, "voice": "book"},
 			], func():
 				_unblock_input()
-				_show_hint("Осмотритесь. Выключите смену вида для продолжения")
+				_show_hint(tr("HINT_FLAT_VIEW_OFF"))
 				current_step = Step.WAIT_FLAT_VIEW_OFF
 			)
 
@@ -293,21 +293,21 @@ func _advance(step: Step) -> void:
 			_block_input()
 			_hide_hint()
 			_show_dialogue([
-				{"name": "Книга", "text": "Видишь? Теперь ты можешь видеть истинную природу построек. Полезно, когда всё начнёт разрастаться.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Книга", "text": "А теперь к делу. Поставь лучников рядом с троном. Да-да, скелетов с луками. Не спрашивай, откуда у них глаза — просто ставь.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_BUILD_1"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_BUILD_2"), "portrait": PORTRAIT_BOOK, "voice": "book"},
 			], func():
 				_unblock_input()
 				_setup_throne_placement()
 				_highlight_toolbar_slot(0)
-				_show_hint("Постройте башню лучников рядом с троном")
+				_show_hint(tr("HINT_BUILD_ARCHERS"))
 			)
 
 		Step.ENEMY_ARRIVES:
 			_block_input()
 			_hide_hint()
 			_show_dialogue([
-				{"name": "Книга", "text": "Хм, неплохо для существа без магического образования. Я впечатлён. Немного. Самую каплю.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Книга", "text": "Стоп. Ты слышишь? Шаги. Кажется, к нам кто-то идёт...", "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_ENEMY_1"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_ENEMY_2"), "portrait": PORTRAIT_BOOK, "voice": "book"},
 			], func():
 				_unblock_input()
 				GameManager.tutorial_wave = true
@@ -320,11 +320,11 @@ func _advance(step: Step) -> void:
 		Step.OUTRO:
 			_block_input()
 			_show_dialogue([
-				{"name": "Рыцарь", "text": "Во имя света! Тьма будет повер... к-как?! Одна стрела?! Мои потомки... отомстят...", "portrait": PORTRAIT_KNIGHT, "voice": "knight"},
-				{"name": "Книга", "text": "Мы буквально сидели у себя дома. ОН пришёл к НАМ. И мы ещё злодеи?", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Книга", "text": "Вот так всегда. Один фанатик, одна стрела, а потом — армия обиженных потомков с факелами и \"священной миссией\".", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Книга", "text": "Ладно, хватит глазеть. У нас примерно одно человеческое поколение до следующей атаки.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-				{"name": "Книга", "text": "Строй, укрепляй, готовься. И учти — в следующий раз одной башней не отделаешься. Ненавижу дедлайны, но тут уж ничего не поделать.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_KNIGHT"), "text": tr("DLG_TUTORIAL_OUTRO_1"), "portrait": PORTRAIT_KNIGHT, "voice": "knight"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_OUTRO_2"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_OUTRO_3"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_OUTRO_4"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+				{"name": tr("CHAR_BOOK"), "text": tr("DLG_TUTORIAL_OUTRO_5"), "portrait": PORTRAIT_BOOK, "voice": "book"},
 			], func(): _advance(Step.DONE))
 
 		Step.DONE:
@@ -492,12 +492,14 @@ func _unhighlight_toolbar_slot() -> void:
 	_highlighted_slot = null
 	_highlight_slot_tween = null
 
-const SKILL_NAMES: Dictionary = {
-	"build_plan": "Строительный план",
-	"archers": "Лучники",
-	"flat_view": "Смена вида",
-	"magic_abilities": "Магические способности",
-}
+var SKILL_NAMES: Dictionary:
+	get:
+		return {
+			"build_plan": tr("SKILL_NAME_BUILD_PLAN"),
+			"archers": tr("SKILL_NAME_ARCHERS"),
+			"flat_view": tr("SKILL_NAME_FLAT_VIEW"),
+			"magic_abilities": tr("SKILL_NAME_MAGIC_ABILITIES"),
+		}
 
 
 func _on_tutorial_skill_unlocked(_skill_id: String) -> void:
@@ -513,7 +515,7 @@ func _update_skills_hint() -> void:
 	if remaining.is_empty():
 		_hide_hint()
 	else:
-		_show_hint("Прокачайте: " + ", ".join(remaining))
+		_show_hint(tr("HINT_UNLOCK_SKILLS") % [", ".join(remaining)])
 var _skill_tree_btn_original_parent: Node = null
 var _skill_tree_btn_original_z: int = 0
 
@@ -573,7 +575,7 @@ func _highlight_skill_tree_button(enable: bool) -> void:
 		var arrow_y = btn_rect.end.y + 5
 
 		_arrow_label = Label.new()
-		_arrow_label.text = "▲  Древо талантов"
+		_arrow_label.text = tr("HINT_SKILL_TREE_LABEL")
 		_arrow_label.add_theme_font_size_override("font_size", 16)
 		_arrow_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
 		_arrow_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

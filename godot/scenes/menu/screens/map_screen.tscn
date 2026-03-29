@@ -18,7 +18,8 @@ theme_override_constants/separation = 16
 layout_mode = 2
 theme_override_colors/font_color = Color(0.91, 0.878, 1, 1)
 theme_override_font_sizes/font_size = 22
-text = "Выбор локации"
+auto_translate_mode = 1
+text = "MENU_SELECT_LOCATION"
 horizontal_alignment = 1
 
 [node name="Maps" type="HBoxContainer" parent="VBox" unique_id=575041963]
@@ -30,6 +31,7 @@ alignment = 1
 custom_minimum_size = Vector2(200, 45)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "← Назад"
+auto_translate_mode = 1
+text = "MENU_BACK"
 
 [connection signal="pressed" from="VBox/Back" to="." method="_on_back_pressed"]

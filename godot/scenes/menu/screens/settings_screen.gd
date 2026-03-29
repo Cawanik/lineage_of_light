@@ -51,7 +51,45 @@ func _ready() -> void:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 	)
 
+	_build_language_selector()
 	_build_toolbar_binds()
+
+
+func _build_language_selector() -> void:
+	var vbox = $Center/VBox
+	var lang_container = HBoxContainer.new()
+	lang_container.name = "LanguageContainer"
+	lang_container.add_theme_constant_override("separation", 10)
+	lang_container.alignment = BoxContainer.ALIGNMENT_CENTER
+
+	var lang_label = Label.new()
+	lang_label.text = "Language:"
+	lang_label.add_theme_font_size_override("font_size", 14)
+	lang_container.add_child(lang_label)
+
+	var lang_btn = OptionButton.new()
+	lang_btn.name = "LanguageButton"
+	lang_btn.add_theme_font_size_override("font_size", 14)
+	lang_btn.custom_minimum_size = Vector2(150, 30)
+
+	var locales = L.get_available_locales()
+	var current_idx = 0
+	for i in range(locales.size()):
+		lang_btn.add_item(L.get_locale_name(locales[i]), i)
+		if locales[i] == L.get_locale():
+			current_idx = i
+	lang_btn.selected = current_idx
+
+	lang_btn.item_selected.connect(func(idx):
+		var locale = locales[idx]
+		L.set_locale(locale)
+	)
+	lang_container.add_child(lang_btn)
+
+	# Вставляем перед toolbar
+	var toolbar_idx = toolbar_container.get_index()
+	vbox.add_child(lang_container)
+	vbox.move_child(lang_container, toolbar_idx)
 
 
 func _update_labels() -> void:
@@ -131,7 +169,7 @@ func _input(event: InputEvent) -> void:
 			_rebinding_btn = null
 			var al = get_node_or_null("/root/AlertSystem")
 			if al:
-				al.alert_error("Эта клавиша зарезервирована")
+				al.alert_error(tr("UI_KEY_RESERVED"))
 			get_viewport().set_input_as_handled()
 			return
 		# Очищаем дубликат

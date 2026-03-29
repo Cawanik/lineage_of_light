@@ -20,6 +20,11 @@ func _ready() -> void:
 	background.modulate = Color(1, 1, 1, 0)
 	vbox.modulate = Color(1, 1, 1, 0)
 
+	# Localize UI text
+	$VBox/GameOverLabel.text = tr("GAME_OVER_TITLE")
+	$VBox/ButtonContainer/RestartButton.text = tr("MENU_RESTART")
+	$VBox/ButtonContainer/ExitButton.text = tr("MENU_MAIN_MENU")
+
 	# Connect buttons
 	$VBox/ButtonContainer/RestartButton.pressed.connect(_on_restart_pressed)
 	$VBox/ButtonContainer/ExitButton.pressed.connect(_on_exit_pressed)
@@ -41,23 +46,23 @@ func _ready() -> void:
 
 func _show_first_death_dialogue() -> void:
 	DialogueBox.say([
-		{"name": "Книга", "text": "НЕЕЕТ! Трон! Мой прекрасный выходной! Всё пропало!", "portrait": PORTRAIT_BOOK, "voice": "book"},
-		{"name": "Книга", "text": "Ну ты и архитектор. \"Лучший из мира людей\", значит? Страшно представить худшего.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-		{"name": "Владыка", "text": "...", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-		{"name": "Книга", "text": "В-владыка?! Вы уже вернулись?! Мы всё исправим, клянусь корешком!", "portrait": PORTRAIT_BOOK, "voice": "book"},
-		{"name": "Владыка", "text": "Спокойно. Я не злюсь.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-		{"name": "Книга", "text": "...Не злитесь?", "portrait": PORTRAIT_BOOK, "voice": "book"},
-		{"name": "Владыка", "text": "Я произвожу эти троны. У меня их на складе ещё штук двадцать. Знаешь, сколько раз мои братья теряли свои? Некоторые — ежемесячно.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-		{"name": "Вы", "text": "То есть... я не умер?", "portrait": PORTRAIT_PLAYER, "voice": "player"},
-		{"name": "Владыка", "text": "Ты бессмертный, помнишь? Я не могу тебя убить, даже если бы захотел. А я не хочу. Я не человек — у нас не принято наказывать за первую ошибку.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-		{"name": "Вы", "text": "...Это лучшее, что мне говорили за долгое время.", "portrait": PORTRAIT_PLAYER, "voice": "player"},
-		{"name": "Владыка", "text": "Держи новый трон. Поставь его на то же место — мне нравится, как там падает лунный свет.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-		{"name": "Книга", "text": "Вам... нравится лунный свет?", "portrait": PORTRAIT_BOOK, "voice": "book"},
-		{"name": "Владыка", "text": "Ещё одно слово — и следующий трон будет из твоих страниц.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-		{"name": "Книга", "text": "Молчу-молчу.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-		{"name": "Владыка", "text": "В этот раз строй умнее. У людей короткая память, но длинные мечи. Они вернутся.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
-		{"name": "Книга", "text": "Ладно, слышал босса? Трон на место, стены покрепче. И на этот раз — постарайся.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-		{"name": "Владыка", "text": "Твои навыки и кристаллы сохранились. Сделай так, чтобы не было вопросов к твоей профпригодности.", "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_GAME_OVER_1"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_GAME_OVER_2"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_OWNER"), "text": tr("DLG_GAME_OVER_3"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_GAME_OVER_4"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_OWNER"), "text": tr("DLG_GAME_OVER_5"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_GAME_OVER_6"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_OWNER"), "text": tr("DLG_GAME_OVER_7"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": tr("CHAR_PLAYER"), "text": tr("DLG_GAME_OVER_8"), "portrait": PORTRAIT_PLAYER, "voice": "player"},
+		{"name": tr("CHAR_OWNER"), "text": tr("DLG_GAME_OVER_9"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": tr("CHAR_PLAYER"), "text": tr("DLG_GAME_OVER_10"), "portrait": PORTRAIT_PLAYER, "voice": "player"},
+		{"name": tr("CHAR_OWNER"), "text": tr("DLG_GAME_OVER_11"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_GAME_OVER_12"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_OWNER"), "text": tr("DLG_GAME_OVER_13"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_GAME_OVER_14"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_OWNER"), "text": tr("DLG_GAME_OVER_15"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_GAME_OVER_16"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_OWNER"), "text": tr("DLG_GAME_OVER_17"), "portrait": PORTRAIT_OWNER, "voice": "owner"},
 	])
 
 	var db = DialogueBox.instance()

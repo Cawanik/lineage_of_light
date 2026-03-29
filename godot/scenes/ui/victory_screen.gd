@@ -46,7 +46,7 @@ func _ready() -> void:
 
 	# Заголовок
 	var title = Label.new()
-	title.text = "ПОБЕДА"
+	title.text = tr("VICTORY_TITLE")
 	title.add_theme_font_size_override("font_size", 32)
 	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -54,7 +54,7 @@ func _ready() -> void:
 
 	# Основной текст
 	var desc = Label.new()
-	desc.text = "Вы прошли демоверсию игры Lineage of Light!\n\nСпасибо, что играли. Ваша поддержка и обратная связь\nочень важны для развития проекта."
+	desc.text = tr("VICTORY_DESCRIPTION")
 	desc.add_theme_font_size_override("font_size", 14)
 	desc.add_theme_color_override("font_color", Color("#e8e0ff"))
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -63,7 +63,7 @@ func _ready() -> void:
 
 	# Контакт
 	var contact = Label.new()
-	contact.text = "Идеи, поддержка, сотрудничество:\nTelegram: @cawanik"
+	contact.text = tr("VICTORY_CONTACT")
 	contact.add_theme_font_size_override("font_size", 14)
 	contact.add_theme_color_override("font_color", Color("#b088dd"))
 	contact.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -71,7 +71,7 @@ func _ready() -> void:
 
 	# Благодарность
 	var thanks = Label.new()
-	thanks.text = "Спасибо за игру!"
+	thanks.text = tr("VICTORY_THANKS")
 	thanks.add_theme_font_size_override("font_size", 18)
 	thanks.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
 	thanks.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -83,7 +83,7 @@ func _ready() -> void:
 	vbox.add_child(btn_container)
 
 	var exit_btn = Button.new()
-	exit_btn.text = "Главное меню"
+	exit_btn.text = tr("MENU_MAIN_MENU")
 	exit_btn.custom_minimum_size = Vector2(200, 50)
 	exit_btn.add_theme_font_size_override("font_size", 16)
 	exit_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND

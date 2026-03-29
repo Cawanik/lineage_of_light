@@ -55,7 +55,8 @@ offset_right = 613.0
 offset_bottom = 105.0
 theme_override_colors/font_color = Color(0.941, 0.816, 0.376, 1)
 theme_override_font_sizes/font_size = 16
-text = "Книгыч"
+auto_translate_mode = 1
+text = "DIALOGUE_PLACEHOLDER_NAME"
 
 [node name="TextLabel" type="RichTextLabel" parent="Container" unique_id=183104936]
 layout_mode = 1
@@ -72,7 +73,8 @@ mouse_filter = 2
 theme_override_colors/default_color = Color(0.91, 0.878, 1, 1)
 theme_override_font_sizes/normal_font_size = 14
 bbcode_enabled = true
-text = "О! Вот и он, я боялся что и в этот раз не получится! Значит, слушай. Расклад такой, ты был призван сюда для одной большой и важной задачи. выфаываываыв ыва ыва ыва ыва ыва ыв аыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ыва ываыв аыв аыва ываываы ваыва ы"
+auto_translate_mode = 1
+text = "DIALOGUE_PLACEHOLDER_TEXT"
 scroll_active = false
 
 [node name="SkipLabel" type="Label" parent="Container" unique_id=1289145798]
@@ -90,7 +92,8 @@ grow_horizontal = 0
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 0.7)
 theme_override_font_sizes/font_size = 10
-text = "Нажмите, чтобы продолжить"
+auto_translate_mode = 1
+text = "UI_CLICK_TO_CONTINUE"
 horizontal_alignment = 2
 
 [node name="ClickArea" type="Control" parent="Container" unique_id=1966821936]

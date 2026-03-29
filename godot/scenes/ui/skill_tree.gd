@@ -80,7 +80,7 @@ func _ready() -> void:
 
 	# Заголовок
 	var title = Label.new()
-	title.text = "Древо Талантов"
+	title.text = tr("UI_SKILL_TREE_TITLE")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.anchors_preset = Control.PRESET_CENTER_TOP
 	title.anchor_left = 0.5
@@ -334,16 +334,16 @@ const UPGRADE_BRANCH_SKILLS: Array[String] = ["archer_up1", "wall_up1", "archer_
 
 var SKILL_HINTS: Dictionary = {
 	"upgrade_tool": [
-		{"name": "Книга", "text": "Ага, инструмент улучшений! Но не спеши радоваться — одного инструмента мало. Тебе ещё нужно изучить улучшения для конкретных зданий.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-		{"name": "Книга", "text": "Видишь ветки улучшений рядом? Без них твой молоток — просто палка. Прокачай хотя бы одну, и тогда поговорим.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_SKILL_UPGRADE_1"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_SKILL_UPGRADE_2"), "portrait": PORTRAIT_BOOK, "voice": "book"},
 	],
 	"magic_shot": [
-		{"name": "Книга", "text": "О-хо-хо! Магический выстрел! Наконец-то ты не будешь просто стоять и смотреть, как крушат твои стены.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-		{"name": "Книга", "text": "Когда начнётся бой, способности появятся на панели инструментов в правом нижнем углу. Эта бьёт автоматически — просто стой и наслаждайся.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_SKILL_MAGIC_1"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_SKILL_MAGIC_2"), "portrait": PORTRAIT_BOOK, "voice": "book"},
 	],
 	"epoch_gate": [
-		{"name": "Книга", "text": "Врата Эпохи! Это не просто здание — это портал в новую эру. Построй его на поле, и откроются постройки второго тира.", "portrait": PORTRAIT_BOOK, "voice": "book"},
-		{"name": "Книга", "text": "Второй тир — это совсем другой уровень. Новые башни, новые возможности. Поверь, они тебе понадобятся.", "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_SKILL_EPOCH_1"), "portrait": PORTRAIT_BOOK, "voice": "book"},
+		{"name": tr("CHAR_BOOK"), "text": tr("DLG_SKILL_EPOCH_2"), "portrait": PORTRAIT_BOOK, "voice": "book"},
 	],
 }
 
@@ -550,19 +550,20 @@ func _update_info_panel() -> void:
 
 	_info_panel.visible = true
 	if state == "unlocked" or state == "available":
-		_info_category.text = data.get("category", "").to_upper()
-		_info_name.text = data.get("name", "")
-		_info_desc.text = data.get("desc", "")
+		var skill_key = _selected_skill.to_upper()
+		_info_category.text = tr("CAT_" + _get_category_key(data.get("category", "")))
+		_info_name.text = tr("SKILL_" + skill_key + "_NAME")
+		_info_desc.text = tr("SKILL_" + skill_key + "_DESC")
 	else:
-		_info_category.text = "???"
-		_info_name.text = "???"
+		_info_category.text = tr("UI_UNKNOWN")
+		_info_name.text = tr("UI_UNKNOWN")
 		_info_desc.text = ""
 
 	var cost = int(data.get("cost", 1))
 
 	match state:
 		"unlocked":
-			_info_cost.text = "Изучено"
+			_info_cost.text = tr("UI_SKILL_LEARNED")
 			_unlock_btn.visible = false
 		"available":
 			_info_cost.text = ""
@@ -580,7 +581,19 @@ func _on_unlock_pressed() -> void:
 		if not SkillManager.unlock(_selected_skill):
 			var as_node = get_node_or_null("/root/AlertSystem")
 			if as_node:
-				as_node.alert_error("Недостаточно душ!")
+				as_node.alert_error(tr("UI_NOT_ENOUGH_SOULS"))
+
+
+const CATEGORY_KEYS: Dictionary = {
+	"Инструмент": "INSTRUMENT",
+	"Здание": "BUILDING",
+	"Способность": "ABILITY",
+	"Улучшение": "UPGRADE",
+	"Майлстоун": "MILESTONE",
+}
+
+func _get_category_key(category: String) -> String:
+	return CATEGORY_KEYS.get(category, category.to_upper())
 
 
 var _panning: bool = false

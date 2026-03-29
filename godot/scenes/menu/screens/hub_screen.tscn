@@ -16,7 +16,8 @@ script = ExtResource("1_script")
 
 [node name="Title" type="Label" parent="Inner"]
 horizontal_alignment = 1
-text = "Остров"
+auto_translate_mode = 1
+text = "MENU_HUB_TITLE"
 theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.91, 0.878, 1, 1)
 
@@ -38,15 +39,18 @@ theme_override_colors/font_color = Color(0.941, 0.816, 0.376, 1)
 
 [node name="Map" type="Button" parent="Inner"]
 custom_minimum_size = Vector2(280, 50)
-text = "Играть"
+auto_translate_mode = 1
+text = "MENU_PLAY"
 
 [node name="SkillTree" type="Button" parent="Inner"]
 custom_minimum_size = Vector2(280, 50)
-text = "Древо Талантов"
+auto_translate_mode = 1
+text = "UI_SKILL_TREE_TITLE"
 
 [node name="Back" type="Button" parent="Inner"]
 custom_minimum_size = Vector2(280, 50)
-text = "← Назад"
+auto_translate_mode = 1
+text = "MENU_BACK"
 
 [connection signal="pressed" from="Inner/Map" to="Inner" method="_on_map_pressed"]
 [connection signal="pressed" from="Inner/SkillTree" to="Inner" method="_on_skill_tree_pressed"]

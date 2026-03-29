@@ -73,11 +73,11 @@ func _ready() -> void:
 	flat_view_button.pressed.connect(_on_flat_view_button_pressed)
 
 	# Тултипы и ховер-эффекты
-	build_button.tooltip_text = "Строительство\nРазмещай здания на поле\nЗажми ЛКМ для линии"
-	demolish_button.tooltip_text = "Снос\nУдаляй постройки\nЗажми ЛКМ для линии"
-	move_button.tooltip_text = "Перемещение\nПеретащи здание на новое место"
-	upgrade_button.tooltip_text = "Улучшение\nУлучшай здания за золото\nЗажми ЛКМ для линии"
-	flat_view_button.tooltip_text = "Плоский вид\nПоказывает подписи построек\nМожно совмещать с другими инструментами"
+	build_button.tooltip_text = tr("TOOLTIP_BUILD")
+	demolish_button.tooltip_text = tr("TOOLTIP_DEMOLISH")
+	move_button.tooltip_text = tr("TOOLTIP_MOVE")
+	upgrade_button.tooltip_text = tr("TOOLTIP_UPGRADE")
+	flat_view_button.tooltip_text = tr("TOOLTIP_FLAT_VIEW")
 
 	for btn in [build_button, demolish_button, move_button, upgrade_button, flat_view_button]:
 		btn.focus_mode = Control.FOCUS_NONE
@@ -925,7 +925,7 @@ func _draw_flat_labels() -> void:
 		label_node.z_index = 200
 
 		var data = Config.buildings.get(b.building_type, {})
-		var short = data.get("short_name", b.building_type.left(3).to_upper())
+		var short = tr("BLD_" + b.building_type.to_upper() + "_SHORT")
 		var tier = b.upgrade_level
 		var tile_color = Color(0.6, 0.2, 0.8, 0.5)  # фиолетовый для зданий
 		if b.building_type == "throne":

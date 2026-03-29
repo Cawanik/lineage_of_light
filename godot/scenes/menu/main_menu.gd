@@ -389,6 +389,7 @@ func _save_settings() -> void:
 		"music_volume": AudioManager.music_volume,
 		"sfx_volume": AudioManager.sfx_volume,
 		"toolbar_keybinds": GameManager.toolbar_keybinds,
+		"locale": L.get_locale(),
 	}
 	var file = FileAccess.open("user://settings.json", FileAccess.WRITE)
 	file.store_string(JSON.stringify(data, "\t"))

@@ -392,3 +392,4 @@ grow_horizontal = 1
 [node name="DialogueBox" parent="." unique_id=1157293591 instance=ExtResource("24_dialogue")]
 
 [node name="PauseMenu" parent="." unique_id=288153909 instance=ExtResource("25_pause")]
+visible = false

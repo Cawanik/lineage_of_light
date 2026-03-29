@@ -39,7 +39,8 @@ func build_map_list(maps_data: Array, completed_maps: Array) -> void:
 		card.add_child(icon_rect)
 
 		var name_lbl = Label.new()
-		name_lbl.text = map.get("name", "???")
+		var map_name_key = "MAP_" + map_id.to_upper()
+		name_lbl.text = tr(map_name_key)
 		name_lbl.add_theme_font_size_override("font_size", 12)
 		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		name_lbl.add_theme_color_override("font_color", Color("#e8e0ff") if is_unlocked else Color("#666666"))
@@ -48,7 +49,7 @@ func build_map_list(maps_data: Array, completed_maps: Array) -> void:
 		if is_unlocked and not is_coming_soon:
 			var is_completed = map_id in completed_maps
 			var play_btn = Button.new()
-			play_btn.text = "Пройдено" if is_completed else "Играть"
+			play_btn.text = tr("MENU_COMPLETED") if is_completed else tr("MENU_PLAY")
 			play_btn.custom_minimum_size = Vector2(80, 35)
 			play_btn.disabled = is_completed
 			if not is_completed:
@@ -56,7 +57,7 @@ func build_map_list(maps_data: Array, completed_maps: Array) -> void:
 			card.add_child(play_btn)
 		else:
 			var lock_lbl = Label.new()
-			lock_lbl.text = "Скоро" if is_coming_soon else "🔒"
+			lock_lbl.text = tr("MENU_COMING_SOON") if is_coming_soon else "🔒"
 			lock_lbl.add_theme_font_size_override("font_size", 10)
 			lock_lbl.add_theme_color_override("font_color", Color("#666666"))
 			lock_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

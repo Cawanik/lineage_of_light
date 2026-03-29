@@ -32,22 +32,27 @@ theme_override_constants/separation = 14
 
 [node name="Title" type="Label" parent="Center/VBox"]
 horizontal_alignment = 1
-text = "ПАУЗА"
+auto_translate_mode = 1
+text = "UI_PAUSE"
 theme_override_font_sizes/font_size = 32
 theme_override_colors/font_color = Color(0.91, 0.878, 1, 1)
 
 [node name="Resume" type="Button" parent="Center/VBox"]
 custom_minimum_size = Vector2(240, 50)
-text = "Продолжить"
+auto_translate_mode = 1
+text = "MENU_RESUME"
 
 [node name="Settings" type="Button" parent="Center/VBox"]
 custom_minimum_size = Vector2(240, 50)
-text = "Настройки"
+auto_translate_mode = 1
+text = "MENU_SETTINGS"
 
 [node name="MainMenu" type="Button" parent="Center/VBox"]
 custom_minimum_size = Vector2(240, 50)
-text = "Главное меню"
+auto_translate_mode = 1
+text = "MENU_MAIN_MENU"
 
 [node name="Quit" type="Button" parent="Center/VBox"]
 custom_minimum_size = Vector2(240, 50)
-text = "Выход"
+auto_translate_mode = 1
+text = "MENU_QUIT"

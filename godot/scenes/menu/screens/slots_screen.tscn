@@ -15,7 +15,8 @@ script = ExtResource("1_script")
 
 [node name="Title" type="Label" parent="Inner"]
 horizontal_alignment = 1
-text = "Новая игра"
+auto_translate_mode = 1
+text = "MENU_NEW_GAME"
 theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.91, 0.878, 1, 1)
 
@@ -24,6 +25,7 @@ theme_override_constants/separation = 8
 
 [node name="Back" type="Button" parent="Inner"]
 custom_minimum_size = Vector2(280, 50)
-text = "← Назад"
+auto_translate_mode = 1
+text = "MENU_BACK"
 
 [connection signal="pressed" from="Inner/Back" to="Inner" method="_on_back_pressed"]

@@ -20,7 +20,8 @@ theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Center/VBox"]
 horizontal_alignment = 1
-text = "Настройки"
+auto_translate_mode = 1
+text = "MENU_SETTINGS"
 theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.91, 0.878, 1, 1)
 
@@ -29,7 +30,8 @@ theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="Center/VBox/MasterVolume"]
 custom_minimum_size = Vector2(130, 0)
-text = "Общая громкость"
+auto_translate_mode = 1
+text = "SETTINGS_MASTER_VOLUME"
 theme_override_colors/font_color = Color(0.8, 0.733, 0.867, 1)
 
 [node name="Slider" type="HSlider" parent="Center/VBox/MasterVolume"]
@@ -49,7 +51,8 @@ theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="Center/VBox/MusicVolume"]
 custom_minimum_size = Vector2(130, 0)
-text = "Музыка"
+auto_translate_mode = 1
+text = "SETTINGS_MUSIC_VOLUME"
 theme_override_colors/font_color = Color(0.8, 0.733, 0.867, 1)
 
 [node name="Slider" type="HSlider" parent="Center/VBox/MusicVolume"]
@@ -69,7 +72,8 @@ theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="Center/VBox/SFXVolume"]
 custom_minimum_size = Vector2(130, 0)
-text = "Эффекты"
+auto_translate_mode = 1
+text = "SETTINGS_SFX_VOLUME"
 theme_override_colors/font_color = Color(0.8, 0.733, 0.867, 1)
 
 [node name="Slider" type="HSlider" parent="Center/VBox/SFXVolume"]
@@ -87,7 +91,8 @@ theme_override_font_sizes/font_size = 12
 [node name="Sep1" type="HSeparator" parent="Center/VBox"]
 
 [node name="WindowLabel" type="Label" parent="Center/VBox"]
-text = "Размер окна"
+auto_translate_mode = 1
+text = "SETTINGS_WINDOW_SIZE"
 theme_override_colors/font_color = Color(0.6, 0.533, 0.733, 1)
 
 [node name="WindowButtons" type="HBoxContainer" parent="Center/VBox"]
@@ -103,12 +108,14 @@ text = "1600x900"
 text = "1920x1080"
 
 [node name="Fullscreen" type="CheckBox" parent="Center/VBox"]
-text = "Полноэкранный"
+auto_translate_mode = 1
+text = "UI_FULLSCREEN"
 
 [node name="Sep2" type="HSeparator" parent="Center/VBox"]
 
 [node name="BindsLabel" type="Label" parent="Center/VBox"]
-text = "Панель инструментов"
+auto_translate_mode = 1
+text = "SETTINGS_TOOLBAR"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.6, 0.533, 0.733, 1)
@@ -121,6 +128,7 @@ custom_minimum_size = Vector2(267, 267)
 [node name="Back" type="Button" parent="Center/VBox"]
 custom_minimum_size = Vector2(240, 45)
 size_flags_horizontal = 4
-text = "← Назад"
+auto_translate_mode = 1
+text = "MENU_BACK"
 
 [connection signal="pressed" from="Center/VBox/Back" to="." method="_on_back_pressed"]

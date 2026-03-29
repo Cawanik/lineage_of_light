@@ -17,12 +17,13 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Lineage of Light"
 run/main_scene="res://scenes/menu/main_menu.tscn"
 config/features=PackedStringArray("4.6")
-config/icon="res://assets/sprites/buildings/wall/wall_segment_0001.png"
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/image="uid://dyxu0vefqn06w"
+config/icon="res://assets/sprites/buildings/wall/wall_segment_0001.png"
 
 [autoload]
 
+L="*res://scripts/autoload/locale_manager.gd"
 Config="*res://scripts/autoload/config.gd"
 GameManager="*res://scripts/autoload/game_manager.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"
@@ -69,6 +70,10 @@ move_right={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":68,"physical_keycode":68,"key_label":68,"unicode":100,"location":0,"echo":false,"script":null)
 ]
 }
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://config/locale/translations.en.translation", "res://config/locale/translations.ru.translation")
 
 [rendering]
 

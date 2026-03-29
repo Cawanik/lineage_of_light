@@ -1,0 +1,220 @@
+keys,en,ru
+UI_SKILL_TREE_TITLE,Skill Tree,Древо Талантов
+UI_SKILL_LEARNED,Learned,Изучено
+UI_NOT_ENOUGH_SOULS,Not enough souls!,Недостаточно душ!
+UI_NOT_ENOUGH_GOLD,Not enough gold! Need: %d,Недостаточно золота! Нужно: %d
+UI_NOT_ENOUGH_GOLD_SHORT,Not enough gold!,Недостаточно золота!
+UI_UPGRADES_COUNT,Upgrades: %d/%d,Улучшения: %d/%d
+UI_HP_FORMAT,HP: %d / %d,HP: %d / %d
+UI_TIER_FORMAT,%s [Tier %d],%s [Тир %d]
+UI_BUILD_MENU_TITLE,BUILD,СТРОЙ
+UI_UNKNOWN,???,???
+UI_COMBAT_LABEL,FIGHT,БОЙ
+UI_TIMER_INFINITY,∞,∞
+UI_KEY_RESERVED,This key is reserved,Эта клавиша зарезервирована
+UI_ARROW_SKILL_TREE,▲  Skill Tree,▲  Древо талантов
+MENU_NEW_GAME,New Game,Новая игра
+MENU_CONTINUE,Continue,Продолжить
+MENU_SETTINGS,Settings,Настройки
+MENU_QUIT,Quit,Выход
+MENU_MAIN_MENU,Main Menu,Главное меню
+MENU_PLAY,Play,Играть
+MENU_COMPLETED,Completed,Пройдено
+MENU_COMING_SOON,Coming Soon,Скоро
+MENU_SLOT_EMPTY,Slot %d — Empty,Слот %d — Пусто
+MENU_SLOT_PROGRESS,Slot %d — %d%%,Слот %d — %d%%
+MENU_RESTART,Restart,Заново
+MENU_RESUME,Resume,Возобновить
+MENU_CLICK_TO_START,Click to start,Нажмите чтобы начать
+VICTORY_TITLE,VICTORY,ПОБЕДА
+VICTORY_DESCRIPTION,"You've completed the Lineage of Light demo!\n\nThank you for playing. Your support and feedback\nare very important for the project.","Вы прошли демоверсию игры Lineage of Light!\n\nСпасибо, что играли. Ваша поддержка и обратная связь\nочень важны для развития проекта."
+VICTORY_CONTACT,"Ideas, support, collaboration:\nTelegram: @cawanik","Идеи, поддержка, сотрудничество:\nTelegram: @cawanik"
+VICTORY_THANKS,Thanks for playing!,Спасибо за игру!
+GAME_OVER_TITLE,DEFEAT,ПОРАЖЕНИЕ
+CHAR_OWNER,Dark Lord,Владыка
+CHAR_BOOK,Book,Книга
+CHAR_PLAYER,You,Вы
+CHAR_KNIGHT,Knight,Рыцарь
+HINT_CLICK_DIALOGUE,Click on dialogue to continue,Нажмите на диалоговое окно для продолжения
+HINT_WASD,Use WASD to move,Используйте WASD для перемещения
+HINT_ZOOM,Scroll mouse wheel to zoom,Прокрутите колёсико мыши для изменения масштаба
+HINT_OPEN_SKILL_TREE,Open the skill tree,Откройте древо навыков
+HINT_UNLOCK_SKILLS,Unlock: %s,Прокачайте: %s
+HINT_FLAT_VIEW,Press the view toggle button,Нажмите кнопку смены вида
+HINT_FLAT_VIEW_OFF,Look around. Toggle view off to continue,"Осмотритесь. Выключите смену вида для продолжения"
+HINT_BUILD_ARCHERS,Build an archer tower near the throne,Постройте башню лучников рядом с троном
+SKILL_NAME_BUILD_PLAN,Build Plan,Строительный план
+SKILL_NAME_ARCHERS,Archers,Лучники
+SKILL_NAME_FLAT_VIEW,View Toggle,Смена вида
+SKILL_NAME_MAGIC_ABILITIES,Magic Abilities,Магические способности
+DLG_TUTORIAL_INTRO_1,"Oh, praise me... It actually worked. You have NO idea how much mana that ritual cost. And frankly, you're better off not knowing.","Ох, слава мне... Наконец-то получилось. Знаешь, сколько я потратил маны на этот ритуал? Не знаешь. И лучше тебе не знать."
+DLG_TUTORIAL_INTRO_2,"What?.. Who am I? Where am I? Why is it so dark? And why do you smell like... death?","Что?.. Кто я? Где я? Почему так темно? И почему от вас веет... смертью?"
+DLG_TUTORIAL_INTRO_3,"Questions later. First, I need to confirm you're not a dud. Walk around a bit.","Вопросы потом. Сейчас мне нужно убедиться, что ты не бракованный. Пошевелись-ка."
+DLG_TUTORIAL_QUEST_1,"Oh, it moves! Splendid. The last one I summoned just stood there sobbing. Three hours. Had to unsummon the poor thing.","О, двигается! Чудесно. Последний, кого я призвал, просто стоял и плакал. Три часа. Пришлось развоплощать."
+DLG_TUTORIAL_QUEST_2,"Pay attention. Humans — those twitchy little creatures — smashed the thrones of my brothers. Every. Single. One. We never touched them, mind you. Not one raid, not one war.","Слушай внимательно. Люди — эти суетливые создания — уничтожили троны моих братьев. Всех до одного. Мы их не трогали, заметь. Ни одного набега, ни одной войны."
+DLG_TUTORIAL_QUEST_3,"We just... exist. Quietly. Peacefully. In our dark castles. But apparently that makes us a ""threat"". A threat! I haven't set foot outside in three centuries!","Мы просто... существуем. Тихо. Мирно. В своих тёмных замках. Но им этого мало — видите ли, мы ""угроза"". Какая угроза? Я за последние триста лет даже с территории не выходил!"
+DLG_TUTORIAL_QUEST_4,"I need an architect. The best one. Word is you built something in the mortal realm... what was it... ""corporate offices""? Sounds absolutely dreadful. You're hired.","Мне нужен архитектор. Лучший. А ты, говорят, в мире людей строил что-то... как это... ""офисные центры""? Звучит ужасающе. Идеально."
+DLG_TUTORIAL_QUEST_5,"I'll give you power, immortality, and zero deadlines. Ever. In return — build me a fortress that these self-righteous lunatics can't knock down. Deal?","Я дам тебе силу, бессмертие и полное отсутствие дедлайнов. Взамен — построй мне крепость, которую эти параноики не смогут разрушить. Согласен?"
+DLG_TUTORIAL_QUEST_6,...,...
+DLG_TUTORIAL_QUEST_7,"Zero deadlines? That's literally all I've ever wanted. I'm in!","Никаких дедлайнов? Это всё, о чём я мечтал! Конечно!"
+DLG_TUTORIAL_QUEST_8,"Wonderful. Haven't seen this kind of enthusiasm since my last batch of freshly raised skeletons. That's a compliment, by the way.","Восхитительно. Такой энтузиазм я видел только у свежеподнятых скелетов. Это комплимент, если что."
+DLG_TUTORIAL_QUEST_9,"Now then — take a peek into the pool of ancient knowledge. You'll find some useful tricks in there.","Теперь загляни в омут древних знаний. Там хранятся способности, которые помогут тебе в строительстве."
+DLG_TUTORIAL_CRYSTALS_1,"Here — four crystals. That's all that's left after your summoning. Don't thank me, you were expensive enough as it is.","Держи четыре кристалла — всё, что осталось после твоего призыва. Не благодари, ты и так обошёлся мне в целое состояние."
+DLG_TUTORIAL_CRYSTALS_2,"Spend them wisely: Build Plan, Archers, View Toggle, and Magic Abilities. Everything else — later, once you've proven yourself.","Вложи их с умом: Строительный план, Лучники, Смена вида и Магические способности. Остальное — потом, когда заслужишь."
+DLG_TUTORIAL_BOOK_1,"FIVE. HUNDRED. YEARS. I've been collecting dust on this shelf for five hundred years! Not one ""hey, how's it going"", not one ""thanks for everything""!","ПЯТЬСОТ. ЛЕТ. Пятьсот лет я лежал на этой полке! И ни одного ""как дела"", ни одного ""спасибо за службу""!"
+DLG_TUTORIAL_BOOK_2,"But the SECOND someone needs help — oh, it's all ""Book, do this"" and ""Book, explain that"". Did anyone even bother to dust me off? NOPE.","А стоит понадобиться — сразу ""о, Книга, помоги, Книга, подскажи"". Вы хоть пыль с меня стряхнули? НЕТ."
+DLG_TUTORIAL_BOOK_3,"Oh, you found my old familiar! This book raised me back when I was just a wee prince of darkness. Good times...","О, ты нашёл моего старого фамильяра! Эта книга учила меня, когда я был ещё маленьким принцем тьмы. Ностальгия..."
+DLG_TUTORIAL_BOOK_4,"Oh, I remember. You drew demons all over my pages. Page 347 still has some abomination labeled ""daddy"".","Ага, помню. Рисовал чертей на моих страницах. До сих пор на 347-й странице какой-то монстр с подписью ""папа""."
+DLG_TUTORIAL_BOOK_5,...One more word and I'll repurpose you. Fireplace kindling comes to mind.,"...Ещё одно слово, и я найду тебе применение поинтереснее. Например, растопка камина."
+DLG_TUTORIAL_BOOK_6,...,...
+DLG_TUTORIAL_BOOK_7,"Thought so. Anyway — I'm leaving you two to it. The Book knows the ropes. I've got, you know... dark lord stuff to attend to.","Вот и славно. Я вас оставляю. Книга подскажет, что к чему. А мне пора — дела тёмные, сами понимаете."
+DLG_TUTORIAL_LEAVES_1,"He's gone. Thank the abyss. Right then — listen up, mortal.","Ушёл. Наконец-то. Ладно, слушай сюда, человечек."
+DLG_TUTORIAL_LEAVES_2,"See that throne? That's the ONLY thing between us and a mob of humans convinced we're the bad guys. Us! We haven't bothered anyone in centuries!","Видишь этот трон? Это единственное, что стоит между нами и толпой людей, которые почему-то считают, что мы угрожаем их существованию. Мы! Которые сидим тут тише воды, ниже травы!"
+DLG_TUTORIAL_LEAVES_3,Before you start building — the Dark Lord blessed you with true sight. Give it a try.,"Прежде чем строить — Владыка дал тебе дар видеть суть вещей. Попробуй активировать его."
+DLG_TUTORIAL_FLAT_1,"Ha! Now you see the world as it really is — no isometric trickery. Every tile, plain as day.","Ага! Теперь ты видишь мир как есть — без этой изометрической мишуры. Каждая клетка как на ладони."
+DLG_TUTORIAL_FLAT_2,"Much easier to plan your defenses in this view. Have a look around, then switch back — we've got work to do.","В этом режиме удобнее строить и планировать оборону. Осмотрись, а потом выключи — нам нужно двигаться дальше."
+DLG_TUTORIAL_BUILD_1,"See? Now you can read every building like an open book. Handy when things get crowded.","Видишь? Теперь ты можешь видеть истинную природу построек. Полезно, когда всё начнёт разрастаться."
+DLG_TUTORIAL_BUILD_2,"Right, down to business. Stick some archers near the throne. Yes, skeleton archers. No, don't ask how they aim without eyes — just do it.","А теперь к делу. Поставь лучников рядом с троном. Да-да, скелетов с луками. Не спрашивай, откуда у них глаза — просто ставь."
+DLG_TUTORIAL_ENEMY_1,"Huh. Not bad for someone with zero magical training. Color me impressed. Slightly. A microscopic amount.","Хм, неплохо для существа без магического образования. Я впечатлён. Немного. Самую каплю."
+DLG_TUTORIAL_ENEMY_2,Hold on. You hear that? Footsteps. Someone's heading this way...,"Стоп. Ты слышишь? Шаги. Кажется, к нам кто-то идёт..."
+DLG_TUTORIAL_OUTRO_1,"For the light! Darkness shall be vanqui— w-WHAT?! One arrow?! My heirs... shall avenge...","Во имя света! Тьма будет повер... к-как?! Одна стрела?! Мои потомки... отомстят..."
+DLG_TUTORIAL_OUTRO_2,We were literally minding our own business. HE broke into OUR home. And somehow WE'RE the villains?,"Мы буквально сидели у себя дома. ОН пришёл к НАМ. И мы ещё злодеи?"
+DLG_TUTORIAL_OUTRO_3,"Every single time. One zealot, one arrow, then before you know it — a whole army of angry descendants with torches and a ""holy crusade"".","Вот так всегда. Один фанатик, одна стрела, а потом — армия обиженных потомков с факелами и ""священной миссией""."
+DLG_TUTORIAL_OUTRO_4,Anyway enough staring. We've got roughly one human generation before the next wave of do-gooders shows up.,"Ладно, хватит глазеть. У нас примерно одно человеческое поколение до следующей атаки."
+DLG_TUTORIAL_OUTRO_5,"Build. Fortify. Prepare. And fair warning — one tower won't cut it next time. I despise deadlines, but here we are.","Строй, укрепляй, готовься. И учти — в следующий раз одной башней не отделаешься. Ненавижу дедлайны, но тут уж ничего не поделать."
+DLG_GAME_OVER_1,NOOO! The throne! My one day off — RUINED!,"НЕЕЕТ! Трон! Мой прекрасный выходной! Всё пропало!"
+DLG_GAME_OVER_2,"Brilliant work, architect. ""The best the human world has to offer"", was it? I shudder to imagine the worst.","Ну ты и архитектор. ""Лучший из мира людей"", значит? Страшно представить худшего."
+DLG_GAME_OVER_3,...,...
+DLG_GAME_OVER_4,"M-my Lord?! Back so soon?! We'll fix this, I swear on my spine!","В-владыка?! Вы уже вернулись?! Мы всё исправим, клянусь корешком!"
+DLG_GAME_OVER_5,Relax. I'm not mad.,"Спокойно. Я не злюсь."
+DLG_GAME_OVER_6,...You're not?,...Не злитесь?
+DLG_GAME_OVER_7,"I mass-produce these thrones. Got about twenty more in the warehouse. You wouldn't believe how often my brothers lose theirs. Some of them — monthly.","Я произвожу эти троны. У меня их на складе ещё штук двадцать. Знаешь, сколько раз мои братья теряли свои? Некоторые — ежемесячно."
+DLG_GAME_OVER_8,Wait... I'm not dead?,"То есть... я не умер?"
+DLG_GAME_OVER_9,"You're immortal, remember? I couldn't kill you if I tried. And I'm not trying. Unlike humans, we don't punish people for a first offense.","Ты бессмертный, помнишь? Я не могу тебя убить, даже если бы захотел. А я не хочу. Я не человек — у нас не принято наказывать за первую ошибку."
+DLG_GAME_OVER_10,...That's genuinely the nicest thing anyone's said to me.,...Это лучшее что мне говорили за долгое время.
+DLG_GAME_OVER_11,Here — fresh throne. Same spot as before. I rather like how the moonlight hits it there.,"Держи новый трон. Поставь его на то же место — мне нравится, как там падает лунный свет."
+DLG_GAME_OVER_12,You... enjoy moonlight?,"Вам... нравится лунный свет?"
+DLG_GAME_OVER_13,One more word and the next throne gets upholstered with your pages.,"Ещё одно слово — и следующий трон будет из твоих страниц."
+DLG_GAME_OVER_14,Zipping it.,Молчу-молчу.
+DLG_GAME_OVER_15,"Build smarter this time. Humans have short memories but very long swords. They will be back.","В этот раз строй умнее. У людей короткая память, но длинные мечи. Они вернутся."
+DLG_GAME_OVER_16,"You heard the man. Throne goes back, walls go up. And THIS time — put some effort in.","Ладно, слышал босса? Трон на место, стены покрепче. И на этот раз — постарайся."
+DLG_GAME_OVER_17,Your skills and crystals are safe. Just make sure nobody questions your qualifications again.,"Твои навыки и кристаллы сохранились. Сделай так, чтобы не было вопросов к твоей профпригодности."
+DLG_SKILL_UPGRADE_1,"Ooh, the upgrade tool! Don't get too excited though — the tool alone is useless. You still need to unlock actual upgrades for each building type.","Ага, инструмент улучшений! Но не спеши радоваться — одного инструмента мало. Тебе ещё нужно изучить улучшения для конкретных зданий."
+DLG_SKILL_UPGRADE_2,See those upgrade branches right there? Without them your shiny new hammer is just a fancy paperweight. Unlock at least one.,"Видишь ветки улучшений рядом? Без них твой молоток — просто палка. Прокачай хотя бы одну, и тогда поговорим."
+DLG_SKILL_MAGIC_1,"Oh-ho-HO! Magic shot! Finally, you won't just stand there helplessly watching your walls get demolished.","О-хо-хо! Магический выстрел! Наконец-то ты не будешь просто стоять и смотреть, как крушат твои стены."
+DLG_SKILL_MAGIC_2,"When combat starts, your abilities show up on the toolbar, bottom-right. This one auto-fires — just sit back and enjoy the fireworks.","Когда начнётся бой, способности появятся на панели инструментов в правом нижнем углу. Эта бьёт автоматически — просто стой и наслаждайся."
+DLG_SKILL_EPOCH_1,"The Epoch Gate! This isn't just any building — it's a gateway to a whole new era. Plop it down and tier 2 structures become available.","Врата Эпохи! Это не просто здание — это портал в новую эру. Построй его на поле, и откроются постройки второго тира."
+DLG_SKILL_EPOCH_2,"Tier 2 is a completely different ballgame. Stronger towers, nastier tricks. Trust me — you're gonna want these.","Второй тир — это совсем другой уровень. Новые башни, новые возможности. Поверь, они тебе понадобятся."
+MENU_BACK,← Back,← Назад
+MENU_HUB_TITLE,Island,Остров
+MENU_SELECT_LOCATION,Select Location,Выбор локации
+SETTINGS_MASTER_VOLUME,Master Volume,Общая громкость
+SETTINGS_MUSIC_VOLUME,Music,Музыка
+SETTINGS_SFX_VOLUME,SFX,Эффекты
+SETTINGS_WINDOW_SIZE,Window Size,Размер окна
+SETTINGS_TOOLBAR,Toolbar,Панель инструментов
+UI_FULLSCREEN,Fullscreen,Полноэкранный
+UI_PAUSE,PAUSE,ПАУЗА
+UI_CLICK_TO_CONTINUE,Click to continue,"Нажмите, чтобы продолжить"
+UI_SKIP_BUILD_PHASE,Skip Build Phase,Пропустить фазу строительства
+GAME_OVER_SUBTITLE,The throne was destroyed...,Трон был уничтожен...
+DIALOGUE_PLACEHOLDER_NAME,Bookworm,Книгыч
+DIALOGUE_PLACEHOLDER_TEXT,Test dialogue text,Тестовый текст диалога
+CAT_INSTRUMENT,Tool,Инструмент
+CAT_BUILDING,Building,Здание
+CAT_ABILITY,Ability,Способность
+CAT_UPGRADE,Upgrade,Улучшение
+CAT_MILESTONE,Milestone,Майлстоун
+SKILL_BUILD_PLAN_NAME,Build Plan,Строительный план
+SKILL_BUILD_PLAN_DESC,Building tool.,Инструмент строительства.
+SKILL_ARCHERS_NAME,Archers,Лучники
+SKILL_ARCHERS_DESC,Unlocks the archer tower.,Открывает башню лучников.
+SKILL_WALLS_NAME,Walls,Стены
+SKILL_WALLS_DESC,Unlocks wall construction.,Открывает строительство стен.
+SKILL_FLAT_VIEW_NAME,View Toggle,Смена вида
+SKILL_FLAT_VIEW_DESC,View toggle tool.,Инструмент смены вида (глаз).
+SKILL_DEMOLISH_TOOL_NAME,Demolish Tool,Инструмент демонтажа
+SKILL_DEMOLISH_TOOL_DESC,Allows demolishing buildings.,Позволяет сносить постройки.
+SKILL_UPGRADE_TOOL_NAME,Upgrade Tool,Инструмент апгрейдов
+SKILL_UPGRADE_TOOL_DESC,Allows upgrading buildings.,Позволяет улучшать постройки.
+SKILL_MOVE_TOOL_NAME,Move Tool,Инструмент перемещения
+SKILL_MOVE_TOOL_DESC,Allows moving buildings.,Позволяет перемещать постройки.
+SKILL_MAGIC_ABILITIES_NAME,Magic Abilities,Магические способности
+SKILL_MAGIC_ABILITIES_DESC,Unlocks the magic branch.,Открывает ветку магии.
+SKILL_MAGIC_SHOT_NAME,Magic Shot,Магический выстрел
+SKILL_MAGIC_SHOT_DESC,Basic magic shot (auto-fires).,Базовый магический выстрел (Может стрелять автоматически).
+SKILL_MAGIC_SHOT_UP1_NAME,Magic Shot Upgrade,Улучшение магического выстрела
+SKILL_MAGIC_SHOT_UP1_DESC,Empowers magic shot (+15 damage).,Усиливает магический выстрел (+15 урона).
+SKILL_MAGIC_SHOT_UP2_NAME,Magic Missiles,Улучшение магического выстрела
+SKILL_MAGIC_SHOT_UP2_DESC,Replaces shot with Magic Missiles (3 projectiles).,Заменяет выстрел на Магические Ракеты (3 снаряда).
+SKILL_FIREBALL_NAME,Fireball,Огненный шар
+SKILL_FIREBALL_DESC,Area-of-effect fireball.,Огненный шар по площади.
+SKILL_FIREBALL_UP1_NAME,Fireball Upgrade,Улучшение огненного шара
+SKILL_FIREBALL_UP1_DESC,Empowers fireball (+30 damage).,Усиливает огненный шар (+30 урона).
+SKILL_FIREBALL_UP2_NAME,Fireball Upgrade,Улучшение огненного шара
+SKILL_FIREBALL_UP2_DESC,Increases fireball area to 9 tiles (3x3).,Увеличивает область огненного шара до 9 клеток (3x3).
+SKILL_BALL_LIGHTNING_NAME,Ball Lightning,Шаровая молния
+SKILL_BALL_LIGHTNING_DESC,Ball lightning against enemies.,Шаровая молния по врагам.
+SKILL_BALL_LIGHTNING_UP1_NAME,Storm Upgrade,Улучшение шаровой молнии
+SKILL_BALL_LIGHTNING_UP1_DESC,Reduces storm cooldown by 2 seconds.,Уменьшает кулдаун шторма на 2 секунды.
+SKILL_BALL_LIGHTNING_UP2_NAME,Storm Upgrade,Улучшение шаровой молнии
+SKILL_BALL_LIGHTNING_UP2_DESC,Increases storm area to 2x2 tiles.,Увеличивает область шторма до 2x2 клетки.
+SKILL_ARCHER_UP1_NAME,Archer Upgrade,Улучшение лучников
+SKILL_ARCHER_UP1_DESC,First archer upgrade.,Первое улучшение лучников.
+SKILL_WALL_UP1_NAME,Wall Upgrade,Улучшение стен
+SKILL_WALL_UP1_DESC,First wall upgrade.,Первое улучшение стен.
+SKILL_ARCHER_UP2_NAME,Archer Upgrade II,2-е улучшение лучников
+SKILL_ARCHER_UP2_DESC,Second archer upgrade.,Второе улучшение лучников.
+SKILL_WALL_UP2_NAME,Wall Upgrade II,2-е улучшение стен
+SKILL_WALL_UP2_DESC,Second wall upgrade.,Второе улучшение стен.
+SKILL_SHADOW_FORGE_NAME,Shadow Forge,Тёмная кузня
+SKILL_SHADOW_FORGE_DESC,Auto-repairs tier 1 buildings.,Автопочинка построек 1-го тира.
+SKILL_REPAIR_UP1_NAME,Forge Upgrade,Улучшение кузни
+SKILL_REPAIR_UP1_DESC,Forge repairs up to 10 buildings after combat.,Кузня чинит до 10 построек после боя.
+SKILL_REPAIR_UP2_NAME,Full Repair,Полный ремонт
+SKILL_REPAIR_UP2_DESC,Forge repairs all buildings after combat.,Кузня чинит все постройки после боя.
+SKILL_EPOCH_GATE_NAME,Epoch Gate,Врата Эпохи
+SKILL_EPOCH_GATE_DESC,Tier 2 buildings.,Здания второго тира.
+SKILL_ALTAR_OF_GREED_NAME,Altar of Greed,Алтарь Жадности
+SKILL_ALTAR_OF_GREED_DESC,+3 gold per kill.,+3 золото за убийство.
+SKILL_CRYSTAL_SPIRE_NAME,Crystal Spire,Кристальный Шпиль
+SKILL_CRYSTAL_SPIRE_DESC,+1 crystal at end of wave.,+1 кристалл в конце волны.
+SKILL_ZOMBIE_TOWER_NAME,Zombie Tower,Башня Зомби
+SKILL_ZOMBIE_TOWER_DESC,"Zombie hands grab and slow enemies.",Руки зомби хватают и замедляют врагов.
+SKILL_CURSE_TOWER_NAME,Curse Tower,Башня Проклятия
+SKILL_CURSE_TOWER_DESC,"Curses the highest HP enemy. +100% incoming damage.","Проклинает самого толстого врага. +100% входящего урона."
+HINT_SKILL_TREE_LABEL,▲  Skill Tree,▲  Древо талантов
+MAP_ISLAND,Island,Остров
+MAP_MOUNTAIN,Mountain Ridge,Горный Хребет
+BLD_THRONE_NAME,Beloved Throne,Любимый Трон
+BLD_THRONE_SHORT,THR,ТРН
+BLD_THRONE_DESC,"The Dark Lord's Throne. If destroyed — we're *#!@!.","Трон Владыки. Если будет разрушен — мне *\/!*!."
+BLD_ARCHER_TOWER_NAME,Archers,Лучники
+BLD_ARCHER_TOWER_SHORT,ARC,ЛУЧ
+BLD_ARCHER_TOWER_DESC,Dark tower with skeleton archers. Fires at enemies.,"Тёмная башня со скелетами-лучниками. Стреляет по врагам."
+BLD_WALL_BLOCK_NAME,Wall,Стена
+BLD_WALL_BLOCK_SHORT,WLL,СТН
+BLD_WALL_BLOCK_DESC,Stone wall. Blocks enemy paths.,Каменная стена. Блокирует путь врагам.
+BLD_ALTAR_OF_GREED_NAME,Altar of Greed,Алтарь Жадности
+BLD_ALTAR_OF_GREED_SHORT,ALT,АЛТ
+BLD_ALTAR_OF_GREED_DESC,Sacrificial altar. Gold multiplier x1.5 per each.,Жертвенный алтарь. Множитель золота ×1.5 за каждый.
+BLD_CRYSTAL_SPIRE_NAME,Crystal Spire,Кристальный Шпиль
+BLD_CRYSTAL_SPIRE_SHORT,CRS,КРС
+BLD_CRYSTAL_SPIRE_DESC,Dark obelisk. +1 soul per wave.,Тёмный обелиск. +1 душа за каждую волну.
+BLD_SHADOW_FORGE_NAME,Shadow Forge,Тёмная Кузня
+BLD_SHADOW_FORGE_SHORT,FRG,КУЗ
+BLD_SHADOW_FORGE_DESC,Cursed forge. Repairs buildings after combat.,Проклятая кузня. Чинит постройки после боя.
+BLD_EPOCH_GATE_NAME,Epoch Gate,Врата Эпох
+BLD_EPOCH_GATE_SHORT,GAT,ВРТ
+BLD_EPOCH_GATE_DESC,Portal to the abyss. Unlocks new epochs and enemy waves.,"Портал в бездну. Открывает новые эпохи и волны врагов."
+BLD_ZOMBIE_TOWER_NAME,Zombie Tower,Башня Зомби
+BLD_ZOMBIE_TOWER_SHORT,ZMB,ЗМБ
+BLD_ZOMBIE_TOWER_DESC,"Spawns zombie hands on enemy tiles. Slows and damages.","Генерирует руки зомби на тайлах врагов. Замедляет и наносит урон."
+BLD_CURSE_TOWER_NAME,Curse Tower,Башня Проклятия
+BLD_CURSE_TOWER_SHORT,CRS,ПРК
+BLD_CURSE_TOWER_DESC,"Curses the highest HP enemy. +100% incoming damage.","Проклинает самого толстого врага. +100% входящего урона."
+TOOLTIP_BUILD,"Building\nPlace buildings on the field\nHold LMB for line","Строительство\nРазмещай здания на поле\nЗажми ЛКМ для линии"
+TOOLTIP_DEMOLISH,"Demolish\nRemove buildings\nHold LMB for line","Снос\nУдаляй постройки\nЗажми ЛКМ для линии"
+TOOLTIP_MOVE,"Move\nDrag a building to a new spot","Перемещение\nПеретащи здание на новое место"
+TOOLTIP_UPGRADE,"Upgrade\nUpgrade buildings for gold\nHold LMB for line","Улучшение\nУлучшай здания за золото\nЗажми ЛКМ для линии"
+TOOLTIP_FLAT_VIEW,"Flat View\nShows building labels\nCan combine with other tools","Плоский вид\nПоказывает подписи построек\nМожно совмещать с другими инструментами"

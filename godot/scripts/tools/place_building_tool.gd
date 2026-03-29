@@ -110,7 +110,7 @@ func on_release() -> void:
 	if total_cost > GameManager.gold:
 		var as_node = wall_system.get_node_or_null("/root/AlertSystem")
 		if as_node:
-			as_node.alert_error("Недостаточно золота!")
+			as_node.alert_error(tr("UI_NOT_ENOUGH_GOLD_SHORT"))
 		_clear_line_previews()
 		return
 
@@ -160,7 +160,7 @@ func on_release() -> void:
 		if not GameManager.spend_gold(cost_per):
 			var as_node = wall_system.get_node_or_null("/root/AlertSystem")
 			if as_node:
-				as_node.alert_error("Недостаточно золота!")
+				as_node.alert_error(tr("UI_NOT_ENOUGH_GOLD_SHORT"))
 			break
 		var building = building_scene.instantiate()
 		bg.place_building(t, building)

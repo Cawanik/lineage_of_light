@@ -104,7 +104,8 @@ func _add_building_row(key: String, data: Dictionary) -> void:
 	info.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var hotkey = data.get("hotkey", "")
-	var name_str = data.get("name", key)
+	var bld_key = "BLD_" + key.to_upper()
+	var name_str = tr(bld_key + "_NAME")
 
 	# Название с clip — если длинное, обрезается
 	var name_label = Label.new()
@@ -131,8 +132,8 @@ func _add_building_row(key: String, data: Dictionary) -> void:
 
 	# Тултип
 	var hp = data.get("hp", 0)
-	var desc = data.get("desc", "")
-	row_btn.tooltip_text = "%s\nHP: %d\n%s" % [data.get("name", key), hp, desc]
+	var desc = tr(bld_key + "_DESC")
+	row_btn.tooltip_text = "%s\nHP: %d\n%s" % [name_str, hp, desc]
 
 	row_btn.add_child(row)
 	item_list.add_child(row_btn)

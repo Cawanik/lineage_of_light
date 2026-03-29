@@ -1,0 +1,144 @@
+{
+	"ui": {
+		"skill_tree_title": "Skill Tree",
+		"skill_learned": "Learned",
+		"not_enough_souls": "Not enough souls!",
+		"not_enough_gold": "Not enough gold! Need: {0}",
+		"not_enough_gold_short": "Not enough gold!",
+		"upgrades_count": "Upgrades: {0}/{1}",
+		"hp_format": "HP: {0} / {1}",
+		"tier_format": "{0} [Tier {1}]",
+		"build_menu_title": "BUILD",
+		"unknown": "???",
+		"wave_format": "{0} / {1}",
+		"timer_infinity": "∞",
+		"timer_format": "{0}:{1}",
+		"combat_label": "FIGHT",
+		"click_to_continue": "Click on dialogue to continue",
+		"arrow_skill_tree": "▲  Skill Tree",
+		"key_reserved": "This key is reserved"
+	},
+
+	"menu": {
+		"new_game": "New Game",
+		"continue": "Continue",
+		"settings": "Settings",
+		"quit": "Quit",
+		"main_menu": "Main Menu",
+		"play": "Play",
+		"completed": "Completed",
+		"coming_soon": "Coming Soon",
+		"slot_empty": "Slot {0} — Empty",
+		"slot_progress": "Slot {0} — {1}%",
+		"restart": "Restart",
+		"resume": "Resume",
+		"click_to_start": "Click to start"
+	},
+
+	"victory": {
+		"title": "VICTORY",
+		"description": "You've completed the Lineage of Light demo!\n\nThank you for playing. Your support and feedback\nare very important for the project.",
+		"contact": "Ideas, support, collaboration:\nTelegram: @cawanik",
+		"thanks": "Thanks for playing!"
+	},
+
+	"game_over": {
+		"title": "DEFEAT"
+	},
+
+	"tutorial": {
+		"hint_click_dialogue": "Click on dialogue to continue",
+		"hint_wasd": "Use WASD to move",
+		"hint_zoom": "Scroll mouse wheel to zoom",
+		"hint_open_skill_tree": "Open the skill tree",
+		"hint_unlock_skills": "Unlock: {0}",
+		"hint_flat_view": "Press the view toggle button",
+		"hint_flat_view_off": "Look around. Toggle view off to continue",
+		"hint_build_archers": "Build an archer tower near the throne",
+
+		"skill_names": {
+			"build_plan": "Build Plan",
+			"archers": "Archers",
+			"flat_view": "View Toggle",
+			"magic_abilities": "Magic Abilities"
+		}
+	},
+
+	"characters": {
+		"owner": "Dark Lord",
+		"book": "Book",
+		"player": "You",
+		"knight": "Knight"
+	},
+
+	"dialogue": {
+		"tutorial_intro_1": "Oh, praise me... It actually worked. You have NO idea how much mana that ritual cost. And frankly, you're better off not knowing.",
+		"tutorial_intro_2": "What?.. Who am I? Where am I? Why is it so dark? And why do you smell like... death?",
+		"tutorial_intro_3": "Questions later. First, I need to confirm you're not a dud. Walk around a bit.",
+
+		"tutorial_quest_1": "Oh, it moves! Splendid. The last one I summoned just stood there sobbing. Three hours. Had to unsummon the poor thing.",
+		"tutorial_quest_2": "Pay attention. Humans — those twitchy little creatures — smashed the thrones of my brothers. Every. Single. One. We never touched them, mind you. Not one raid, not one war.",
+		"tutorial_quest_3": "We just... exist. Quietly. Peacefully. In our dark castles. But apparently that makes us a \"threat\". A threat! I haven't set foot outside in three centuries!",
+		"tutorial_quest_4": "I need an architect. The best one. Word is you built something in the mortal realm... what was it... \"corporate offices\"? Sounds absolutely dreadful. You're hired.",
+		"tutorial_quest_5": "I'll give you power, immortality, and zero deadlines. Ever. In return — build me a fortress that these self-righteous lunatics can't knock down. Deal?",
+		"tutorial_quest_6": "...",
+		"tutorial_quest_7": "Zero deadlines? That's literally all I've ever wanted. I'm in!",
+		"tutorial_quest_8": "Wonderful. Haven't seen this kind of enthusiasm since my last batch of freshly raised skeletons. That's a compliment, by the way.",
+		"tutorial_quest_9": "Now then — take a peek into the pool of ancient knowledge. You'll find some useful tricks in there.",
+
+		"tutorial_crystals_1": "Here — four crystals. That's all that's left after your summoning. Don't thank me, you were expensive enough as it is.",
+		"tutorial_crystals_2": "Spend them wisely: Build Plan, Archers, View Toggle, and Magic Abilities. Everything else — later, once you've proven yourself.",
+
+		"tutorial_book_intro_1": "FIVE. HUNDRED. YEARS. I've been collecting dust on this shelf for five hundred years! Not one \"hey, how's it going\", not one \"thanks for everything\"!",
+		"tutorial_book_intro_2": "But the SECOND someone needs help — oh, it's all \"Book, do this\" and \"Book, explain that\". Did anyone even bother to dust me off? NOPE.",
+		"tutorial_book_intro_3": "Oh, you found my old familiar! This book raised me back when I was just a wee prince of darkness. Good times...",
+		"tutorial_book_intro_4": "Oh, I remember. You drew demons all over my pages. Page 347 still has some abomination labeled \"daddy\".",
+		"tutorial_book_intro_5": "...One more word and I'll repurpose you. Fireplace kindling comes to mind.",
+		"tutorial_book_intro_6": "...",
+		"tutorial_book_intro_7": "Thought so. Anyway — I'm leaving you two to it. The Book knows the ropes. I've got, you know... dark lord stuff to attend to.",
+
+		"tutorial_owner_leaves_1": "He's gone. Thank the abyss. Right then — listen up, mortal.",
+		"tutorial_owner_leaves_2": "See that throne? That's the ONLY thing between us and a mob of humans convinced we're the bad guys. Us! We haven't bothered anyone in centuries!",
+		"tutorial_owner_leaves_3": "Before you start building — the Dark Lord blessed you with true sight. Give it a try.",
+
+		"tutorial_flat_view_1": "Ha! Now you see the world as it really is — no isometric trickery. Every tile, plain as day.",
+		"tutorial_flat_view_2": "Much easier to plan your defenses in this view. Have a look around, then switch back — we've got work to do.",
+
+		"tutorial_build_1": "See? Now you can read every building like an open book. Handy when things get crowded.",
+		"tutorial_build_2": "Right, down to business. Stick some archers near the throne. Yes, skeleton archers. No, don't ask how they aim without eyes — just do it.",
+
+		"tutorial_enemy_1": "Huh. Not bad for someone with zero magical training. Color me impressed. Slightly. A microscopic amount.",
+		"tutorial_enemy_2": "Hold on. You hear that? Footsteps. Someone's heading this way...",
+
+		"tutorial_outro_1": "For the light! Darkness shall be vanqui— w-WHAT?! One arrow?! My heirs... shall avenge...",
+		"tutorial_outro_2": "We were literally minding our own business. HE broke into OUR home. And somehow WE'RE the villains?",
+		"tutorial_outro_3": "Every single time. One zealot, one arrow, then before you know it — a whole army of angry descendants with torches and a \"holy crusade\".",
+		"tutorial_outro_4": "Anyway, enough staring. We've got roughly one human generation before the next wave of do-gooders shows up.",
+		"tutorial_outro_5": "Build. Fortify. Prepare. And fair warning — one tower won't cut it next time. I despise deadlines, but here we are.",
+
+		"game_over_1": "NOOO! The throne! My one day off — RUINED!",
+		"game_over_2": "Brilliant work, architect. \"The best the human world has to offer\", was it? I shudder to imagine the worst.",
+		"game_over_3": "...",
+		"game_over_4": "M-my Lord?! Back so soon?! We'll fix this, I swear on my spine!",
+		"game_over_5": "Relax. I'm not mad.",
+		"game_over_6": "...You're not?",
+		"game_over_7": "I mass-produce these thrones. Got about twenty more in the warehouse. You wouldn't believe how often my brothers lose theirs. Some of them — monthly.",
+		"game_over_8": "Wait... I'm not dead?",
+		"game_over_9": "You're immortal, remember? I couldn't kill you if I tried. And I'm not trying. Unlike humans, we don't punish people for a first offense.",
+		"game_over_10": "...That's genuinely the nicest thing anyone's said to me.",
+		"game_over_11": "Here — fresh throne. Same spot as before. I rather like how the moonlight hits it there.",
+		"game_over_12": "You... enjoy moonlight?",
+		"game_over_13": "One more word and the next throne gets upholstered with your pages.",
+		"game_over_14": "Zipping it.",
+		"game_over_15": "Build smarter this time. Humans have short memories but very long swords. They will be back.",
+		"game_over_16": "You heard the man. Throne goes back, walls go up. And THIS time — put some effort in.",
+		"game_over_17": "Your skills and crystals are safe. Just make sure nobody questions your qualifications again.",
+
+		"skill_hint_upgrade_1": "Ooh, the upgrade tool! Don't get too excited though — the tool alone is useless. You still need to unlock actual upgrades for each building type.",
+		"skill_hint_upgrade_2": "See those upgrade branches right there? Without them your shiny new hammer is just a fancy paperweight. Unlock at least one.",
+		"skill_hint_magic_1": "Oh-ho-HO! Magic shot! Finally, you won't just stand there helplessly watching your walls get demolished.",
+		"skill_hint_magic_2": "When combat starts, your abilities show up on the toolbar, bottom-right. This one auto-fires — just sit back and enjoy the fireworks.",
+		"skill_hint_epoch_1": "The Epoch Gate! This isn't just any building — it's a gateway to a whole new era. Plop it down and tier 2 structures become available.",
+		"skill_hint_epoch_2": "Tier 2 is a completely different ballgame. Stronger towers, nastier tricks. Trust me — you're gonna want these."
+	}
+}

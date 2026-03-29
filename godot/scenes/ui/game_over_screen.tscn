@@ -42,14 +42,16 @@ theme_override_constants/separation = 20
 
 [node name="GameOverLabel" type="Label" parent="VBox"]
 layout_mode = 2
-text = "ПОРАЖЕНИЕ"
+auto_translate_mode = 1
+text = "GAME_OVER_TITLE"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(1, 0.2, 0.2, 1)
 theme_override_font_sizes/font_size = 48
 
 [node name="SubLabel" type="Label" parent="VBox"]
 layout_mode = 2
-text = "Трон был уничтожен..."
+auto_translate_mode = 1
+text = "GAME_OVER_SUBTITLE"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_font_sizes/font_size = 16
@@ -62,9 +64,11 @@ alignment = 1
 [node name="RestartButton" type="Button" parent="VBox/ButtonContainer"]
 layout_mode = 2
 custom_minimum_size = Vector2(150, 45)
-text = "Заново"
+auto_translate_mode = 1
+text = "MENU_RESTART"
 
 [node name="ExitButton" type="Button" parent="VBox/ButtonContainer"]
 layout_mode = 2
 custom_minimum_size = Vector2(150, 45)
-text = "Главное меню"
+auto_translate_mode = 1
+text = "MENU_MAIN_MENU"

@@ -93,7 +93,7 @@ func _process(_delta: float) -> void:
 		if PhaseManager.is_build_phase():
 			_time_remaining = PhaseManager.get_build_time_remaining()
 			if _time_remaining > 9999:
-				timer_label.text = "∞"
+				timer_label.text = tr("UI_TIMER_INFINITY")
 				timer_label.add_theme_color_override("font_color", timer_color)
 			else:
 				var mins = int(_time_remaining) / 60
@@ -104,7 +104,7 @@ func _process(_delta: float) -> void:
 			else:
 				timer_label.add_theme_color_override("font_color", timer_color)
 		else:
-			timer_label.text = "БОЙ"
+			timer_label.text = tr("UI_COMBAT_LABEL")
 			timer_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3, 1.0))
 
 

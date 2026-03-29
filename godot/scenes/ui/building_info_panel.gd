@@ -107,12 +107,13 @@ func _create_ui(data: Dictionary) -> void:
 	top_row.add_child(name_vbox)
 
 	var name_label = Label.new()
-	var base_name = data.get("name", "???")
+	var bld_key = "BLD_" + _building.building_type.to_upper()
+	var base_name = tr(bld_key + "_NAME")
 	var upgrades = data.get("upgrades", [])
 	var upgrade_level = _building.upgrade_level
 	if upgrade_level > 0 and upgrade_level <= upgrades.size():
 		var last_upgrade = upgrades[upgrade_level - 1]
-		name_label.text = "%s [Тир %d]" % [last_upgrade.get("name", base_name), upgrade_level]
+		name_label.text = tr("UI_TIER_FORMAT") % [last_upgrade.get("name", base_name), upgrade_level]
 	else:
 		name_label.text = base_name
 	name_label.add_theme_color_override("font_color", Color("#e8e0ff"))
@@ -120,7 +121,7 @@ func _create_ui(data: Dictionary) -> void:
 	name_vbox.add_child(name_label)
 
 	var hp_label = Label.new()
-	hp_label.text = "HP: %d / %d" % [int(_building.hp), int(_building.max_hp)]
+	hp_label.text = tr("UI_HP_FORMAT") % [int(_building.hp), int(_building.max_hp)]
 	hp_label.add_theme_color_override("font_color", Color("#66cc66"))
 	hp_label.add_theme_font_size_override("font_size", 12)
 	name_vbox.add_child(hp_label)
@@ -137,7 +138,7 @@ func _create_ui(data: Dictionary) -> void:
 			top_row.add_child(upgrade_btn)
 
 	# === Описание ===
-	var desc = data.get("desc", "")
+	var desc = tr(bld_key + "_DESC")
 	if desc != "":
 		var desc_label = Label.new()
 		desc_label.text = desc
@@ -177,7 +178,7 @@ func _create_ui(data: Dictionary) -> void:
 	if upgrades.size() > 0:
 		var upgrades_label = Label.new()
 		var applied = mini(upgrade_level, upgrades.size())
-		upgrades_label.text = "Улучшения: %d/%d" % [applied, upgrades.size()]
+		upgrades_label.text = tr("UI_UPGRADES_COUNT") % [applied, upgrades.size()]
 		upgrades_label.add_theme_color_override("font_color", Color("#f0d060"))
 		upgrades_label.add_theme_font_size_override("font_size", 10)
 		stats.add_child(upgrades_label)
@@ -229,7 +230,7 @@ func _apply_upgrade(upgrade: Dictionary, level: int) -> void:
 	if not GameManager.spend_gold(cost):
 		var as_node = get_node_or_null("/root/AlertSystem")
 		if as_node:
-			as_node.alert_error("Недостаточно золота! Нужно: %d" % cost)
+			as_node.alert_error(tr("UI_NOT_ENOUGH_GOLD") % [cost])
 		return
 
 	# HP бонус
