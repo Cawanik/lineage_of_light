@@ -51,27 +51,12 @@ func _ready() -> void:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 	)
 
-	_build_language_selector()
+	_setup_language_button()
 	_build_toolbar_binds()
 
 
-func _build_language_selector() -> void:
-	var vbox = $Center/VBox
-	var lang_container = HBoxContainer.new()
-	lang_container.name = "LanguageContainer"
-	lang_container.add_theme_constant_override("separation", 10)
-	lang_container.alignment = BoxContainer.ALIGNMENT_CENTER
-
-	var lang_label = Label.new()
-	lang_label.text = "Language:"
-	lang_label.add_theme_font_size_override("font_size", 14)
-	lang_container.add_child(lang_label)
-
-	var lang_btn = OptionButton.new()
-	lang_btn.name = "LanguageButton"
-	lang_btn.add_theme_font_size_override("font_size", 14)
-	lang_btn.custom_minimum_size = Vector2(150, 30)
-
+func _setup_language_button() -> void:
+	var lang_btn = $Center/VBox/LanguageContainer/LanguageButton
 	var locales = L.get_available_locales()
 	var current_idx = 0
 	for i in range(locales.size()):
@@ -79,17 +64,9 @@ func _build_language_selector() -> void:
 		if locales[i] == L.get_locale():
 			current_idx = i
 	lang_btn.selected = current_idx
-
 	lang_btn.item_selected.connect(func(idx):
-		var locale = locales[idx]
-		L.set_locale(locale)
+		L.set_locale(locales[idx])
 	)
-	lang_container.add_child(lang_btn)
-
-	# Вставляем перед toolbar
-	var toolbar_idx = toolbar_container.get_index()
-	vbox.add_child(lang_container)
-	vbox.move_child(lang_container, toolbar_idx)
 
 
 func _update_labels() -> void:

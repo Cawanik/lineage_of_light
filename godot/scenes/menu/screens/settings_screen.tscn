@@ -111,6 +111,21 @@ text = "1920x1080"
 auto_translate_mode = 1
 text = "UI_FULLSCREEN"
 
+[node name="LanguageContainer" type="HBoxContainer" parent="Center/VBox"]
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="Center/VBox/LanguageContainer"]
+auto_translate_mode = 1
+text = "SETTINGS_LANGUAGE"
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.8, 0.733, 0.867, 1)
+
+[node name="LanguageButton" type="OptionButton" parent="Center/VBox/LanguageContainer"]
+custom_minimum_size = Vector2(150, 30)
+flat = true
+theme_override_font_sizes/font_size = 14
+
 [node name="Sep2" type="HSeparator" parent="Center/VBox"]
 
 [node name="BindsLabel" type="Label" parent="Center/VBox"]

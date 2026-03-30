@@ -571,7 +571,7 @@ func _highlight_skill_tree_button(enable: bool) -> void:
 
 		# Стрелка с подписью — снизу от кнопки
 		var btn_rect = original.get_global_rect()
-		var arrow_x = btn_rect.position.x + btn_rect.size.x * 0.5 - 30
+		var btn_center_x = btn_rect.position.x + btn_rect.size.x * 0.5
 		var arrow_y = btn_rect.end.y + 5
 
 		_arrow_label = Label.new()
@@ -579,8 +579,8 @@ func _highlight_skill_tree_button(enable: bool) -> void:
 		_arrow_label.add_theme_font_size_override("font_size", 16)
 		_arrow_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
 		_arrow_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		_arrow_label.position = Vector2(arrow_x, arrow_y)
-		_arrow_label.size = Vector2(200, 30)
+		_arrow_label.position = Vector2(btn_center_x - 150, arrow_y)
+		_arrow_label.size = Vector2(300, 30)
 		_arrow_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_block_layer.add_child(_arrow_label)
 

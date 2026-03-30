@@ -116,10 +116,11 @@ SETTINGS_TOOLBAR,Toolbar,Панель инструментов
 UI_FULLSCREEN,Fullscreen,Полноэкранный
 UI_PAUSE,PAUSE,ПАУЗА
 UI_CLICK_TO_CONTINUE,Click to continue,"Нажмите, чтобы продолжить"
-UI_SKIP_BUILD_PHASE,Skip Build Phase,Пропустить фазу строительства
+UI_SKIP_BUILD_PHASE,Start Battle,Начать бой
 GAME_OVER_SUBTITLE,The throne was destroyed...,Трон был уничтожен...
 DIALOGUE_PLACEHOLDER_NAME,Bookworm,Книгыч
 DIALOGUE_PLACEHOLDER_TEXT,Test dialogue text,Тестовый текст диалога
+SETTINGS_LANGUAGE,Language,Язык
 CAT_INSTRUMENT,Tool,Инструмент
 CAT_BUILDING,Building,Здание
 CAT_ABILITY,Ability,Способность
