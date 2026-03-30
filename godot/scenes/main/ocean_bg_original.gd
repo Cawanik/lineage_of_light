@@ -38,8 +38,6 @@ var _frames: Array[Texture2D] = []
 var _elapsed: float = 0.0
 var _tile_time_offsets: Dictionary = {}
 var _tile_frame_offsets: Dictionary = {}
-var _redraw_accumulator: float = 0.0
-const REDRAW_FPS: float = 20.0
 
 
 func _ready() -> void:
@@ -157,27 +155,10 @@ func _process(delta: float) -> void:
 	if _frames.is_empty():
 		return
 	_elapsed += delta
-	_redraw_accumulator += delta
-	# Перерисовываем максимум REDRAW_FPS раз в секунду
-	if _redraw_accumulator >= 1.0 / REDRAW_FPS:
-		_redraw_accumulator = 0.0
-		queue_redraw()
+	queue_redraw()
 
 	if not Engine.is_editor_hint():
 		_update_camera_limits_for_zoom()
-
-
-func _get_visible_rect_local() -> Rect2:
-	var vp = get_viewport()
-	var vp_size = vp.get_visible_rect().size
-	# Берём реальную трансформацию viewport — учитывает камеру, zoom и любые офсеты
-	var inv = vp.get_canvas_transform().affine_inverse()
-	var world_tl = inv * Vector2.ZERO
-	var world_br = inv * vp_size
-	# Переводим в локальное пространство ноды
-	var local_tl = to_local(world_tl)
-	var local_br = to_local(world_br)
-	return Rect2(local_tl, local_br - local_tl)
 
 
 func _draw() -> void:
@@ -189,24 +170,11 @@ func _draw() -> void:
 	var frame_count = _frames.size()
 	var hw = tile_size.x * 0.5
 	var hh = tile_size.y * 0.5
-	var frame_duration = 1.0 / fps
 
-	# Считаем видимую область один раз перед циклом
-	var vis := _get_visible_rect_local()
-	var margin_x = tile_size.x
-	var margin_y = tile_size.y
+	var frame_duration = 1.0 / fps
 
 	for y in range(-fill_radius, fill_radius):
 		for x in range(-fill_radius, fill_radius):
-			var screen_x = (x - y) * hw
-			var screen_y = (x + y) * hh
-
-			# Пропускаем тайлы за экраном
-			if screen_x + margin_x < vis.position.x or screen_x - margin_x > vis.position.x + vis.size.x:
-				continue
-			if screen_y + margin_y < vis.position.y or screen_y - margin_y > vis.position.y + vis.size.y:
-				continue
-
 			var tile_key = Vector2i(x, y)
 			var f_offset = _tile_frame_offsets[tile_key] if _tile_frame_offsets.has(tile_key) else 0
 			var t_offset = _tile_time_offsets[tile_key] if _tile_time_offsets.has(tile_key) else 0.0
@@ -214,6 +182,8 @@ func _draw() -> void:
 			var frame_idx = (int(tile_time / frame_duration) + f_offset) % frame_count
 			var tex = _frames[frame_idx]
 
+			var screen_x = (x - y) * hw
+			var screen_y = (x + y) * hh
 			var draw_pos = Vector2(
 				screen_x - tex.get_width() * 0.5 + tile_offset.x,
 				screen_y - tex.get_height() * 0.5 + tile_offset.y

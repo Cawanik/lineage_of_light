@@ -7,11 +7,8 @@ uniform float wave_speed : hint_range(0.01, 2.0) = 0.4;
 uniform float wave_scale : hint_range(1.0, 50.0) = 8.0;
 uniform float foam_amount : hint_range(0.0, 1.0) = 0.3;
 
-// Быстрый hash без sin
 float hash(vec2 p) {
-	p = fract(p * vec2(234.34, 435.345));
-	p += dot(p, p + 34.23);
-	return fract(p.x * p.y);
+	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
 
 float noise(vec2 p) {
@@ -25,11 +22,10 @@ float noise(vec2 p) {
 	return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
-// 3 октавы вместо 5
 float fbm(vec2 p) {
 	float v = 0.0;
 	float a = 0.5;
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 5; i++) {
 		v += a * noise(p);
 		p *= 2.0;
 		a *= 0.5;
@@ -41,11 +37,12 @@ void fragment() {
 	vec2 uv = UV * wave_scale;
 	float t = TIME * wave_speed;
 
-	// 2 слоя волн вместо 3
+	// Two wave layers moving in different directions
 	float wave1 = fbm(uv + vec2(t * 0.6, t * 0.2));
 	float wave2 = fbm(uv * 1.3 + vec2(-t * 0.3, t * 0.5));
+	float wave3 = fbm(uv * 0.7 + vec2(t * 0.1, -t * 0.4));
 
-	float waves = (wave1 + wave2) * 0.5;
+	float waves = (wave1 + wave2 + wave3) / 3.0;
 
 	// Broad rolling wave pattern
 	float big_wave = sin(uv.x * 0.5 + uv.y * 0.3 + t * 1.5) * 0.5 + 0.5;
@@ -58,6 +55,11 @@ void fragment() {
 	// Foam on wave crests
 	float foam = smoothstep(0.5, 0.65, waves) * foam_amount;
 	col = mix(col, foam_color.rgb, foam);
+
+	// Subtle caustic sparkles
+	float caustic = noise(uv * 4.0 + vec2(t * 1.2, t * 0.8));
+	caustic = pow(caustic, 5.0) * 0.15;
+	col += vec3(caustic * 0.5, caustic * 0.7, caustic);
 
 	// Gentle brightness variation
 	float brightness = sin(uv.y * 0.2 + t * 0.3) * 0.05 + 1.0;
