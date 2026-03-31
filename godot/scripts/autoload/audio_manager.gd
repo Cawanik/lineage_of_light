@@ -33,20 +33,15 @@ var sounds: Dictionary = {}
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	# Сначала создаём аудиобасы
-	_ensure_bus("SFX")
-	_ensure_bus("Music")
 
 	# Пул SFX плееров
 	for i in range(SFX_POOL_SIZE):
 		var player = AudioStreamPlayer.new()
-		player.bus = "SFX"
 		add_child(player)
 		_sfx_players.append(player)
 
 	# Музыкальный плеер (не паузится)
 	_music_player = AudioStreamPlayer.new()
-	_music_player.bus = "Music"
 	_music_player.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(_music_player)
 

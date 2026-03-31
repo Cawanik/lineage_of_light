@@ -105,7 +105,7 @@ DLG_SKILL_MAGIC_1,"Oh-ho-HO! Magic shot! Finally, you won't just stand there hel
 DLG_SKILL_MAGIC_2,"When combat starts, your abilities show up on the toolbar, bottom-right. This one auto-fires — just sit back and enjoy the fireworks.","Когда начнётся бой, способности появятся на панели инструментов в правом нижнем углу. Эта бьёт автоматически — просто стой и наслаждайся."
 DLG_SKILL_EPOCH_1,"The Epoch Gate! This isn't just any building — it's a gateway to a whole new era. Plop it down and tier 2 structures become available.","Врата Эпохи! Это не просто здание — это портал в новую эру. Построй его на поле, и откроются постройки второго тира."
 DLG_SKILL_EPOCH_2,"Tier 2 is a completely different ballgame. Stronger towers, nastier tricks. Trust me — you're gonna want these.","Второй тир — это совсем другой уровень. Новые башни, новые возможности. Поверь, они тебе понадобятся."
-MENU_BACK,← Back,← Назад
+MENU_BACK,< Back,< Назад
 MENU_HUB_TITLE,Island,Остров
 MENU_SELECT_LOCATION,Select Location,Выбор локации
 SETTINGS_MASTER_VOLUME,Master Volume,Общая громкость
@@ -184,7 +184,7 @@ SKILL_ZOMBIE_TOWER_NAME,Zombie Tower,Башня Зомби
 SKILL_ZOMBIE_TOWER_DESC,"Zombie hands grab and slow enemies.",Руки зомби хватают и замедляют врагов.
 SKILL_CURSE_TOWER_NAME,Curse Tower,Башня Проклятия
 SKILL_CURSE_TOWER_DESC,"Curses the highest HP enemy. +100% incoming damage.","Проклинает самого толстого врага. +100% входящего урона."
-HINT_SKILL_TREE_LABEL,▲  Skill Tree,▲  Древо талантов
+HINT_SKILL_TREE_LABEL,Skill Tree,Древо талантов
 MAP_ISLAND,Island,Остров
 MAP_MOUNTAIN,Mountain Ridge,Горный Хребет
 BLD_THRONE_NAME,Beloved Throne,Любимый Трон

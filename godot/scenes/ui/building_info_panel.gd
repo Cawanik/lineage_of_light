@@ -169,7 +169,7 @@ func _create_ui(data: Dictionary) -> void:
 			if i < upgrades.size():
 				var u = upgrades[i]
 				var u_label = Label.new()
-				u_label.text = "✓ %s" % u.get("desc", u.get("name", ""))
+				u_label.text = "+ %s" % u.get("desc", u.get("name", ""))
 				u_label.add_theme_color_override("font_color", Color("#88cc88"))
 				u_label.add_theme_font_size_override("font_size", 10)
 				stats.add_child(u_label)

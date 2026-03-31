@@ -65,7 +65,7 @@ func build_map_list(maps_data: Array, completed_maps: Array) -> void:
 
 		if i < maps_data.size() - 1:
 			var arrow = Label.new()
-			arrow.text = "→"
+			arrow.text = "->"
 			arrow.add_theme_font_size_override("font_size", 20)
 			arrow.add_theme_color_override("font_color", Color("#9988bb"))
 			arrow.size_flags_vertical = Control.SIZE_SHRINK_CENTER
