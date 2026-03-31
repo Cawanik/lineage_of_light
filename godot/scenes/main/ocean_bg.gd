@@ -168,16 +168,20 @@ func _process(delta: float) -> void:
 
 
 func _get_visible_rect_local() -> Rect2:
-	var vp = get_viewport()
-	var vp_size = vp.get_visible_rect().size
-	# Берём реальную трансформацию viewport — учитывает камеру, zoom и любые офсеты
-	var inv = vp.get_canvas_transform().affine_inverse()
-	var world_tl = inv * Vector2.ZERO
-	var world_br = inv * vp_size
-	# Переводим в локальное пространство ноды
-	var local_tl = to_local(world_tl)
-	var local_br = to_local(world_br)
-	return Rect2(local_tl, local_br - local_tl)
+	var vp_size = get_viewport().get_visible_rect().size
+	# get_screen_transform() даёт полный маппинг local→screen (камера + zoom + stretch)
+	# корректно работает на всех платформах включая HTML5
+	var inv = get_screen_transform().affine_inverse()
+	var local_tl = inv * Vector2.ZERO
+	var local_br = inv * vp_size
+	var r = Rect2(local_tl, local_br - local_tl)
+	if r.size.x < 0:
+		r.position.x += r.size.x
+		r.size.x = -r.size.x
+	if r.size.y < 0:
+		r.position.y += r.size.y
+		r.size.y = -r.size.y
+	return r
 
 
 func _draw() -> void:
