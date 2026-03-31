@@ -15,7 +15,7 @@
 	"archer_tower": {
 		"name": "Лучники",
 		"short_name": "ЛУЧ",
-		"cost": 50,
+		"cost": 75,
 		"desc": "Тёмная башня со скелетами-лучниками. Стреляет по врагам.",
 		"hp": 200,
 		"sprite": "res://assets/sprites/buildings/skeleton_archer_tower.png",
