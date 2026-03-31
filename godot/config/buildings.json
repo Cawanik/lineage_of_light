@@ -102,7 +102,7 @@
 		"short_name": "АЛТ",
 		"type": "production",
 		"cost": 100,
-		"desc": "Жертвенный алтарь. Множитель золота ×1.5 за каждый.",
+		"desc": "Жертвенный алтарь. +3 золота за убийство.",
 		"hp": 150,
 		"sprite": "res://assets/sprites/buildings/production/altar_of_greed.png",
 		"sprite_offset": [0.0, -24.0],

@@ -96,19 +96,12 @@ func spend_gold(amount: int) -> bool:
 
 
 func earn_gold(amount: int) -> void:
-	var multiplier = get_gold_multiplier()
-	gold += int(amount * multiplier)
+	gold += amount + get_altar_bonus()
 
 
-# Считаем множитель золота от алтарей
-func get_gold_multiplier() -> float:
-	var altar_count = _count_buildings("altar_of_greed")
-	if altar_count <= 0:
-		return 1.0
-	var mult = 1.0
-	for i in range(altar_count):
-		mult *= 1.5
-	return mult
+# Бонус золота от алтарей: +3 за каждый алтарь на карте
+func get_altar_bonus() -> int:
+	return _count_buildings("altar_of_greed") * 3
 
 
 # Считаем бонус душ от шпилей
