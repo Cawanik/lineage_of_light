@@ -39,7 +39,7 @@ var _elapsed: float = 0.0
 var _tile_time_offsets: Dictionary = {}
 var _tile_frame_offsets: Dictionary = {}
 var _redraw_accumulator: float = 0.0
-const REDRAW_FPS: float = 20.0
+const REDRAW_FPS: float = 60.0
 
 
 func _ready() -> void:
