@@ -211,7 +211,7 @@
 	},
 	"shadow_forge": {
 		"name": "Тёмная кузня",
-		"desc": "Автопочинка построек 1-го тира.",
+		"desc": "Чинит 3 постройки после боя.",
 		"category": "Здание",
 		"icon": "res://assets/sprites/buildings/production/shadow_forge.png",
 		"cost": 1,
